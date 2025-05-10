@@ -1,0 +1,46 @@
+/*
+ * Copyright (c) 2025 Liang.Zhong. All rights reserved.
+ *
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.langwuyue.orange.example.redis.converters;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import com.langwuyue.orange.example.redis.entity.OrangeZSetBooleanExampleEntity2;
+import com.langwuyue.orange.example.redis.entity.OrangeZSetScoreNullableExampleEntity;
+
+/**
+ * @author Liang.Zhong
+ * @since 1.0.0
+ */
+public class OrangeMapToBooleanExampleEntities2Converter {
+	
+	public List<OrangeZSetBooleanExampleEntity2> toEntities(Map<OrangeZSetScoreNullableExampleEntity,Boolean> result){
+		List<OrangeZSetBooleanExampleEntity2> entities = new ArrayList<>();
+		for(Entry<OrangeZSetScoreNullableExampleEntity,Boolean> entry : result.entrySet()) {
+			OrangeZSetBooleanExampleEntity2 entity = new OrangeZSetBooleanExampleEntity2();
+			entity.setMember(entry.getKey());
+			entity.setSuccess(entry.getValue());
+			entities.add(entity);
+		}
+		return entities;
+	}
+
+}
