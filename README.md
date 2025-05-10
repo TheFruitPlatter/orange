@@ -1,58 +1,57 @@
-# Orange - 企业级Java开发基础组件
+# Orange - Enterprise Java Development Foundation Components
 
 <div align="right">
-  <a href="./README.en.md">English</a> |
-  <a href="./README.md">中文</a>
+  <a href="./README.md">English</a> |
+  <a href="./README.zh_CN.md">中文</a>
 </div>
 
+## Project Background
+With over 10 years of professional experience, I've observed that many so-called development standards often become mere formalities with poor implementation. This project aims to standardize development practices, improve project quality, and enhance efficiency. If you're facing any of the following challenges, you should give it a try.
 
-## 项目背景
-在我过去的10多年工作经验中，发现所谓的研发规范，很多情况下都沦为形式主义，落实到位的很少。所以本项目的目的就是规范开发，提升项目质量，提升效率。如果你也面临一下几个问题，你一定要尝试一下。
+### Common Pain Points
+#### Redis Management Challenges
+1. Key naming collision risks relying on manual code review
+2. Inconsistent expiration times for the same Key across different features developed by different team members
+3. Difficulty ensuring cache consistency (even with "delete-before-query" pattern)
+4. Lack of automatic renewal functionality (compatibility issues between Spring Boot native solution and Redission)
 
-### 常见痛点问题
-#### Redis管理难题
-1. Key命名冲突风险，依赖人工Code Review
-2. 过期时间不统一，同一个Key，涉及到不同的功能，不同的功能不同的开发者完成。
-3. 缓存一致性难以保证（先删后查模式仍存在不一致）
-4. 缺乏自动续约功能（Spring Boot原生方案 vs Redission的兼容问题）
+> Similar issues exist with other common components like Zookeeper, MQ, SQL, etc.
 
-> 类似问题同样存在于Zookeeper、MQ、SQL等常用组件中
+## Technology Roadmap
+| Component     | Status     |
+|--------------|-----------|
+| Redis        | ✅ Completed |
+| Logging      | 🚧 In Development |
+| Zookeeper    | ⌛ Pending |
+| MQ           | ⌛ Pending |
+| JDBC         | ⌛ Pending |
+| Thread Pool  | ⌛ Pending |
 
-## 技术路线图
-| 组件        | 状态     |
-|-------------|----------|
-| Redis       | ✅ 已完成 |
-| 日志        | 🚧 开发中 |
-| Zookeeper   | ⌛ 待开发 |
-| MQ          | ⌛ 待开发 |
-| JDBC        | ⌛ 待开发 |
-| 线程池      | ⌛ 待开发 |
+## Orange-Redis Core Features
+### Standardized Management
+- Interface-oriented Key management
+- Automatic collision detection
 
-## Orange-Redis 核心特性
-### 规范化管理
-- 面向接口的Key管理
-- 自动冲突检测
+### High Performance Guarantee
+- Circuit breaker/rate limiting support
+- Batch lock operations + automatic renewal
 
-### 高性能保障
-- 熔断/限流支持
-- 批量锁操作+自动续约
+### Data Consistency
+- Transaction support
+- Final consistency guarantee with database transactions
 
-### 数据一致性
-- 事务支持
-- 与数据库事务最终一致性保证
-
-## 快速入门
-### 环境准备
+## Quick Start
+### Environment Requirements
 - JDK 1.8+
 - Maven 3.0+
 
-### 安装方式
-#### 方案A：源码编译（当前推荐）
+### Installation Options
+#### Option A: Source Compilation (Recommended)
 ```bash
-git clone [项目地址]
+git clone [project URL]
 mvn clean install
 ```
-#### 方案B：Maven依赖（即将发布）
+#### Option B: Maven Dependency (Coming Soon)
 ```xml
 <dependency>
   <groupId>com.langwuyue</groupId>
@@ -60,9 +59,8 @@ mvn clean install
   <version>1.0.0-RELEASE</version>
 </dependency>
 ```
-### 基础示例
-
-#### 1. 启用组件扫描
+### Basic Example
+#### 1. Enable Component Scanning
 ```java
 @OrangeRedisClientScan(basePackages = "com.your.package")
 @SpringBootApplication
@@ -72,13 +70,12 @@ public class App {
     }
 }
 ```
-#### 2. 定义操作接口
-
+#### 2. Define Operation Interface
 ```java
 /**
- * Redis缓存操作接口定义
- * 使用@OrangeRedisValueClient注解指定操作类型
- * 使用@OrangeRedisKey注解定义Key规则
+ * Redis cache operation interface definition
+ * Use @OrangeRedisValueClient to specify operation type
+ * Use @OrangeRedisKey to define Key rules
  */
 @OrangeRedisValueClient(valueType = RedisValueTypeEnum.STRING)
 @OrangeRedisKey(
@@ -88,25 +85,24 @@ public class App {
 public interface DemoRedisApi {
     
     /**
-     * 设置缓存值
-     * @param value 要缓存的字符串值
+     * Set cache value
+     * @param value String value to cache
      */
     @SetValue
     void cacheValue(@RedisValue String value);
     
     /**
-     * 获取缓存值
-     * @return 返回缓存的字符串值
+     * Get cache value
+     * @return Cached string value
      */
     @GetValue
     String getValue();
 }
 ```
-
-#### 3. 业务调用
+#### 3. Business Implementation
 ```java
 /**
- * 示例Controller展示Redis接口调用
+ * Example Controller demonstrating Redis interface usage
  */
 @RestController
 @RequestMapping("/api/cache")
@@ -116,9 +112,9 @@ public class CacheController {
     private DemoRedisApi redisApi;
 
     /**
-     * 设置缓存值接口
-     * @param data 要缓存的数据
-     * @return 操作结果
+     * Set cache value endpoint
+     * @param data Data to cache
+     * @return Operation result
      */
     @PostMapping("/set")
     public ResponseEntity<String> setCacheData(@RequestParam String data) {
@@ -127,8 +123,8 @@ public class CacheController {
     }
 
     /**
-     * 获取缓存值接口
-     * @return 缓存的数据
+     * Get cache value endpoint
+     * @return Cached data
      */
     @GetMapping("/get")
     public ResponseEntity<String> getCacheData() {
@@ -137,14 +133,16 @@ public class CacheController {
     }
 }
 ```
-## 进阶指南
-参考项目中的示例模块：
-- 覆盖90%+的典型使用场景
-- 包含完整测试用例
-- 提供最佳实践示例
+## Advanced Guide
+Refer to the example module in the project:
 
-## 加入我们
-参与贡献方式：
-- 提交Pull Request
-- 报告Issues
-- 联系邮箱：jianpanxia_liang@163.com
+- Covers 90%+ typical usage scenarios
+- Includes complete test cases  
+- Provides best practice examples
+
+## Join Us
+Contribution methods:
+
+- Submit Pull Requests
+- Report Issues  
+- Contact email: `jianpanxia_liang@163.com`
