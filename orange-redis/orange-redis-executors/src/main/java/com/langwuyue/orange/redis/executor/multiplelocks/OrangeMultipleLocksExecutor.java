@@ -171,12 +171,12 @@ public class OrangeMultipleLocksExecutor extends OrangeRedisAbstractExecutor {
 					valueType,
 					threshold
 				);
-				renewTimerWheel.addRenewTask(task);
-				renewTasks.add(task);
 				Boolean success = doLock(task);
 				if(success != null && success.booleanValue()) {
 					successEntries.add(o);
 					successMembers.add(t);
+					renewTimerWheel.addRenewTask(task);
+					renewTasks.add(task);
 				}else{
 					throw new OrangeRedisIfAbsentException("False returned");
 				}
@@ -188,7 +188,12 @@ public class OrangeMultipleLocksExecutor extends OrangeRedisAbstractExecutor {
 				failedEntries.put(o, e);
 			}
 		});
-		if(!successEntries.isEmpty() || !unknownEnties.isEmpty() || !failedEntries.isEmpty()) {
+		
+		if(successEntries.isEmpty() && !unknownEnties.isEmpty() && failedEntries.isEmpty()) {
+			return;
+		}
+		
+		try {
 			this.listeners.forEach(t -> 
 				t.onCompleted(
 					redisKey.getOriginalKey(),
@@ -200,10 +205,23 @@ public class OrangeMultipleLocksExecutor extends OrangeRedisAbstractExecutor {
 					)
 				)
 			);
+		}finally {
+			// Remove auto renew tasks
+			renewTasks.forEach(t -> t.setRemove(true));
+			// Release locks
+			releaseLocks(successMembers,successEntries,failedEntries,unknownEnties,redisKey,valueType,args);
 		}
-		
-		renewTasks.forEach(t -> t.setRemove(true));
-		
+	}
+	
+	private void releaseLocks(
+		Set<Object> successMembers,
+		Set<Object> successEntries,
+		Map<Object,Exception> failedEntries,
+		Set<Object> unknownEnties,
+		Key redisKey, 
+		RedisValueTypeEnum valueType, 
+		Object[] args
+	) {
 		if(successMembers.isEmpty()) {
 			return;
 		}

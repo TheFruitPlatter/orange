@@ -90,7 +90,12 @@ public class OrangeAddMembersIfAbsentExecutor extends OrangeAddMemberIfAbsentExe
 				failedEntries.put(o, e);
 			}
 		});
-		if(!successEntries.isEmpty() || !unknownEnties.isEmpty() || !failedEntries.isEmpty()) {
+		
+		if(successEntries.isEmpty() && unknownEnties.isEmpty() && failedEntries.isEmpty()) {
+			return null;
+		}
+		
+		try {
 			this.listeners.forEach(t -> 
 				t.onCompleted(
 					context.getRedisKey().getOriginalKey(),
@@ -102,10 +107,21 @@ public class OrangeAddMembersIfAbsentExecutor extends OrangeAddMemberIfAbsentExe
 					)
 				)
 			);
+		}finally {
+			removeMembers(ctx,successEntries,successMembers,failedEntries,unknownEnties);
 		}
-		
+		return null;
+	}
+	
+	private void removeMembers(
+		OrangeAddMembersIfAbsentContext ctx,
+		Set<Object> successEntries,
+		Set<Object> successMembers,
+		Map<Object,Exception> failedEntries,
+		Set<Object> unknownEnties
+	) {
 		if(!ctx.isDeleteInTheEnd() || successMembers.isEmpty()) {
-			return null;
+			return;
 		}
 		Long removed = null;
 		try {
@@ -123,7 +139,7 @@ public class OrangeAddMembersIfAbsentExecutor extends OrangeAddMemberIfAbsentExe
 			final Long removeCount = removed;
 			this.listeners.forEach(t -> 
 				t.onCompleted(
-					context.getRedisKey().getOriginalKey(),
+					ctx.getRedisKey().getOriginalKey(),
 					new OrangRemoveMembersFailedEvent(
 						ctx.getArgs(),
 						successEntries,
@@ -136,7 +152,6 @@ public class OrangeAddMembersIfAbsentExecutor extends OrangeAddMemberIfAbsentExe
 				)
 			);
 		}
-		return null;
 	}
 	
 	@Override

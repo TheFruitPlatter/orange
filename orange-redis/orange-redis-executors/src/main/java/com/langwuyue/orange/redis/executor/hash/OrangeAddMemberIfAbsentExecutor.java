@@ -66,8 +66,6 @@ public class OrangeAddMemberIfAbsentExecutor extends OrangeRedisAbstractExecutor
 		OrangeAddIfAbsentContext ctx = (OrangeAddIfAbsentContext) context;
 		Entry member = (Entry) ctx.getMember().entrySet().iterator().next();
 		Boolean success = false;
-		boolean removeFailed = false;
-		Exception removeFailedException = null;
 		try {
 			success = this.operations.putIfAbsent(
 					context.getRedisKey().getValue(), 
@@ -79,12 +77,6 @@ public class OrangeAddMemberIfAbsentExecutor extends OrangeRedisAbstractExecutor
 			if(success == null || !success.booleanValue()) {
 				throw new OrangeRedisIfAbsentException("False returned");
 			}
-			this.listeners.forEach(t -> 
-				t.onSuccess(
-					context.getRedisKey().getOriginalKey(),
-					new OrangeAddMemberIfAbsentSuccessEvent(context.getArgs())
-				)
-			);
 		}catch (Exception e) {
 			// The operation may have been interrupted by a client timeout or network error, but it was actually completed successfully.
 			this.listeners.forEach(t -> 
@@ -93,9 +85,37 @@ public class OrangeAddMemberIfAbsentExecutor extends OrangeRedisAbstractExecutor
 					new OrangeAddMemberIfAbsentFailedEvent(context.getArgs(),e)
 				)
 			);
-		}finally {
+		}
+		
+		notifyListeners(context,success,member);
+		
+		Class<?> returnClass = context.getOperationMethod().getReturnType();
+		if(returnClass == Boolean.class || returnClass == boolean.class) {
+			return success == null ? Boolean.FALSE : success;	
+		}
+		if(OrangeReflectionUtils.isInteger(returnClass)) {
+			return success == null || !success.booleanValue() ? 0 : 1;	
+		}
+		return null;
+	}
+	
+	private void notifyListeners(OrangeRedisContext context,Boolean success,Entry member) {
+		if(success == null || !success.booleanValue()) {
+			return;
+		}
+		OrangeAddIfAbsentContext ctx = (OrangeAddIfAbsentContext) context;
+		boolean removeFailed = false;
+		Exception removeFailedException = null;
+		try {
+			this.listeners.forEach(t -> 
+				t.onSuccess(
+					context.getRedisKey().getOriginalKey(),
+					new OrangeAddMemberIfAbsentSuccessEvent(context.getArgs())
+				)
+			);
+		}finally{
 			try {
-				if(ctx.isDeleteInTheEnd() && success != null && success.booleanValue()) {
+				if(ctx.isDeleteInTheEnd()) {
 					Long removed = operations.removeMembers(context.getRedisKey().getValue(),ctx.getKeyType(),member.getKey());
 					removeFailed = removed == null || removed <= 0;
 				}
@@ -106,23 +126,17 @@ public class OrangeAddMemberIfAbsentExecutor extends OrangeRedisAbstractExecutor
 				removeFailedException = e;
 			}
 		}
-		if(removeFailed) {
-			final Exception exception = removeFailedException;
-			this.listeners.forEach(t -> 
-				t.onRemoveFailed(
-					context.getRedisKey().getOriginalKey(),
-					new OrangeRemoveMemberFailedEvent(context.getArgs(),exception)
-				)
-			);
+		
+		if(!removeFailed) {
+			return;
 		}
-		Class<?> returnClass = context.getOperationMethod().getReturnType();
-		if(returnClass == Boolean.class || returnClass == boolean.class) {
-			return success == null ? Boolean.FALSE : success;	
-		}
-		if(OrangeReflectionUtils.isInteger(returnClass)) {
-			return success == null || !success.booleanValue() ? 0 : 1;	
-		}
-		return null;
+		final Exception exception = removeFailedException;
+		this.listeners.forEach(t -> 
+			t.onRemoveFailed(
+				context.getRedisKey().getOriginalKey(),
+				new OrangeRemoveMemberFailedEvent(context.getArgs(),exception)
+			)
+		);
 	}
 
 	@Override

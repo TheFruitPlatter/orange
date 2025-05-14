@@ -107,19 +107,12 @@ public class OrangeAddMemberIfAbsentExecutor extends OrangeRedisAbstractExecutor
 	public Object execute(OrangeRedisContext context) throws Exception {
 		OrangeRedisValueIfAbsentContext ctx = (OrangeRedisValueIfAbsentContext)context;
 		Boolean success = Boolean.FALSE;
-		boolean removeFailed = false;
-		Exception removeFailedException = null;
+		
 		try {
 			success = executeIfAbsent(ctx,ctx.getValue());
 			if(success == null || !success.booleanValue()) {
 				throw new OrangeRedisIfAbsentException("False returned");
 			}
-			listeners.forEach(t -> 
-				t.onSuccess(
-					context.getRedisKey().getOriginalKey(),
-					new OrangeAddMemberIfAbsentSuccessEvent(context.getArgs(), ctx.getValue())
-				)
-			);
 		}catch (Exception e) {
 			// The operation may have been interrupted by a client timeout or network error, but it was actually completed successfully.
 			listeners.forEach(t -> 
@@ -132,10 +125,30 @@ public class OrangeAddMemberIfAbsentExecutor extends OrangeRedisAbstractExecutor
 					)
 				)
 			);
+		}
+		
+		notifyListeners(success,ctx);
+		
+		return null;
+	}
+	
+	private void notifyListeners(Boolean success,OrangeRedisValueIfAbsentContext ctx) {
+		if(success == null || !success.booleanValue()) {
+			return;
+		}
+		boolean removeFailed = false;
+		Exception removeFailedException = null;
+		try {
+			listeners.forEach(t -> 
+				t.onSuccess(
+					ctx.getRedisKey().getOriginalKey(),
+					new OrangeAddMemberIfAbsentSuccessEvent(ctx.getArgs(), ctx.getValue())
+				)
+			);
 		}finally {
 			try {
-				if(ctx.isDeleteInTheEnd() && success != null && success.booleanValue()) {
-					Long removed = operations.remove(context.getRedisKey().getValue(), context.getValueType(), ctx.getValue());
+				if(ctx.isDeleteInTheEnd()) {
+					Long removed = operations.remove(ctx.getRedisKey().getValue(), ctx.getValueType(), ctx.getValue());
 					removeFailed = removed == null || removed <= 0;
 				}
 			}catch (Exception e) {
@@ -146,16 +159,18 @@ public class OrangeAddMemberIfAbsentExecutor extends OrangeRedisAbstractExecutor
 				
 			}
 		}
-		if(removeFailed) {
-			Exception exception = removeFailedException;
-			listeners.forEach(t -> 
-				t.onRemoveFailed(
-					context.getRedisKey().getOriginalKey(), 
-					new OrangeRemoveMemberFailedEvent(context.getArgs(),ctx.getValue(),exception)
-				)
-			);
+		
+		if(!removeFailed) {
+			return;
 		}
-		return null;
+		
+		Exception exception = removeFailedException;
+		listeners.forEach(t -> 
+			t.onRemoveFailed(
+				ctx.getRedisKey().getOriginalKey(), 
+				new OrangeRemoveMemberFailedEvent(ctx.getArgs(),ctx.getValue(),exception)
+			)
+		);
 	}
 
 	protected Boolean executeIfAbsent(OrangeRedisContext ctx,Object member) throws Exception {

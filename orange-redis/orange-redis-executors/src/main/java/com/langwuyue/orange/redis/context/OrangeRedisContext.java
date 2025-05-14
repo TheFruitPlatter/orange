@@ -141,5 +141,11 @@ public class OrangeRedisContext {
 			return expirationTime == other.expirationTime && expirationTimeUnit == other.expirationTimeUnit
 					&& Objects.equals(value, other.value);
 		}
+		@Override
+		public String toString() {
+			return "Key [originalKey=" + originalKey + ", value=" + value + ", expirationTime=" + expirationTime
+					+ ", expirationTimeUnit=" + expirationTimeUnit + "]";
+		}
+		
 	}
 }

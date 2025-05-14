@@ -62,20 +62,9 @@ public class OrangeSetIfAbsentExecutor extends OrangeRedisAbstractExecutor {
 	@Override
 	public Object execute(OrangeRedisContext context) throws Exception {
 		OrangeRedisValueContext ctx = (OrangeRedisValueContext)context;
-		Boolean success = Boolean.FALSE;
-		boolean delFailed = false;
-		Exception delFailedException = null;
+		Object result = null;
 		try {
-			success = executeIfAsent(ctx);
-			if(success == null || !success.booleanValue()) {
-				throw new OrangeRedisIfAbsentException("False returned");
-			}
-			listeners.forEach(t -> 
-				t.onSuccess(
-					context.getRedisKey().getOriginalKey(),
-					new OrangeSetIfAbsentSuccessEvent(context.getArgs(), ctx.getValue())
-				)
-			);
+			result = executeIfAsent(ctx);
 		}catch (Exception e) {
 			// The operation may have been interrupted by a client timeout or network error, but it was actually completed successfully.
 			listeners.forEach(t -> 
@@ -84,10 +73,41 @@ public class OrangeSetIfAbsentExecutor extends OrangeRedisAbstractExecutor {
 					new OrangeSetIfAbsentFailedEvent(ctx.getArgs(),ctx.getValue(), e)
 				)
 			);
+		}
+		
+		notifyListeners(ctx,result);
+		
+		return returnValue(context, result);
+	}
+	
+	protected Object returnValue(OrangeRedisContext context,Object result) {
+		Class<?> returnClass = context.getOperationMethod().getReturnType();
+		if(returnClass == Boolean.class || returnClass == boolean.class) {
+			return result == null ? Boolean.FALSE : result;	
+		}
+		if(OrangeReflectionUtils.isInteger(returnClass)) {
+			return result != null && (((Boolean)result).booleanValue()) ? 1 : 0;	
+		}
+		return null;
+	}
+	
+	protected void notifyListeners(OrangeRedisValueContext ctx,Object result) {
+		if(result == null || !(((Boolean)result).booleanValue())) {
+			return;
+		}
+		boolean delFailed = false;
+		Exception delFailedException = null;
+		try {
+			listeners.forEach(t -> 
+				t.onSuccess(
+					ctx.getRedisKey().getOriginalKey(),
+					new OrangeSetIfAbsentSuccessEvent(ctx.getArgs(), ctx.getValue())
+				)
+			);
 		}finally {
 			try {
-				if(isDeleteInTheEnd(ctx,success)) {
-					Boolean deleted = operations.delete(context.getRedisKey().getValue());	
+				if(isDeleteInTheEnd(ctx,result)) {
+					Boolean deleted = operations.delete(ctx.getRedisKey().getValue());	
 					delFailed = deleted == null || !deleted.booleanValue(); 
 				}
 			}catch (Exception e) {
@@ -98,36 +118,35 @@ public class OrangeSetIfAbsentExecutor extends OrangeRedisAbstractExecutor {
 				
 			}
 		}
-		if(delFailed) {
-			final Exception exception = delFailedException;
-			listeners.forEach(t -> 
-				t.onRemoveFailed(
-					context.getRedisKey().getOriginalKey(),
-					new OrangeRemoveFailedEvent(ctx.getArgs(),ctx.getValue(), exception)
-				)
-			);
+		
+		if(!delFailed) {
+			return;
 		}
-		Class<?> returnClass = context.getOperationMethod().getReturnType();
-		if(returnClass == Boolean.class || returnClass == boolean.class) {
-			return success == null ? Boolean.FALSE : success;	
-		}
-		if(OrangeReflectionUtils.isInteger(returnClass)) {
-			return success != null && success.booleanValue() ? 1 : 0;	
-		}
-		return null;
+		
+		final Exception exception = delFailedException;
+		listeners.forEach(t -> 
+			t.onRemoveFailed(
+				ctx.getRedisKey().getOriginalKey(),
+				new OrangeRemoveFailedEvent(ctx.getArgs(),ctx.getValue(), exception)
+			)
+		);
 	}
 	
-	protected boolean isDeleteInTheEnd(OrangeRedisContext context,Boolean result) {
+	protected boolean isDeleteInTheEnd(OrangeRedisContext context,Object result) {
 		OrangeRedisValueIfAbsentContext ctx = (OrangeRedisValueIfAbsentContext)context;
-		return ctx.isDeleteInTheEnd() && result != null && result;
+		return ctx.isDeleteInTheEnd() && result != null && (Boolean)result;
 	}
 
-	protected Boolean executeIfAsent(OrangeRedisValueContext ctx) throws Exception {
-		return operations.setIfAbsent(
+	protected Object executeIfAsent(OrangeRedisValueContext ctx) throws Exception {
+		Boolean result = operations.setIfAbsent(
 				ctx.getRedisKey().getValue(), 
 				ctx.getValue(),
 				ctx.getValueType()
 		);
+		if(result == null || !result.booleanValue()) {
+			throw new OrangeRedisIfAbsentException("False returned");
+		}
+		return result;
 	}
 
 	@Override

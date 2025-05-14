@@ -37,7 +37,22 @@ public class OrangeDefaultExpirationTimeAutoInitializer implements OrangeExpirat
 
 	@Override
 	public Key init(Key originKey, int renewThreshold) {
-		long expirationTime = (properties.getAutoInitValue().getSeconds() * renewThreshold) / (renewThreshold - 1);
+		// To avoid a sudden surge of renewal tasks at the same time (when all keys share the same expiration time),
+		// the initial expiration time (autoInitValue) is randomized within the range [autoInitValue, maxExpirationTime].
+		// This spreads out renewal operations over time, reducing system load spikes.
+		long maxExpirationTime = properties.getWheelSize() * properties.getTickDuration().getSeconds();
+		long autoInitValue = properties.getAutoInitValue().getSeconds();
+		if(autoInitValue < maxExpirationTime) {
+			autoInitValue = Math.round(Math.random() * (maxExpirationTime - properties.getAutoInitValue().getSeconds()) + properties.getAutoInitValue().getSeconds());	
+		}
+		
+		// System auto-renews if remaining time < (expirationTime / renewThreshold).
+		// autoInitValue is derived as: (expirationTime * renewThreshold) / (renewThreshold - 1).
+		//
+		// Example (renewThreshold=3):
+		//   autoInitValue=10s → expirationTime=15s.
+		long expirationTime = (autoInitValue * renewThreshold) / (renewThreshold - 1);
+		
 		return new Key(originKey.getOriginalKey(),originKey.getValue(),expirationTime,TimeUnit.SECONDS);
 	}
 }

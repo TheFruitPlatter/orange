@@ -5,6 +5,10 @@
 	<artifactId>orange</artifactId>
 	<version>1.0.0-RELEASE</version>
 	<packaging>pom</packaging>
+	
+	<name>orange</name>
+	<description>Java components base on SpringBoot</description>
+	<url>https://github.com/TheFruitPlatter/orange.git</url>
 
 	<properties>
 		<resource.delimiter>@</resource.delimiter>
@@ -38,6 +42,11 @@
 			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
 		</license>
 	</licenses>
+	
+	<scm>
+	  <connection>scm:git:git@github.com:TheFruitPlatter/orange.git</connection>
+	  <url>https://github.com/TheFruitPlatter/orange.git</url>
+	</scm>
 
 	<dependencyManagement>
 		<dependencies>
@@ -166,6 +175,15 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+	          <groupId>org.sonatype.central</groupId>
+	          <artifactId>central-publishing-maven-plugin</artifactId>
+	          <version>0.7.0</version>
+	          <extensions>true</extensions>
+	          <configuration>
+	            <publishingServerId>central</publishingServerId>
+	          </configuration>
+	        </plugin>
 		</plugins>
 	</build>
 </project>

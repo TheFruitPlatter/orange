@@ -22,6 +22,7 @@ import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.List;
 
+import com.langwuyue.orange.redis.OrangeRedisIfAbsentException;
 import com.langwuyue.orange.redis.annotation.AutoRenew;
 import com.langwuyue.orange.redis.annotation.RedisValue;
 import com.langwuyue.orange.redis.annotation.global.SetExpiration;
@@ -61,12 +62,17 @@ public class OrangeValueLockAutoRenewExpirationExecutor extends OrangeSetIfAbsen
 	}
 
 	@Override
-	protected boolean isDeleteInTheEnd(OrangeRedisContext context, Boolean result) {
-		return result;
+	protected boolean isDeleteInTheEnd(OrangeRedisContext context, Object result) {
+		if(result == null) {
+			return false;
+		}
+		OrangeValueLockRenewTask task = (OrangeValueLockRenewTask)result;
+		task.setRemove(true);
+		return true;
 	}
 
 	@Override
-	protected Boolean executeIfAsent(OrangeRedisValueContext context) throws Exception {
+	protected Object executeIfAsent(OrangeRedisValueContext context) throws Exception {
 		OrangeValueLockAutoRenewContext ctx = (OrangeValueLockAutoRenewContext) context;
 		Key key = ctx.getRedisKey();
 		AutoRenew autoRenew = ctx.getAutoRenew();
@@ -80,14 +86,30 @@ public class OrangeValueLockAutoRenewExpirationExecutor extends OrangeSetIfAbsen
 			ctx.getValueType(),
 			autoRenew.threshold()
 		);
-		renewTimerWheel.addRenewTask(task);
-		return this.getOperations().setIfAbsent(
+		Boolean result = this.getOperations().setIfAbsent(
 			key.getValue(), 
 			ctx.getValue(), 
 			key.getExpirationTime(), 
 			key.getExpirationTimeUnit(), 
 			ctx.getValueType()
 		);
+		if(result == null || !result.booleanValue()) {
+			throw new OrangeRedisIfAbsentException("False returned");
+		}
+		renewTimerWheel.addRenewTask(task);
+		return task;
+	}
+	
+	
+
+	@Override
+	protected Object returnValue(OrangeRedisContext context, Object result) {
+		return super.returnValue(context, result != null);
+	}
+
+	@Override
+	protected void notifyListeners(OrangeRedisValueContext ctx, Object result) {
+		super.notifyListeners(ctx, result != null);
 	}
 
 	@Override
@@ -99,5 +121,4 @@ public class OrangeValueLockAutoRenewExpirationExecutor extends OrangeSetIfAbsen
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(RedisValue.class,SetValue.class, AutoRenew.class,SetExpiration.class);
 	}
-
 }
