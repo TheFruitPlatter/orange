@@ -1,9 +1,9 @@
 # Eclipse specific files
 .classpath
 .project
-.settings/
+.settings
 
-bin/
+bin
 *.tmp
 *.bak
 *.swp
@@ -11,7 +11,7 @@ bin/
 *.launch
 
 # Maven build directories and temp files
-target/
+target
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -23,7 +23,7 @@ buildNumber.properties
 .mvn/wrapper/maven-wrapper.jar
 
 # IDE specific files (general)
-.idea/
+.idea
 *.iml
 *.ipr
 *.iws
@@ -34,7 +34,7 @@ Thumbs.db
 
 # Log files
 *.log
-logs/
+logs
 
 # Build artifacts
 *.class
@@ -43,4 +43,4 @@ logs/
 *.ear
 *.zip
 *.tar.gz
-*.rars
+*.rar
