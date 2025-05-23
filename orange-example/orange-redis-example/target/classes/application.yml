@@ -1,0 +1,77 @@
+spring:
+  application:
+    name: orange-example
+  datasource:
+    url: jdbc:h2:mem:orangedb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+  sql:
+    init:
+      mode: always
+  h2:
+    console:
+      enabled: true
+      path: /h2/console
+orange:
+  redis:
+    metrics:
+      enabled: true
+    client-type: lettuce
+    host: 10.192.11.120
+    # host: 127.0.0.1
+    username: default
+    password: FC23E904EDB5
+    database: 0
+    port: 6379
+    key-check-level: 4
+    timeout: 10s
+    connect-timeout: 1s
+    key-prefix: 'orange:exmaple:'
+    slow-operation:
+       slow-operation-threshold: 1s
+       enabled: true
+    out-of-service:
+      enabled: true
+      health-check-threshold: 3
+      ping-latency-threshold: 3s
+    auto-renew: 
+      tick-duration: 1s
+      wheel-size: 60
+      auto-init-value: 10s
+      enabled: true
+    transaction:
+      enabled: true
+      gc-thread-initial-delay: 10h
+      gc-thread-period: 1s
+      timeout-callback-thread-initial-delay: 10h
+      timeout-callback-thread-period: 1s
+      timeout-threshold: 3s
+      timeout-callback-period: 1s
+      timeout-callback-times: 300
+      dead-transaction-threshold: 1d
+    
+logging:
+  level:
+    com.langwuyue.orange.redis.executor.transaction.OrangeTransactionGarbageCollector: info
+    com.langwuyue.orange.redis.executor.transaction.OrangeTransactionTimeoutCallbackExecutor: info
+    com.langwuyue.orange.redis.timer: info
+    com.langwuyue.orange.redis.operations: info
+    com.langwuyue.orange.redis.executor: debug
+
+management:
+  server:
+    port: 18080
+  health:
+    redis:
+      enabled: true
+  endpoint:
+    shutdown:
+      enabled: true
+    health:
+      show-details: always
+      show-components: always
+  endpoints:
+    web:
+      exposure:
+        include: health,info,of-redis-key-registry,of-redis-conf,shutdown,of-redis-dead-tx,of-redis-slow-ops,metrics

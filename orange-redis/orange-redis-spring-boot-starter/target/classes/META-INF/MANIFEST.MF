@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Build-Jdk-Spec: 21
+Specification-Title: orange-redis-spring-boot-starter
+Specification-Version: 1.0
+Built-By: Liang.Zhong
+Created-By: 1.8 (Eclipse Adoptium)
+Implementation-Title: orange-redis-spring-boot-starter
+Implementation-Version: 1.0.0-RELEASE
+License: META-INF/LICENSE
+Notice: META-INF/NOTICE
+
