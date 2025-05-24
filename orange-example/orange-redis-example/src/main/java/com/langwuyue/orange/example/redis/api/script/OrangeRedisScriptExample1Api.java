@@ -29,6 +29,14 @@ import com.langwuyue.orange.redis.annotation.script.OrangeRedisScriptClient;
 import com.langwuyue.orange.redis.annotation.script.ScriptArg;
 
 /**
+ * Redis Script Client Example 1 - CAS (Compare-And-Swap) Operation.
+ * 
+ * <p>This interface demonstrates how to implement a Redis script client for performing
+ * atomic compare-and-swap operations using Lua scripts.</p>
+ *
+ * <p>The script will atomically compare the current value with an expected value,
+ * and only if they match, update to the new value.</p>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
@@ -36,6 +44,35 @@ import com.langwuyue.orange.redis.annotation.script.ScriptArg;
 @OrangeRedisKey(expirationTime = @Timeout(value = 1, unit = TimeUnit.HOURS), key = "orange:script:example1")
 public interface OrangeRedisScriptExample1Api {
 	
+	/**
+	 * Performs an atomic Compare-And-Swap (CAS) operation with simplified parameters.
+	 * 
+	 * <p>The operation will:
+	 * <ol>
+	 *   <li>Get current value for the key (arg1)</li>
+	 *   <li>Compare with expected value (arg2)</li>
+	 *   <li>If matches (or both are nil):</li>
+	 *   <ul>
+	 *     <li>Delete key if new value is '[[NIL]]'</li>
+	 *     <li>Set new value otherwise</li>
+	 *     <li>Return '1' indicating success</li>
+	 *   </ul>
+	 *   <li>Else return '0' indicating failure</li>
+	 * </ol>
+	 * </p>
+	 *
+	 * <p>Special values:
+	 * <ul>
+	 *   <li>'[[NIL]]' represents nil/empty value</li>
+	 *   <li>Returns '1' for success, '0' for failure</li>
+	 * </ul>
+	 * </p>
+	 *
+	 * @param arg1 The Redis key to operate on
+	 * @param arg2 The expected value (use '[[NIL]]' for nil) and new value combined:
+	 *             Format is "expectedValue:newValue"
+	 * @return "1" if update was successful, "0" otherwise
+	 */
 	@ExecuteLuaScript(script = 
 	"local key = KEYS[1]; \n" +
 	"local expected = ARGV[1]; \n" +

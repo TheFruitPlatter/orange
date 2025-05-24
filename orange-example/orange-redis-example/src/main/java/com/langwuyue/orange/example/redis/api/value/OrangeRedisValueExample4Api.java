@@ -38,8 +38,37 @@ import com.langwuyue.orange.redis.annotation.value.OrangeRedisValueClient;
 import com.langwuyue.orange.redis.annotation.value.SetValue;
 
 /**
+ * Advanced Redis value operations example demonstrating:
+ * <ul>
+ *   <li>Dynamic key variables</li>
+ *   <li>Conditional value operations</li>
+ *   <li>Compare-and-swap pattern</li>
+ *   <li>Expiration management</li>
+ * </ul>
+ * 
+ * <p>Key configuration:
+ * <ul>
+ *   <li>Dynamic key pattern: "orange:value:example4:${var1}"</li>
+ *   <li>Default expiration: 1 hour</li>
+ * </ul>
+ * 
+ * <p>Redis commands used:
+ * <ul>
+ *   <li>{@code SET} - Basic value storage</li>
+ *   <li>{@code SETNX} - Conditional set if not exists</li>
+ *   <li>{@code GET} - Value retrieval</li>
+ *   <li>{@code DEL} - Key deletion</li>
+ *   <li>{@code TTL} - Get expiration time</li>
+ *   <li>{@code EXPIRE} - Set expiration time</li>
+ *   <li>{@code CAS} - Compare-and-swap pattern (implemented via Lua script)</li>
+ * </ul>
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see com.langwuyue.orange.redis.annotation.KeyVariable Key variable annotation
+ * @see com.langwuyue.orange.redis.annotation.IfAbsent Conditional set annotation
+ * @see com.langwuyue.orange.redis.annotation.CAS Compare-and-swap annotation
+ * @see OrangeRedisValueExample1Api Basic JSON value operations example
  */
 @OrangeRedisValueClient(valueType = RedisValueTypeEnum.JSON)
 @OrangeRedisKey(expirationTime = @Timeout(value = 1, unit = TimeUnit.HOURS), key = "orange:value:example4:${var1}")

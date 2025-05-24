@@ -29,8 +29,29 @@ import com.langwuyue.orange.redis.annotation.Timeout;
 import com.langwuyue.orange.redis.template.list.JSONOperationsTemplate;
 
 /**
+ * Declarative interface for Redis List operations with JSON value support.
+ * 
+ * <p>Provides standard Redis List operations through automatically generated implementation.
+ * 
+ * <p>Key configuration:
+ * <ul>
+ *   <li>Fixed key: "orange:list:example4"</li>
+ *   <li>Default expiration: 1 hour</li>
+ *   <li>Value type: {@link OrangeValueExampleEntity} (JSON serialized)</li>
+ * </ul>
+ * 
+ * <p>Basic usage:
+ * <pre>{@code
+ * @Autowired
+ * private OrangeRedisListExample4Api listOps;
+ * 
+ * // Push elements to list
+ * listOps.leftPush(entities);
+ * }</pre>
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see JSONOperationsTemplate Base template interface
  */
 @OrangeRedisKey(expirationTime = @Timeout(value = 1, unit = TimeUnit.HOURS), key = "orange:list:example4")
 public interface OrangeRedisListExample4Api extends JSONOperationsTemplate<OrangeValueExampleEntity> {

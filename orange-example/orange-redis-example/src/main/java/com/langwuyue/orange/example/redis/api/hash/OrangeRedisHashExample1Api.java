@@ -29,8 +29,49 @@ import com.langwuyue.orange.redis.annotation.Timeout;
 import com.langwuyue.orange.redis.template.hash.JSONOperationsTemplate;
 
 /**
+ * Example interface demonstrating Redis hash operations for JSON values.
+ * 
+ * <p>Redis hashes map string fields to values, making them ideal for:
+ * <ul>
+ *   <li>Storing objects (field=property, value=property value)</li>
+ *   <li>Implementing simple key-value stores within a key</li>
+ *   <li>Grouping related fields together</li>
+ * </ul>
+ * 
+ * <p>Extends {@link JSONOperationsTemplate} which provides common Redis hash commands:
+ * <ul>
+ *   <li>{@code HSET} - Set field value</li>
+ *   <li>{@code HGET} - Get field value</li>
+ *   <li>{@code HMGET} - Get multiple field values</li>
+ *   <li>{@code HGETALL} - Get all fields and values</li>
+ *   <li>{@code HDEL} - Delete fields</li>
+ *   <li>{@code HEXISTS} - Check if field exists</li>
+ * </ul>
+ * 
+ * <p>Key configuration:
+ * <ul>
+ *   <li>Fixed hash key: "orange:hash:example1"</li>
+ *   <li>Default expiration: 1 hour</li>
+ * </ul>
+ * 
+ * <p>Example usage:
+ * <pre>{@code
+ * // Store entity in hash
+ * hashTemplate.put("user1", new OrangeValueExampleEntity(...));
+ * 
+ * // Get single entity
+ * OrangeValueExampleEntity user = hashTemplate.get("user1");
+ * 
+ * // Get all entities
+ * Map<String, OrangeValueExampleEntity> allUsers = hashTemplate.getAllMembers();
+ * }</pre>
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see JSONOperationsTemplate Base template providing JSON hash operations
+ * @see OrangeValueExampleEntity Example entity class
+ * @see com.langwuyue.orange.redis.annotation.OrangeRedisKey Key configuration
+ * @see com.langwuyue.orange.redis.annotation.Timeout Expiration configuration
  */
 @OrangeRedisKey(expirationTime = @Timeout(value = 1, unit = TimeUnit.HOURS), key = "orange:hash:example1")
 public interface OrangeRedisHashExample1Api extends JSONOperationsTemplate<OrangeValueExampleEntity> {

@@ -25,8 +25,22 @@ import com.langwuyue.orange.redis.annotation.Timeout;
 import com.langwuyue.orange.redis.template.value.DoubleOperationsTemplate;
 
 /**
+ * Example interface demonstrating Redis value operations for Double values.
+ * 
+ * <p>Similar to {@link OrangeRedisValueExample2Api} but for {@code double} values.
+ * Uses the same Redis commands (INCRBYFLOAT, DECRBYFLOAT, GET, SET) but with
+ * floating-point precision.</p>
+ * 
+ * <p>Key configuration:
+ * <ul>
+ *   <li>Fixed key prefix: "orange:value:example3"</li>
+ *   <li>Default expiration: 1 hour</li>
+ * </ul>
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see DoubleOperationsTemplate Base template for Double operations
+ * @see OrangeRedisValueExample2Api Similar example for Long values
  */
 @OrangeRedisKey(expirationTime = @Timeout(value = 1, unit = TimeUnit.HOURS), key = "orange:value:example3")
 public interface OrangeRedisValueExample3Api extends DoubleOperationsTemplate {

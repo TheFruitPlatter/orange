@@ -25,8 +25,30 @@ import com.langwuyue.orange.redis.annotation.Timeout;
 import com.langwuyue.orange.redis.template.value.LongOperationsTemplate;
 
 /**
+ * Example interface demonstrating Redis value operations for Long values.
+ * 
+ * <p>This interface extends {@link LongOperationsTemplate} to provide Redis value operations
+ * for primitive {@code long} values. Compared to {@link OrangeRedisValueExample1Api} which
+ * handles JSON objects, this interface works with simple numeric values.</p>
+ * 
+ * <p>Redis key configuration:
+ * <ul>
+ *   <li>Fixed key prefix: "orange:value:example2"</li>
+ *   <li>Default expiration: 1 hour</li>
+ * </ul>
+ * 
+ * <p>Common operations include:
+ * <ul>
+ *   <li>{@code INCR} - Increment value</li>
+ *   <li>{@code DECR} - Decrement value</li>
+ *   <li>{@code GET} - Retrieve value</li>
+ *   <li>{@code SET} - Store value</li>
+ * </ul>
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see LongOperationsTemplate Base template providing Long-specific Redis operations
+ * @see OrangeRedisValueExample1Api Example using JSON object values
  */
 @OrangeRedisKey(expirationTime = @Timeout(value = 1, unit = TimeUnit.HOURS), key = "orange:value:example2")
 public interface OrangeRedisValueExample2Api extends LongOperationsTemplate {

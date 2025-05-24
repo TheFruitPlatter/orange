@@ -108,16 +108,64 @@ public interface OrangeRedisGeoExample1Api extends JSONOperationsTemplate<Orange
 		return null;
 	}
 
+	/**
+	 * Calculates the distance between multiple geo locations.
+	 * 
+	 * <p>Returns the distance between consecutive pairs of locations in the list.
+	 * For example, if the list contains [A, B, C], it will calculate the distance
+	 * between A and B, then B and C.
+	 * 
+	 * <p>Operation: GEODIST key member1 member2 [unit]
+	 * 
+	 * @param locations List of locations to calculate distances between
+	 * @return The distance in meters between consecutive locations
+	 */
 	@Distance
 	Double distance2(@Multiple List<OrangeGeoExampleEntity> locations);
 	
+	/**
+	 * Retrieves multiple geo members by their values.
+	 * 
+	 * <p>Returns the geo information (coordinates and member data) for the specified members.
+	 * If a member doesn't exist, its corresponding entry in the result will be null.
+	 * 
+	 * <p>Operation: GEOPOS key member [member ...]
+	 * 
+	 * @param members List of members to retrieve
+	 * @return List of geo entities containing the coordinates and data for each member
+	 */
 	@GetMembers
 	List<OrangeGeoExampleEntity> getMembers2(@Multiple List<OrangeGeoExampleEntity> members);
 	
+	/**
+	 * Searches for members within a circular radius of a given location.
+	 * 
+	 * <p>Returns members that are within the specified distance from the given location,
+	 * including their distances from the center point.
+	 * 
+	 * <p>Operation: GEOSEARCH key FROMMEMBER member BYRADIUS radius m
+	 * 
+	 * @param location Center point for the radius search
+	 * @param distance Search radius in meters
+	 * @return List of members within the radius, including their distances from the center
+	 */
 	@GetMembers
 	@SearchArgs
 	List<OrangeGeoDistanceExampleEntity> getMembersInRadius1(@RedisValue OrangeValueExampleEntity location,@Distance Double distance);
 	
+	/**
+	 * Searches for a limited number of members within a circular radius.
+	 * 
+	 * <p>Returns up to the specified number of members that are within the given distance
+	 * from the center location, including their distances from the center point.
+	 * 
+	 * <p>Operation: GEOSEARCH key FROMMEMBER member BYRADIUS radius m COUNT count
+	 * 
+	 * @param location Center point for the radius search
+	 * @param distance Search radius in meters
+	 * @param count Maximum number of members to return
+	 * @return Limited list of members within the radius, including their distances from the center
+	 */
 	@GetMembers
 	@SearchArgs
 	List<OrangeGeoDistanceExampleEntity> getMembersInRadius3(@RedisValue OrangeValueExampleEntity location,@Distance Double distance,@Count Long count);

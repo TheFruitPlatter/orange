@@ -50,7 +50,7 @@ import com.langwuyue.orange.redis.template.global.GlobalOperationsTemplate;
 public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	
 	/**
-	 * <h3>Set value</h3>
+	 * Set value
 	 * 
 	 * <p>This operation will set a value in Redis and return the transaction version.
 	 * 
@@ -61,7 +61,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	Long setValue(@RedisValue T value);
 	
 	/**
-	 * <h3>Commit</h3>
+	 * Commit
 	 * 
 	 * <p>This operation will affect the value based on the transaction version returned by {@link JSONOperationsTemplate#setValue(Object)}
 	 * 
@@ -73,7 +73,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	Boolean commit(@Version Long version);
 	
 	/**
-	 * <h3>Get value</h3>
+	 * Get value
 	 * 
 	 * <p>The value cannot be accessed until {@link #commit(Long)} is invoked.
 	 * 

@@ -75,7 +75,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	
 	
 	/**
-	 * <h3>Set {@code value} if it does not already exists.</h3>
+	 * Set {@code value} if it does not already exists.
 	 * <p>
 	 * This method is present for setting a default value.
 	 * 
@@ -104,7 +104,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	void setValueIfAbsent(@RedisValue T value);
 	
 	/**
-	 * <h3>Set {@code value} if it does not already exists, and set a time-to-live (TTL) for the value at the same time.</h3>
+	 * Set {@code value} if it does not already exists, and set a time-to-live (TTL) for the value at the same time.
 	 * 
 	 * <p>
 	 * Once the set operation process is completed, the {@code OrangeRedisValueSetIfAbsentListener} component ​​will be triggered​​. 

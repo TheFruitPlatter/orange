@@ -57,7 +57,7 @@ import com.langwuyue.orange.redis.annotation.transaction.Release;
 public interface JSONOperationsTemplate<T> {
 	
 	/**
-	 * <h3>Get locks</h3>
+	 * Get locks
 	 * 
 	 * 
 	 * <p>
@@ -91,7 +91,7 @@ public interface JSONOperationsTemplate<T> {
 	void lock(@Multiple Collection<T> targets);
 	
 	/**
-	 * <h3>Releases all locks forcibly.</3> 
+	 * Releases all locks forcibly.</3> 
 	 * 
 	 * 
 	 * @return a boolean value, true if all the locks were successfully released.
@@ -100,7 +100,7 @@ public interface JSONOperationsTemplate<T> {
 	Boolean releaseAll();
 	
 	/**
-	 * <h3>Release locks</h3>
+	 * Release locks
 	 * 
 	 * <p>
 	 * The {@code @ContinueOnFailure} annotation's value determines 
@@ -123,7 +123,7 @@ public interface JSONOperationsTemplate<T> {
 	Map<T,Boolean> release(@Multiple Collection<T> targets);
 	
 	/**
-	 * <h3>Retrieves the remaining time-to-live (TTL) values for the specified locks</h3>
+	 * Retrieves the remaining time-to-live (TTL) values for the specified locks
 	 * 
 	 * <p>
 	 * The {@code @ContinueOnFailure} annotation determines 
@@ -146,7 +146,7 @@ public interface JSONOperationsTemplate<T> {
 	Map<T,Long> getExpiration(@Multiple Collection<T> targets);
 	
 	/**
-	 * <h3>Retrieves the remaining time-to-live (TTL) values for the specified locks</h3>
+	 * Retrieves the remaining time-to-live (TTL) values for the specified locks
 	 * 
 	 * <p>
 	 * The {@code @ContinueOnFailure} annotation determines 

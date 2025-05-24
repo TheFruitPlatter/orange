@@ -24,8 +24,19 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.langwuyue.orange.redis.configuration.OrangeRedisClientScan;
 
 /**
+ * Main entry point for the Orange Redis Example Application.
+ * 
+ * <p>This Spring Boot application demonstrates various Redis operations using the Orange framework,
+ * including examples for different Redis data types (strings, hashes, lists, sets, etc.) and
+ * advanced features like transactions, scripting, and geo operations.</p>
+ * 
+ * <p>The {@code @OrangeRedisClientScan} annotation configures the package scanning for Redis client
+ * interfaces, while {@code @SpringBootApplication} enables Spring Boot auto-configuration.</p>
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see org.springframework.boot.SpringApplication
+ * @see com.langwuyue.orange.redis.configuration.OrangeRedisClientScan
  */
 @OrangeRedisClientScan(basePackages= {"com.langwuyue.orange.example"})
 @SpringBootApplication

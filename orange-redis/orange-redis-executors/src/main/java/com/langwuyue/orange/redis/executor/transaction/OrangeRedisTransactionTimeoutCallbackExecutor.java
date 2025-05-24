@@ -50,7 +50,7 @@ import com.langwuyue.orange.redis.registry.OrangeRedisKeyRegistry;
 import com.langwuyue.orange.redis.utils.OrangeReflectionUtils;
 
 /**
- * <h3>Transaction timeout callback executor</h3>
+ * Transaction timeout callback executor
  * 1. Callback when transaction timeout
  * 2. Clear dead transaction
  * 
@@ -154,12 +154,12 @@ public class OrangeRedisTransactionTimeoutCallbackExecutor implements Runnable, 
 	}
 	
 	/**
-	 * <h3>Add a transaction key into transaction timeout callback queue</h3>
+	 * Add a transaction key into transaction timeout callback queue
 	 * <p>
 	 * The queue will sorted by transaction begin time.
 	 * 
 	 * 
-	 * <h3>Saves callback attempt metrics including</h3>
+	 * Saves callback attempt metrics including
 	 * <p>
 	 * - Total callback attempts 
 	 * - Whether the notification was sent 
@@ -190,7 +190,7 @@ public class OrangeRedisTransactionTimeoutCallbackExecutor implements Runnable, 
 	}
 	
 	/**
-	 * <h3>Compute the score</h3>
+	 * Compute the score
 	 * 
 	 * <p>
 	 * Convert the timestamp to a double score.

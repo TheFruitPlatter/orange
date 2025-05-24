@@ -70,7 +70,7 @@ import com.langwuyue.orange.redis.template.global.GlobalOperationsTemplate;
 public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	
 	/**
-	 * <h3>Add a member into the Redis Set</h3>
+	 * Add a member into the Redis Set
 	 * 
 	 * @param value the value to be added
 	 * @return {@code true} if the value was successfully added,
@@ -80,7 +80,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	Boolean add(@RedisValue T value);
 	
 	/**
-	 * <h3>Add members into the Redis Set</h3>
+	 * Add members into the Redis Set
 	 * 
 	 * <p>
 	 * The {@code @ContinueOnFailure} annotation's value determines whether the method adding remaining members to the Redis set upon exceptions.
@@ -101,7 +101,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	Map<T, Boolean> add(@Multiple Set<T> members);
 	
 	/**
-	 * <h3>Add a member into the Redis Set if the member not exists</h3>
+	 * Add a member into the Redis Set if the member not exists
 	 * 
 	 * <p>
 	 * Once the addition process is completed, the {@code OrangeRedisSetAddMembersIfAbsentListener} component ​​will be triggered​​. 
@@ -125,7 +125,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	void addIfAbsent(@RedisValue T value);
 	
 	/**
-	 * <h3>Add members into the Redis Set if members not exists</h3>
+	 * Add members into the Redis Set if members not exists
 	 * 
 	 * <p>
 	 * The {@code @ContinueOnFailure} annotation's value determines whether the method adding remaining members to the Redis set upon exceptions.
@@ -155,7 +155,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	void addIfAbsent(@Multiple Set<T> members);
 	
 	/**
-	 * <h3>Compare and swap</h3>
+	 * Compare and swap
 	 * <p>The {@code oldValue} will be overwritten by {@code newValue} only if it matches current value in the set.
 	 * 
 	 * 
@@ -167,7 +167,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	Boolean compareAndSwap(@RedisOldValue T oldValue, @RedisValue T newValue);
 	
 	/**
-	 * <h3>Random get a member from set</h3>
+	 * Random get a member from set
 	 * 
 	 * <p>
 	 * Developers must override this method when another interface extends this template; 
@@ -182,7 +182,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	T randomGetOne();
 	
 	/**
-	 * <h3>Random get {@code count}  members from set</h3>
+	 * Random get {@code count}  members from set
 	 *
 	 * <p>
 	 * Developers must override this method when another interface extends this template; 
@@ -199,7 +199,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	
 	
 	/**
-	 * <h3>Get {@code count} distinct random members from set.</h3>
+	 * Get {@code count} distinct random members from set.
 	 * 
 	 * <p>
 	 * Developers must override this method when another interface extends this template; 
@@ -216,7 +216,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	Set<T> distinctRandomGetMembers(@Count Long count);
 	
 	/**
-	 * <h3>Get {@code count} all members from set.</h3>
+	 * Get {@code count} all members from set.
 	 * 
 	 * <p>
 	 * Developers must override this method when another interface extends this template; 
@@ -230,7 +230,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	Set<T> getMembers();
 	
 	/**
-	 * <h3>Check whether the member exists.</h3>
+	 * Check whether the member exists.
 	 * 
 	 * 
 	 * @return a boolean value, true if exists, false otherwise.
@@ -239,7 +239,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	Boolean isMember(@RedisValue T member);
 	
 	/**
-	 * <h3>Check whether the members exist.</h3>
+	 * Check whether the members exist.
 	 * 
 	 * <p>
 	 * The {@code @ContinueOnFailure} annotation's value determines whether the method checking remaining members to the Redis set upon exceptions.
@@ -259,7 +259,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	Map<T, Boolean> isMembers(@Multiple Set<T> members);
 	
 	/**
-	 * <h3>Atomically removes and returns the member.</h3>
+	 * Atomically removes and returns the member.
 	 * 
 	 * @return a member
 	 */
@@ -267,7 +267,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	T pop();
 	
 	/**
-	 * <h3>Atomically removes and returns up to {@code count} members.</h3>
+	 * Atomically removes and returns up to {@code count} members.
 	 * 
 	 * @return members
 	 */
@@ -275,7 +275,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	Set<T> pop(@Count Long count);
 	
 	/**
-	 * <h3>Get the Redis set total size</h3>
+	 * Get the Redis set total size
 	 * 
 	 * @return Long
 	 */
@@ -283,7 +283,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	Long getSize();
 	
 	/**
-	 * <h3>Remove member</h3>
+	 * Remove member
 	 * 
 	 * @param value
 	 * @return a boolean value, true if member was successfully removed, false otherwise(e.g., The member was already removed).
@@ -292,7 +292,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	Boolean remove(@RedisValue T value);
 	
 	/**
-	 * <h3>Remove members from the Redis Set</h3>
+	 * Remove members from the Redis Set
 	 * 
 	 * <p>
 	 * The {@code @ContinueOnFailure} annotation's value determines whether the method adding remaining members to the Redis set upon exceptions.
@@ -313,7 +313,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	Map<T,Boolean> remove(@Multiple Set<T> values);
 	
 	/**
-	 * <h3> Scan members by pattern</h3>
+	 *  Scan members by pattern
 	 * 
 	 * 
 	 * <p>
