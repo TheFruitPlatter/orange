@@ -39,9 +39,9 @@ import com.langwuyue.orange.redis.template.global.GlobalOperationsTemplate;
  *  	Value getValue();
  *  }
  * </pre></blockquote>
- * </p>
  * 
- * <p>Please review examples for more information.</p>
+ * 
+ * <p>Please review examples for more information.
  * 
  * @author Liang.Zhong
  * @since 1.0.0
@@ -52,7 +52,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	/**
 	 * <h3>Set value</h3>
 	 * 
-	 * <p>This operation will set a value in Redis and return the transaction version.</p>
+	 * <p>This operation will set a value in Redis and return the transaction version.
 	 * 
 	 * @param value		The value.
 	 * @return long		The transaction version.
@@ -75,13 +75,13 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	/**
 	 * <h3>Get value</h3>
 	 * 
-	 * <p>The value cannot be accessed until {@link #commit(Long)} is invoked.</p>
+	 * <p>The value cannot be accessed until {@link #commit(Long)} is invoked.
 	 * 
 	 * <p>
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
 	 * @return current value.
 	 */

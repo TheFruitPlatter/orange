@@ -66,9 +66,9 @@ import com.langwuyue.orange.redis.template.global.GlobalOperationsTemplate;
  *  
  *  }
  * </pre></blockquote>
- * </p>
  * 
- * <p>Please review examples for more information.</p>
+ * 
+ * <p>Please review examples for more information.
  * 
  * @param <T> The type of value stored in the Redis ZSet (will be serialized as JSON)
  * @author Liang.Zhong
@@ -93,13 +93,13 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * <p>
 	 * The {@code @ContinueOnFailure} annotation's value determines whether the method adding remaining members to the Redis set upon exceptions.
 	 * True: continue | False: break
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
 	 * @param members is a map. The keys of this map are the values of a sorted set,and the values of this map are the scores.
 	 * @return a LinkedHashMap. The keys are the values; the values are the results of adding these members
@@ -115,16 +115,16 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Once the addition process is completed, the {@code OrangeRedisZSetAddMemberIfAbsentListener} component ​​will be triggered​​. 
 	 * Developers should ​​configure​​ {@code OrangeRedisZSetAddMemberIfAbsentListener} to manage post-addition business logic. 
 	 * Note that the {@code OrangeRedisZSetAddMemberIfAbsentListener} implementation class must be annotated with Spring’s {@code @Component}
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * The property {@code deleteInTheEnd} of {@code @IfAbsent} determines if the value is deleted after operation completion.
 	 * True​​: Delete | ​​False​​: Keep
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * Please review examples for more information.
-	 * </p>
+	 * 
 	 * 
 	 * @param value the value.
 	 * @param score the score.
@@ -139,22 +139,22 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * <p>
 	 * The {@code @ContinueOnFailure} annotation's value determines whether the method adding remaining members to the Redis set upon exceptions.
 	 * True: continue | False: break
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * Once the addition process is completed, the {@code OrangeRedisZSetAddMembersIfAbsentListener} component ​​will be triggered​​. 
 	 * Developers should ​​configure​​ {@code OrangeRedisZSetAddMembersIfAbsentListener} to manage post-addition business logic. 
 	 * Note that the {@code OrangeRedisZSetAddMembersIfAbsentListener} implementation class must be annotated with Spring’s {@code @Component}
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * The property {@code deleteInTheEnd} of {@code @IfAbsent} determines if the value is deleted after operation completion.
 	 * True​​: Delete | ​​False​​: Keep
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * Please review examples for more information.
-	 * </p>
+	 * 
 	 * 
 	 * @param members is map. The keys of this map are the values of a sorted set,and the values of this map are the scores.
 	 */
@@ -170,16 +170,16 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Once the addition process is completed, the {@code OrangeRedisZSetAddMemberIfAbsentListener} component ​​will be triggered​​. 
 	 * Developers should ​​configure​​ {@code OrangeRedisZSetAddMemberIfAbsentListener} to manage post-addition business logic. 
 	 * Note that the {@code OrangeRedisZSetAddMemberIfAbsentListener} implementation class must be annotated with Spring’s {@code @Component}
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * The property {@code deleteInTheEnd} of {@code @IfAbsent} determines if the value is deleted after operation completion.
 	 * True​​: Delete | ​​False​​: Keep
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * Please review examples for more information.
-	 * </p>
+	 * 
 	 * 
 	 * @param value The value.
 	 * @param score The score.
@@ -194,22 +194,22 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * <p>
 	 * The {@code @ContinueOnFailure} annotation's value determines whether the method adding remaining members to the Redis set upon exceptions.
 	 * True: continue | False: break
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * Once the addition process is completed, the {@code OrangeRedisZSetAddMembersIfAbsentListener} component ​​will be triggered​​. 
 	 * Developers should ​​configure​​ {@code OrangeRedisZSetAddMembersIfAbsentListener} to manage post-addition business logic. 
 	 * Note that the {@code OrangeRedisZSetAddMembersIfAbsentListener} implementation class must be annotated with Spring’s {@code @Component}
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * The property {@code deleteInTheEnd} of {@code @IfAbsent} determines if the value is deleted after operation completion.
 	 * True​​: Delete | ​​False​​: Keep
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * Please review examples for more information.
-	 * </p>
+	 * 
 	 * 
 	 * @param members is map. The keys of this map are the values of a sorted set,and the values of this map are the scores.
 	 */
@@ -237,7 +237,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
 	 * @return the value.
 	 */
@@ -252,7 +252,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
 	 * @return a LinkedHashMap{"value": score}.
 	 */
@@ -268,7 +268,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
 	 * @param count 	Number of values to return.
 	 * @return a ArrayList,the returned list maintains the same order as the randomized sequence.
@@ -284,7 +284,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
 	 * @param count 		Number of members to return.
 	 * @return a ArrayList, single-entry maps: {"value": score} for each item.
@@ -302,7 +302,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p> 
+	 *  
 	 * 
 	 * @param count 	Number of members to return.
 	 * @return a LinkedHashSet,the returned set maintains the same order as the randomized sequence.
@@ -319,7 +319,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
 	 * @param count 				Number of members to return.
 	 * @return a LinkedHashMap{"value": score}, the returned map maintains the same order as the randomized sequence.

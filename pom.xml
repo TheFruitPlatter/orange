@@ -189,6 +189,9 @@
 	            <groupId>org.apache.maven.plugins</groupId>
 	            <artifactId>maven-gpg-plugin</artifactId>
 	            <version>3.1.0</version>
+	            <configuration>
+					<keyname>jianpanxia_liang@163.com</keyname>
+				</configuration>
 	            <executions>
 	                <execution>
 	                    <id>sign-artifacts</id>
@@ -203,6 +206,13 @@
 	            <groupId>org.apache.maven.plugins</groupId>
 	            <artifactId>maven-javadoc-plugin</artifactId>
 	            <version>3.6.3</version>
+	            <configuration>
+					<encoding>UTF-8</encoding>
+					<docencoding>UTF-8</docencoding>
+					<charset>UTF-8</charset>
+					<source>8</source>
+					<show>public</show>
+				</configuration>
 	            <executions>
 	                <execution>
 	                    <id>generate-javadoc</id>

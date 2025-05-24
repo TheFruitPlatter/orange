@@ -36,9 +36,9 @@ import com.langwuyue.orange.redis.annotation.hash.OrangeRedisHashClient;
  *  	
  *  }
  * </pre></blockquote>
- * </p>
  * 
- * <p>Please review examples for more information.</p>
+ * 
+ * <p>Please review examples for more information.
  * 
  * @author Liang.Zhong
  * @since 1.0.0

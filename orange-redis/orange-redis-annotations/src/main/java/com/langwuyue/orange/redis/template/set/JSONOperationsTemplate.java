@@ -58,9 +58,9 @@ import com.langwuyue.orange.redis.template.global.GlobalOperationsTemplate;
  *  	// Custom operations can be added here
  *  }
  * </pre></blockquote>
- * </p>
  * 
- * <p>Please review examples for more information.</p>
+ * 
+ * <p>Please review examples for more information.
  * 
  * @param <T> The type of elements stored in the Redis Set (will be serialized as JSON)
  * @author Liang.Zhong
@@ -85,13 +85,13 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * <p>
 	 * The {@code @ContinueOnFailure} annotation's value determines whether the method adding remaining members to the Redis set upon exceptions.
 	 * True: continue | False: break
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
 	 * @param members the members to be added.
 	 * @return LinkedHashMap where keys are the members and values indicate whether each member was successfully added
@@ -107,16 +107,16 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Once the addition process is completed, the {@code OrangeRedisSetAddMembersIfAbsentListener} component ​​will be triggered​​. 
 	 * Developers should ​​configure​​ {@code OrangeRedisSetAddMembersIfAbsentListener} to manage post-addition business logic. 
 	 * Note that the {@code OrangeRedisSetAddMembersIfAbsentListener} implementation class must be annotated with Spring’s {@code @Component}
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * The property {@code deleteInTheEnd} of {@code @IfAbsent} determines if the value is deleted after operation completion.
 	 * True​​: Delete | ​​False​​: Keep
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * Please review examples for more information.
-	 * </p>
+	 * 
 	 * 
 	 * @param value the value to be added.
 	 */
@@ -130,22 +130,22 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * <p>
 	 * The {@code @ContinueOnFailure} annotation's value determines whether the method adding remaining members to the Redis set upon exceptions.
 	 * True: continue | False: break
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * Once the addition process is completed, the {@code OrangeRedisSetAddMembersIfAbsentListener} component ​​will be triggered​​. 
 	 * Developers should ​​configure​​ {@code OrangeRedisSetAddMembersIfAbsentListener} to manage post-addition business logic. 
 	 * Note that the {@code OrangeRedisSetAddMembersIfAbsentListener} implementation class must be annotated with Spring’s {@code @Component}
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * The property {@code deleteInTheEnd} of {@code @IfAbsent} determines if the value is deleted after operation completion.
 	 * True​​: Delete | ​​False​​: Keep
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * Please review examples for more information.
-	 * </p>
+	 * 
 	 * 
 	 * @param members is a set. The members to be added
 	 */
@@ -156,7 +156,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	
 	/**
 	 * <h3>Compare and swap</h3>
-	 * <p>The {@code oldValue} will be overwritten by {@code newValue} only if it matches current value in the set.</p>
+	 * <p>The {@code oldValue} will be overwritten by {@code newValue} only if it matches current value in the set.
 	 * 
 	 * 
 	 * @param oldValue  The expected current value in the set.
@@ -173,7 +173,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
 	 * @return the member.
 	 */
@@ -188,7 +188,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
 	 * @param count 		Number of members to return.
 	 * @return a ArrayList. The returned list maintains the same order as the randomized sequence.
@@ -205,7 +205,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p> 
+	 *  
 	 * 
 	 * @param count 	Number of members to return.
 	 * @return a LinkedHashSet,the returned set maintains the same order as the randomized sequence.
@@ -222,7 +222,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p> 
+	 *  
 	 * 
 	 * @return a LinkedHashSet.
 	 */
@@ -244,13 +244,13 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * <p>
 	 * The {@code @ContinueOnFailure} annotation's value determines whether the method checking remaining members to the Redis set upon exceptions.
 	 * True: continue | False: break
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
 	 * @param members the members to be checked.
 	 * @return LinkedHashMap where keys are the members and values indicate whether each member exists.
@@ -297,13 +297,13 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * <p>
 	 * The {@code @ContinueOnFailure} annotation's value determines whether the method adding remaining members to the Redis set upon exceptions.
 	 * True: continue | False: break
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
 	 * @param members the members to be removed.
 	 * @return LinkedHashMap where keys are the members and values indicate whether each member was successfully removed
@@ -320,7 +320,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
 	 * 
 	 * @param pattern

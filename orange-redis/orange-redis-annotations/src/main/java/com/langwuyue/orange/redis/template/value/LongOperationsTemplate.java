@@ -41,9 +41,9 @@ import com.langwuyue.orange.redis.template.global.GlobalOperationsTemplate;
  *  
  *  }
  * </pre></blockquote>
- * </p>
  * 
- * <p>Please review examples for more information.</p>
+ * 
+ * <p>Please review examples for more information.
  * 
  * @author Liang.Zhong
  * @since 1.0.0
@@ -59,16 +59,16 @@ public interface LongOperationsTemplate extends GlobalOperationsTemplate {
 	 * Once the set operation process is completed, the {@code OrangeRedisValueSetIfAbsentListener} component ​​will be triggered​​. 
 	 * Developers should ​​configure​​ {@code OrangeRedisValueSetIfAbsentListener} to manage post-setting business logic. 
 	 * Note that the {@code OrangeRedisValueSetIfAbsentListener} implementation class must be annotated with Spring’s {code @Component}
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * The property {@code deleteInTheEnd} of {@code @IfAbsent} determines if the value is deleted after operation completion.
 	 * True​​: Delete | ​​False​​: Keep
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * Please review examples for more information.
-	 * </p>
+	 * 
 	 * 
 	 * @param value the value.
 	 */

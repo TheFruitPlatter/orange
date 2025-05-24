@@ -55,7 +55,7 @@ import com.langwuyue.orange.redis.template.global.GlobalOperationsTemplate;
  *   <li>Includes single-key and batch operations</li>
  *   <li>Supports conditional operations and Compare-And-Swap pattern</li>
  * </ul>
- * </p>
+ * 
  * 
  * <p>Usage example:
  * <blockquote><pre>
@@ -63,7 +63,7 @@ import com.langwuyue.orange.redis.template.global.GlobalOperationsTemplate;
  * public interface OrangeRedisHashExample1Api extends JSONOperationsTemplate{@code <Value>}{
  * }
  * </pre></blockquote>
- * </p>
+ * 
  * 
  * @param <T> The type of value stored in the Redis Hash (will be JSON serialized)
  * @author Liang.Zhong
@@ -92,7 +92,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * whether the method continues to add subsequent members into Redis hash
 	 * even if an exception occurs or some members fail.
 	 * True: continue | False: break
-	 * </p>
+	 * 
      * 
      * @param members Map of key-value pairs to add
      * @see ContinueOnFailure If true, continues processing remaining items on failure
@@ -108,12 +108,12 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Once the addition process is completed, the {@code OrangeRedisHashAddMemberIfAbsentListener} component ​​will be triggered​​. 
 	 * Developers should ​​configure​​ {@code OrangeRedisHashAddMemberIfAbsentListener} to manage post-addition business logic. 
 	 * Note that the {@code OrangeRedisHashAddMemberIfAbsentListener} implementation class must be annotated with Spring’s {@code @Component}
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * The property {@code deleteInTheEnd} of {@code @IfAbsent} determines if the value is deleted after operation completion.
 	 * True​​: Delete | ​​False​​: Keep
-	 * </p>
+	 * 
      * 
      * @param key The hash key to check
      * @param value The value to store if key is absent
@@ -129,19 +129,19 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Once the addition process is completed, the {@code OrangeRedisHashAddMembersIfAbsentListener} component ​​will be triggered​​. 
 	 * Developers should ​​configure​​ {@code OrangeRedisHashAddMembersIfAbsentListener} to manage post-addition business logic. 
 	 * Note that the {@code OrangeRedisHashAddMembersIfAbsentListener} implementation class must be annotated with Spring’s {@code @Component}
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * The property {@code deleteInTheEnd} of {@code @IfAbsent} determines if the value is deleted after operation completion.
 	 * True​​: Delete | ​​False​​: Keep
-	 * </p>
+	 * 
      * 
      * <p>
 	 * The {@code @ContinueOnFailure} annotation's value determines 
 	 * whether the method continues to add subsequent members into Redis hash
 	 * even if an exception occurs or some members fail.
 	 * True: continue | False: break
-	 * </p>
+	 * 
 	 * 
      * 
      * @param members Map of key-value pairs to conditionally add
@@ -234,7 +234,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * whether the method continues to check the subsequent members in the Redis hash
 	 * even if an exception occurs or some members fail.
 	 * True: continue | False: break
-	 * </p>
+	 * 
      * 
      * @param key Collection of field names to check
      * @return Map of field names to existence booleans
@@ -250,7 +250,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
      * 
      * @return List of all values (deserialized from JSON)
      */
@@ -264,7 +264,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
      * 
      * @param key Field name to retrieve
      * @return The deserialized value, or null if not found
@@ -279,7 +279,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
      * 
      * @param key Collection of field names to retrieve
      * @return Map of field names to deserialized values
@@ -294,7 +294,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
      * 
      * @return Map of all field names to deserialized values
      */
@@ -318,7 +318,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * whether the method continues to remove subsequent members from Redis hash
 	 * even if an exception occurs or some members fail.
 	 * True: continue | False: break
-	 * </p>
+	 * 
      * 
      * @param keys Collection of field names to remove
      * @return Map of field names to removal status booleans

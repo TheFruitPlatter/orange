@@ -38,11 +38,11 @@ public @interface Aggregate {
 	 * 
 	 * <p>
 	 * Weights define the multiplier applied to each input sorted set's scores during aggregation.
-	 * </p>
+	 * 
 	 * 
 	 *  <p>
 	 *  The weights and keys must have the same length.
-	 *  </p>
+	 *  
 	 */
 	double[] weights();
 	

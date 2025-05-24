@@ -157,13 +157,13 @@ public class OrangeRedisTransactionTimeoutCallbackExecutor implements Runnable, 
 	 * <h3>Add a transaction key into transaction timeout callback queue</h3>
 	 * <p>
 	 * The queue will sorted by transaction begin time.
-	 * </p>
+	 * 
 	 * 
 	 * <h3>Saves callback attempt metrics including</h3>
 	 * <p>
 	 * - Total callback attempts 
 	 * - Whether the notification was sent 
-	 * </p> 
+	 *  
 	 * 
 	 * @param transactionKey
 	 * @param commitExecutor
@@ -195,7 +195,7 @@ public class OrangeRedisTransactionTimeoutCallbackExecutor implements Runnable, 
 	 * <p>
 	 * Convert the timestamp to a double score.
 	 * The decimal part of the score represents milliseconds(Nanoseconds may be used in future implementations).
-	 * </p>
+	 * 
 	 * 
 	 * @param transactionKey
 	 * @return

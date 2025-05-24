@@ -55,7 +55,7 @@ import com.langwuyue.orange.redis.template.global.GlobalOperationsTemplate;
  * 
  * <p>This template provides a type-safe way to perform various Redis List operations
  * where values are stored as JSON. To use, extend this interface and annotate the 
- * child interface with {@code @OrangeRedisKey} to specify Redis key configuration.</p>
+ * child interface with {@code @OrangeRedisKey} to specify Redis key configuration.
  * 
  * <p>Example usage:
  * <pre>
@@ -63,9 +63,9 @@ import com.langwuyue.orange.redis.template.global.GlobalOperationsTemplate;
  * public interface OrangeRedisListExample1Api extends JSONOperationsTemplate{@code<Value>} {
  *     // Custom operations can be added here
  * }</pre>
- * </p>
  * 
- * <p>Please review examples for more information.</p>
+ * 
+ * <p>Please review examples for more information.
  * 
  * @param <T> The type of elements stored in the Redis List (will be serialized as JSON)
  * @author Liang.Zhong
@@ -119,13 +119,13 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * whether the method continues to insert subsequent members at the head (left) of the list
 	 * even if an exception occurs or some members fail.
 	 * True: continue | False: break
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
      * @param members collection of elements to add
      * @return map indicating success/failure for each element
@@ -162,13 +162,13 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * whether the method continues to insert subsequent members at the tail (right) of the list
 	 * even if an exception occurs or some members fail.
 	 * True: continue | False: break
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
      * @param members collection of elements to add
      * @return map indicating success/failure for each element
@@ -201,13 +201,13 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * whether the method continues to get subsequent members's first index in the list
 	 * even if an exception occurs or some members fail.
 	 * True: continue | False: break
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
      * @param members collection of elements to search for
      * @return map of elements to their indices (null if not found)
@@ -233,13 +233,13 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * whether the method continues to get subsequent members's last index in the list
 	 * even if an exception occurs or some members fail.
 	 * True: continue | False: break
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
      * 
      * @param member collection of elements to search for
      * @return map of elements to their last indices (null if not found)
@@ -256,7 +256,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
      * @param index the index to retrieve
      * @return the element at the index
@@ -271,7 +271,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
      * @param start the starting index (inclusive)
      * @param end the ending index (inclusive)
@@ -287,7 +287,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
      * @return a random element
      */
@@ -302,7 +302,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
      * @param count number of random elements to get
      * @return list of random elements
@@ -318,7 +318,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
      * @param count number of distinct random elements to get
      * @return list of distinct random elements
@@ -335,7 +335,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
      * @return the removed element
      */
@@ -350,7 +350,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
      * @param count number of elements to remove
      * @return list of removed elements
@@ -366,7 +366,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
 	 * 
      * @param value timeout duration
@@ -384,7 +384,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
 	 * 
      * @return the removed element
@@ -400,7 +400,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
      * @param count number of elements to remove
      * @return list of removed elements
@@ -416,7 +416,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
      * 
      * @param value timeout duration
      * @param unit timeout time unit

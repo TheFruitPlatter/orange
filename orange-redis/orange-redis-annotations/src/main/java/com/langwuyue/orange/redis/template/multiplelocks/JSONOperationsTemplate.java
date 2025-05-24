@@ -45,9 +45,9 @@ import com.langwuyue.orange.redis.annotation.transaction.Release;
  *  	// Custom operations can be added here
  *  }
  * </pre></blockquote>
- * </p>
  * 
- * <p>Please review examples for more information.</p>
+ * 
+ * <p>Please review examples for more information.
  * 
  * @param <T> The type of the lock key (will be serialized as JSON)
  * @author Liang.Zhong
@@ -64,22 +64,22 @@ public interface JSONOperationsTemplate<T> {
 	 * Once the set operation process is completed, the {@code OrangeRedisMultipleLocksListener} component ​​will be triggered​​. 
 	 * Developers should ​​configure​​ {@code OrangeRedisMultipleLocksListener} to manage post-setting business logic. 
 	 * Note that the {@code OrangeRedisMultipleLocksListener} implementation class must be annotated with Spring’s {@code @Component}
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * This method automatically extends the TTL if the listeners are still executing when the current TTL approaches expiration.
 	 * Automatically extends the TTL when:
 	 * - Remaining TTL ≤ {@link AutoRenew#threshold()} * {@link com.langwuyue.orange.redis.annotation.OrangeRedisKey#expirationTime()}  
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * The {@code @ContinueOnFailure} annotation's value determines whether the method lock remaining keys upon exceptions.
 	 * True: continue | False: break
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * The {@code @SetExpiration} annotation will automatically set a TTL (time-to-live) for each lock.
-	 * </p>
+	 * 
 	 * 
 	 * 
 	 * @param targets the lock keys
@@ -107,13 +107,13 @@ public interface JSONOperationsTemplate<T> {
 	 * whether the method continues to release subsequent locks individually 
 	 * even if an exception occurs or some releases fail.
 	 * True: continue | False: break
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
 	 * @param targets the locks to be released.
 	 * @return LinkedHashMap where keys are the lock keys and values indicate whether each lock was successfully released
@@ -130,13 +130,13 @@ public interface JSONOperationsTemplate<T> {
 	 * whether the method continues to retrieve TTL values for subsequent locks 
 	 * even if an exception occurs or some keys get fail.
 	 * True: continue | False: break
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
 	 * @param targets the targets need to get expiration.
 	 * @return LinkedHashMap where keys are the lock keys and values are the expirations of the lock keys.
@@ -153,13 +153,13 @@ public interface JSONOperationsTemplate<T> {
 	 * whether the method continues to retrieve TTL values for subsequent locks 
 	 * even if an exception occurs or some keys get fail.
 	 * True: continue | False: break
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
 	 * @param targets the targets need to get expiration.
 	 * @param unit 	  the unit of the returned TTL values.

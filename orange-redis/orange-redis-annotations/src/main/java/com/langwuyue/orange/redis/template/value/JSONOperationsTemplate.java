@@ -44,9 +44,9 @@ import com.langwuyue.orange.redis.template.global.GlobalOperationsTemplate;
  *  	// Custom operations can be added here
  *  }
  * </pre></blockquote>
- * </p>
  * 
- * <p>Please review examples for more information.</p>
+ * 
+ * <p>Please review examples for more information.
  * 
  * @param <T> The type of elements stored in the Redis Value (will be serialized as JSON)
  * @author Liang.Zhong
@@ -78,24 +78,24 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * <h3>Set {@code value} if it does not already exists.</h3>
 	 * <p>
 	 * This method is present for setting a default value.
-	 * </p>
+	 * 
 	 * <p>
 	 * To set a time-to-live (TTL) for the value at the same time, invoke {@link JSONOperationsTemplate#setValueIfAbsentWithExpiration(Object)} instead.
-	 * </p>
+	 * 
 	 * <p>
 	 * Once the set operation process is completed, the {@code OrangeRedisValueSetIfAbsentListener} component ​​will be triggered​​. 
 	 * Developers should ​​configure​​ {@code OrangeRedisValueSetIfAbsentListener} to manage post-setting business logic. 
 	 * Note that the {@code OrangeRedisValueSetIfAbsentListener} implementation class must be annotated with Spring’s {@code @Component}
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * The property {@code deleteInTheEnd} of {@code @IfAbsent} determines if the value is deleted after operation completion.
 	 * True​​: Delete | ​​False​​: Keep
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * Please review examples for more information.
-	 * </p>
+	 * 
 	 * 
 	 * @param value the value.
 	 */
@@ -110,16 +110,16 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Once the set operation process is completed, the {@code OrangeRedisValueSetIfAbsentListener} component ​​will be triggered​​. 
 	 * Developers should ​​configure​​ {@code OrangeRedisValueSetIfAbsentListener} to manage post-setting business logic. 
 	 * Note that the {@code OrangeRedisValueSetIfAbsentListener} implementation class must be annotated with Spring’s {@code @Component}
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * The property {@code deleteInTheEnd} of {@code @IfAbsent} determines if the value is deleted after operation completion.
 	 * True​​: Delete | ​​False​​: Keep
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * Please review examples for more information.
-	 * </p>
+	 * 
 	 * 
 	 * @param value the value.
 	 */
@@ -146,7 +146,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument T.
-	 * </p>
+	 * 
 	 * 
 	 * @return value
 	 */

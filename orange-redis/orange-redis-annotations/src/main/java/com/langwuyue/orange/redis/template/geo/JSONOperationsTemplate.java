@@ -51,9 +51,9 @@ import com.langwuyue.orange.redis.template.global.GlobalOperationsTemplate;
  *  	
  *  }
  * </pre></blockquote>
- * </p>
  * 
- * <p>Please review examples for more information.</p>
+ * 
+ * <p>Please review examples for more information.
  * 
  * @author Liang.Zhong
  * @since 1.0.0
@@ -91,13 +91,13 @@ public interface JSONOperationsTemplate<M,L> extends GlobalOperationsTemplate {
 	 * whether the method continues to add subsequent members into Redis geo
 	 * even if an exception occurs or some members fail.
 	 * True: continue | False: break
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument M.
-	 * </p>
+	 * 
 	 * 
 	 * 
 	 * @param members Collection of member objects to add
@@ -124,7 +124,7 @@ public interface JSONOperationsTemplate<M,L> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument M.
-	 * </p>
+	 * 
 	 * 
 	 * @param location The location to query
 	 * @return The member object associated with the location
@@ -139,7 +139,7 @@ public interface JSONOperationsTemplate<M,L> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument M.
-	 * </p>
+	 * 
 	 * 
 	 * 
 	 * @param locations List of locations to query
@@ -156,7 +156,7 @@ public interface JSONOperationsTemplate<M,L> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument M.
-	 * </p>
+	 * 
 	 * 
 	 * @param location The center location
 	 * @param distance The search radius
@@ -173,7 +173,7 @@ public interface JSONOperationsTemplate<M,L> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument M.
-	 * </p>
+	 * 
 	 * 
 	 * 
 	 * @param location The center location
@@ -193,7 +193,7 @@ public interface JSONOperationsTemplate<M,L> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument M.
-	 * </p>
+	 * 
 	 * 
 	 * @param longitude The center longitude
 	 * @param latitude The center latitude
@@ -211,7 +211,7 @@ public interface JSONOperationsTemplate<M,L> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument M.
-	 * </p>
+	 * 
 	 * 
 	 * 
 	 * @param longitude The center longitude
@@ -231,7 +231,7 @@ public interface JSONOperationsTemplate<M,L> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument M.
-	 * </p>
+	 * 
 	 * 
 	 * 
 	 * @param longitude The center longitude
@@ -251,7 +251,7 @@ public interface JSONOperationsTemplate<M,L> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument M.
-	 * </p>
+	 * 
 	 * 
 	 * 
 	 * @param longitude The center longitude
@@ -272,7 +272,7 @@ public interface JSONOperationsTemplate<M,L> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument M.
-	 * </p>
+	 * 
 	 * 
 	 * @param location The center location
 	 * @param width The width of the search area
@@ -290,7 +290,7 @@ public interface JSONOperationsTemplate<M,L> extends GlobalOperationsTemplate {
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument M.
-	 * </p>
+	 * 
 	 * 
 	 * @param location The center location
 	 * @param width The width of the search area
@@ -319,13 +319,13 @@ public interface JSONOperationsTemplate<M,L> extends GlobalOperationsTemplate {
 	 * whether the method continues to remove subsequent members from Redis geo
 	 * even if an exception occurs or some members fail.
 	 * True: continue | False: break
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * Developers must override this method when another interface extends this template; 
 	 * otherwise, an exception will occur, 
 	 * because the method's return type involves a generic argument L.
-	 * </p>
+	 * 
 	 * 
 	 * @param locations Collection of locations to remove
 	 * @return Map of locations to their remove operation status

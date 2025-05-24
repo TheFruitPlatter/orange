@@ -37,9 +37,9 @@ import com.langwuyue.orange.redis.template.global.GlobalOperationsTemplate;
  *  	// Custom operations can be added here
  *  }
  * </pre></blockquote>
- * </p>
  * 
- * <p>Please review examples for more information.</p>
+ * 
+ * <p>Please review examples for more information.
  * 
  * @param <T> The type of elements stored in the Redis Value (will be serialized as JSON)
  * @author Liang.Zhong
@@ -53,23 +53,23 @@ public interface LockOperationsTemplate extends GlobalOperationsTemplate {
 	 * 
 	 * <p>
 	 * [Lock] -> [Notify listeners]  (listeners process business logic)-> [Release Lock]
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * Once the set operation process is completed, the {@code OrangeRedisValueSetIfAbsentListener} component ​​will be triggered​​. 
 	 * Developers should ​​configure​​ {@code OrangeRedisValueSetIfAbsentListener} to manage post-setting business logic. 
 	 * Note that the {@code OrangeRedisValueSetIfAbsentListener} implementation class must be annotated with Spring’s {@code @Component}
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * This method automatically extends the TTL if the listeners are still executing when the current TTL approaches expiration.
 	 * Automatically extends the TTL when:
 	 * - Remaining TTL ≤ {@link AutoRenew#threshold()} * {@link com.langwuyue.orange.redis.annotation.OrangeRedisKey#expirationTime()}  
-	 * </p>
+	 * 
 	 * 
 	 * <p>
 	 * Please review examples for more information.
-	 * </p>
+	 * 
 	 */
 	@Lock
 	@SetExpiration
