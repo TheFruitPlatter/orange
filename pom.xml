@@ -30,7 +30,7 @@
 		<connection>https://github.com/TheFruitPlatter/orange.git</connection>
 		<developerConnection>https://github.com/TheFruitPlatter/orange.git</developerConnection>
 		<url>https://github.com/TheFruitPlatter/orange</url>
-		<tag>1.0.0-RELEASE</tag>
+		<tag>1.0.0</tag>
 	</scm>
 
 	<developers>
