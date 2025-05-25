@@ -60,7 +60,7 @@ import com.langwuyue.orange.redis.annotation.value.OrangeRedisValueClient;
  *
  * @author Liang.Zhong
  * @since 1.0.0
- * @see GlobalOperationsTemplate
+ * @see JSONOperationsTemplate
  * @see <a href="https://redis.io/commands/set">Redis SET command</a>
  * @see <a href="https://redis.io/commands/get">Redis GET command</a>
  */
