@@ -41,7 +41,7 @@ public interface OrangeRedisZSetExample8Api extends JSONOperationsTemplate<ZSetV
 	}
 
 	@Override
-	default void addIfAsent(Map<ZSetValue, Double> members) {
+	default void addIfAbsent(Map<ZSetValue, Double> members) {
 	}
 
 	@Override
@@ -106,33 +106,33 @@ public interface OrangeRedisZSetExample8Api extends JSONOperationsTemplate<ZSetV
 	}
 
 	@Override
-	default Set<ZSetValue> reveseScoreRange(Double maxScore, Double minScore) {
+	default Set<ZSetValue> reverseScoreRange(Double maxScore, Double minScore) {
 		return null;
 	}
 
 	@Override
-	default Set<ZSetValue> reveseScoreRange(Double maxScore, Double minScore, Long pageNo, Long count) {
+	default Set<ZSetValue> reverseScoreRange(Double maxScore, Double minScore, Long pageNo, Long count) {
 		return null;
 	}
 
 	@Override
-	default Set<ZSetValue> reveseRankRange(Long startIndex, Long endIndex) {
+	default Set<ZSetValue> reverseRankRange(Long startIndex, Long endIndex) {
 		return null;
 	}
 
 	@Override
-	default Map<ZSetValue, Double> reveseScoreRangeWithScores(Double maxScore, Double minScore) {
+	default Map<ZSetValue, Double> reverseScoreRangeWithScores(Double maxScore, Double minScore) {
 		return null;
 	}
 
 	@Override
-	default Map<ZSetValue, Double> reveseScoreRangeWithScores(Double maxScore, Double minScore,
+	default Map<ZSetValue, Double> reverseScoreRangeWithScores(Double maxScore, Double minScore,
 			Long pageNo, Long count) {
 		return null;
 	}
 
 	@Override
-	default Map<ZSetValue, Double> reveseRankRangeWithScores(Long startIndex, Long endIndex) {
+	default Map<ZSetValue, Double> reverseRankRangeWithScores(Long startIndex, Long endIndex) {
 		return null;
 	}
 
@@ -183,7 +183,7 @@ public interface OrangeRedisZSetExample8Api extends JSONOperationsTemplate<ZSetV
 	}
 
 	@Override
-	default Map<ZSetValue, Long> reveseRanks(Set<ZSetValue> value) {
+	default Map<ZSetValue, Long> reverseRanks(Set<ZSetValue> value) {
 		return null;
 	}
 }

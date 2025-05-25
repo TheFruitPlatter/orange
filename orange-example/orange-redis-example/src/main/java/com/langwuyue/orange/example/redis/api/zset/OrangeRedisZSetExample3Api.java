@@ -61,8 +61,20 @@ import com.langwuyue.orange.redis.annotation.zset.ScoreRange;
 import com.langwuyue.orange.redis.annotation.zset.WithScores;
 
 /**
+ * Redis Sorted Set (ZSet) intersection operations interface
+ * 
+ * <p>Provides intersection operations for Redis Sorted Set data structure including:
+ * <ul>
+ *   <li>Set intersection with score aggregation</li>
+ *   <li>Weighted intersection operations</li>
+ *   <li>Intersection storage operations</li>
+ * </ul>
+ * 
+ * <p>Default expiration time: 1 hour
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see <a href="https://redis.io/commands#sorted_set">Redis Sorted Set Commands</a>
  */
 @OrangeRedisKey(expirationTime = @Timeout(value = 1, unit = TimeUnit.HOURS), key = "orange:zset:example3")
 @OrangeRedisZSetClient(valueType = RedisValueTypeEnum.JSON)

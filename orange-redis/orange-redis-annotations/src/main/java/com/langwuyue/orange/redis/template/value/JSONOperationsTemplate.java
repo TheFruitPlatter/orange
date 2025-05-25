@@ -56,18 +56,81 @@ import com.langwuyue.orange.redis.template.global.GlobalOperationsTemplate;
 public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	
 	/**
-	 * Set value
-	 * 
-	 * 
-	 * @param value
+	 * Serializes and stores the object as JSON in Redis.
+	 * <p>
+	 * This is the fundamental SET operation for JSON values in Redis.
+	 *
+	 * <p>Key characteristics:
+	 * <ul>
+	 *   <li>O(1) time complexity</li>
+	 *   <li>Uses Jackson for JSON serialization</li>
+	 *   <li>Supports complex object graphs</li>
+	 *   <li>Overwrites existing value if any</li>
+	 * </ul>
+	 *
+	 * <p>Serialization behavior:
+	 * <ul>
+	 *   <li>Object is converted to JSON string using Jackson</li>
+	 *   <li>Follows Jackson's default serialization rules</li>
+	 *   <li>Null values are stored as Redis nil</li>
+	 * </ul>
+	 *
+	 * <p>Performance considerations:
+	 * <ul>
+	 *   <li>Serialization overhead increases with object complexity</li>
+	 *   <li>Recommended payload size under 1MB for optimal performance</li>
+	 *   <li>Large objects may trigger Redis maxmemory policies</li>
+	 * </ul>
+	 *
+	 * <p>Example usage:
+	 * <pre>{@code
+	 * User user = new User("John", "john@example.com");
+	 * setValue(user); // Serializes and stores user as JSON
+	 * }</pre>
+	 *
+	 * @param value the object to serialize and store, may be null
+	 * @throws RedisConnectionFailureException if unable to communicate with Redis
+	 * @throws JsonProcessingException if object cannot be serialized to JSON
 	 */
 	@SetValue
 	void setValue(@RedisValue T value);
 	
 	/**
-	 * Set value with with a time-to-live (TTL).
-	 * 
-	 * @param value
+	 * Serializes and stores the object as JSON in Redis with expiration time.
+	 * <p>
+	 * This operation combines SET and EXPIRE in a single atomic command.
+	 *
+	 * <p>Key characteristics:
+	 * <ul>
+	 *   <li>O(1) time complexity</li>
+	 *   <li>Uses Jackson for JSON serialization</li>
+	 *   <li>Supports complex object graphs</li>
+	 *   <li>Overwrites existing value if any</li>
+	 *   <li>Expiration time is set by {@code @OrangeRedisKey} annotation</li>
+	 * </ul>
+	 *
+	 * <p>TTL behavior:
+	 * <ul>
+	 *   <li>Expiration timer starts immediately after set</li>
+	 *   <li>If key is updated before expiration, timer resets</li>
+	 *   <li>After expiration, key is automatically deleted</li>
+	 * </ul>
+	 *
+	 * <p>Performance considerations:
+	 * <ul>
+	 *   <li>Serialization overhead increases with object complexity</li>
+	 *   <li>Recommended payload size under 1MB for optimal performance</li>
+	 * </ul>
+	 *
+	 * <p>Example usage:
+	 * <pre>{@code
+	 * Session session = new Session("user123", Instant.now().plusSeconds(3600));
+	 * setValueWithExpiration(session); // Stores with 1-hour TTL
+	 * }</pre>
+	 *
+	 * @param value the object to serialize and store, may be null
+	 * @throws RedisConnectionFailureException if unable to communicate with Redis
+	 * @throws JsonProcessingException if object cannot be serialized to JSON
 	 */
 	@SetValue
 	@SetExpiration
@@ -75,53 +138,87 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	
 	
 	/**
-	 * Set {@code value} if it does not already exists.
+	 * Atomically sets the JSON value if the key does not exist (SETNX operation).
 	 * <p>
-	 * This method is present for setting a default value.
-	 * 
-	 * <p>
-	 * To set a time-to-live (TTL) for the value at the same time, invoke {@link JSONOperationsTemplate#setValueIfAbsentWithExpiration(Object)} instead.
-	 * 
-	 * <p>
-	 * Once the set operation process is completed, the {@code OrangeRedisValueSetIfAbsentListener} component ​​will be triggered​​. 
-	 * Developers should ​​configure​​ {@code OrangeRedisValueSetIfAbsentListener} to manage post-setting business logic. 
-	 * Note that the {@code OrangeRedisValueSetIfAbsentListener} implementation class must be annotated with Spring’s {@code @Component}
-	 * 
-	 * 
-	 * <p>
-	 * The property {@code deleteInTheEnd} of {@code @IfAbsent} determines if the value is deleted after operation completion.
-	 * True​​: Delete | ​​False​​: Keep
-	 * 
-	 * 
-	 * <p>
-	 * Please review examples for more information.
-	 * 
-	 * 
-	 * @param value the value.
+	 * This operation provides atomic "set-if-not-exists" semantics for JSON data.
+	 *
+	 * <p>Key characteristics:
+	 * <ul>
+	 *   <li>O(1) time complexity</li>
+	 *   <li>Uses Jackson for JSON serialization</li>
+	 *   <li>Only sets the value if key does not exist</li>
+	 *   <li>Triggers {@code OrangeRedisValueSetIfAbsentListener} after operation</li>
+	 * </ul>
+	 *
+	 * <p>Listener behavior:
+	 * <ul>
+	 *   <li>Listener is triggered after successful set operation</li>
+	 *   <li>Listener implementation must be a Spring {@code @Component}</li>
+	 *   <li>Use listener for post-set business logic</li>
+	 * </ul>
+	 *
+	 * <p>Performance considerations:
+	 * <ul>
+	 *   <li>Serialization overhead increases with object complexity</li>
+	 *   <li>Recommended payload size under 1MB for optimal performance</li>
+	 * </ul>
+	 *
+	 * <p>Example usage:
+	 * <pre>{@code
+	 * Config defaultConfig = new Config("default");
+	 * setValueIfAbsent(defaultConfig); // Only sets if key doesn't exist
+	 * }</pre>
+	 *
+	 * <p>For TTL version see: {@link JSONOperationsTemplate#setValueIfAbsentWithExpiration(Object)}
+	 *
+	 * @param value the JSON-serializable object to set if key is absent
+	 * @see OrangeRedisValueSetIfAbsentListener
 	 */
 	@SetValue
 	@IfAbsent(deleteInTheEnd = false)
 	void setValueIfAbsent(@RedisValue T value);
 	
 	/**
-	 * Set {@code value} if it does not already exists, and set a time-to-live (TTL) for the value at the same time.
-	 * 
+	 * Atomically sets the JSON value with TTL if the key does not exist (SETNX with EXPIRE).
 	 * <p>
-	 * Once the set operation process is completed, the {@code OrangeRedisValueSetIfAbsentListener} component ​​will be triggered​​. 
-	 * Developers should ​​configure​​ {@code OrangeRedisValueSetIfAbsentListener} to manage post-setting business logic. 
-	 * Note that the {@code OrangeRedisValueSetIfAbsentListener} implementation class must be annotated with Spring’s {@code @Component}
-	 * 
-	 * 
-	 * <p>
-	 * The property {@code deleteInTheEnd} of {@code @IfAbsent} determines if the value is deleted after operation completion.
-	 * True​​: Delete | ​​False​​: Keep
-	 * 
-	 * 
-	 * <p>
-	 * Please review examples for more information.
-	 * 
-	 * 
-	 * @param value the value.
+	 * This operation combines SETNX and EXPIRE in a single atomic command.
+	 *
+	 * <p>Key characteristics:
+	 * <ul>
+	 *   <li>O(1) time complexity</li>
+	 *   <li>Uses Jackson for JSON serialization</li>
+	 *   <li>Only sets the value if key does not exist</li>
+	 *   <li>Sets expiration time from {@code @OrangeRedisKey} annotation</li>
+	 *   <li>Triggers {@code OrangeRedisValueSetIfAbsentListener} after operation</li>
+	 * </ul>
+	 *
+	 * <p>TTL behavior:
+	 * <ul>
+	 *   <li>Expiration timer starts immediately after set</li>
+	 *   <li>After expiration, key is automatically deleted</li>
+	 * </ul>
+	 *
+	 * <p>Listener behavior:
+	 * <ul>
+	 *   <li>Listener is triggered after successful set operation</li>
+	 *   <li>Value is deleted after listener completes (deleteInTheEnd=true)</li>
+	 *   <li>Listener implementation must be a Spring {@code @Component}</li>
+	 * </ul>
+	 *
+	 * <p>Performance considerations:
+	 * <ul>
+	 *   <li>Serialization overhead increases with object complexity</li>
+	 *   <li>Recommended payload size under 1MB for optimal performance</li>
+	 * </ul>
+	 *
+	 * <p>Example usage:
+	 * <pre>{@code
+	 * Session tempSession = new Session("user123", Instant.now().plusSeconds(3600));
+	 * setValueIfAbsentWithExpiration(tempSession); // Sets with TTL only if new session
+	 * }</pre>
+	 *
+	 * @param value the JSON-serializable object to set if key is absent
+	 * @see OrangeRedisValueSetIfAbsentListener
 	 */
 	@SetValue
 	@IfAbsent(deleteInTheEnd = true)
@@ -129,26 +226,91 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	void setValueIfAbsentWithExpiration(@RedisValue T value);
 	
 	/**
-	 * The {@code oldValue} will be overwritten by {@code newValue} only if it matches current value.
-	 * 
-	 * 
-	 * @param oldValue  The expected current value.
-	 * @param newValue  The new value to set if verification succeeds.
-	 * @return Boolean  True if the value was updated, false otherwise (e.g., if {@code oldValue} did not match).
+	 * Atomically compares and swaps the JSON value (CAS operation).
+	 * <p>
+	 * This operation provides compare-and-set semantics for JSON data.
+	 *
+	 * <p>Key characteristics:
+	 * <ul>
+	 *   <li>O(1) time complexity</li>
+	 *   <li>Uses JSON string comparison for verification</li>
+	 *   <li>Returns true only if the value was changed</li>
+	 *   <li>More efficient than WATCH/MULTI for simple CAS scenarios</li>
+	 * </ul>
+	 *
+	 * <p>JSON comparison behavior:
+	 * <ul>
+	 *   <li>Objects are serialized to JSON strings before comparison</li>
+	 *   <li>Comparison is exact (including whitespace and field order)</li>
+	 *   <li>Semantically equivalent JSON may fail comparison due to formatting</li>
+	 * </ul>
+	 *
+	 * <p>Concurrency considerations:
+	 * <ul>
+	 *   <li>Provides atomic check-and-update semantics</li>
+	 *   <li>Use for light-weight optimistic locking</li>
+	 *   <li>For complex transactions, consider WATCH/MULTI</li>
+	 * </ul>
+	 *
+	 * <p>Example usage:
+	 * <pre>{@code
+	 * User current = getValue();
+	 * User updated = current.withEmail("new@example.com");
+	 * if (compareAndSwap(current, updated)) {
+	 *     // Update succeeded
+	 * } else {
+	 *     // Retry or handle contention
+	 * }
+	 * }</pre>
+	 *
+	 * @param oldValue the expected current value (exact JSON match required)
+	 * @param newValue the new value to set if verification succeeds
+	 * @return true if the value was updated, false otherwise
 	 */
 	@CAS
 	Boolean compareAndSwap(@RedisOldValue T oldValue, @RedisValue T newValue);
 	
 	/**
-	 * Get value.
-	 * 
+	 * Retrieves and deserializes the JSON value from Redis.
 	 * <p>
-	 * Developers must override this method when another interface extends this template; 
-	 * otherwise, an exception will occur, 
-	 * because the method's return type involves a generic argument T.
-	 * 
-	 * 
-	 * @return value
+	 * This is the fundamental GET operation for JSON values in Redis.
+	 *
+	 * <p>Key characteristics:
+	 * <ul>
+	 *   <li>O(1) time complexity</li>
+	 *   <li>Returns null if key does not exist</li>
+	 *   <li>Uses Jackson for JSON deserialization</li>
+	 *   <li>Supports complex object graphs</li>
+	 * </ul>
+	 *
+	 * <p>Deserialization behavior:
+	 * <ul>
+	 *   <li>JSON string is parsed into Java object of type T</li>
+	 *   <li>Follows Jackson's default deserialization rules</li>
+	 *   <li>Type T must be compatible with stored JSON structure</li>
+	 * </ul>
+	 *
+	 * <p>Performance considerations:
+	 * <ul>
+	 *   <li>Deserialization overhead increases with object complexity</li>
+	 *   <li>Large JSON payloads may impact network transfer time</li>
+	 * </ul>
+	 *
+	 * <p>Example usage:
+	 * <pre>{@code
+	 * User user = getValue();
+	 * if (user != null) {
+	 *     // Use the deserialized object
+	 * }
+	 * }</pre>
+	 *
+	 * <p>Implementation note:
+	 * <ul>
+	 *   <li>Must be overridden in child interfaces</li>
+	 *   <li>Concrete return type must be specified</li>
+	 * </ul>
+	 *
+	 * @return the deserialized object of type T, or null if key does not exist
 	 */
 	@GetValue
 	T getValue();

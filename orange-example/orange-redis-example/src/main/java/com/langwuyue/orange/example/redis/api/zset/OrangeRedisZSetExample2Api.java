@@ -25,8 +25,21 @@ import com.langwuyue.orange.redis.annotation.Timeout;
 import com.langwuyue.orange.redis.template.zset.StringOperationsTemplate;
 
 /**
+ * Redis Sorted Set (ZSet) advanced operations interface
+ * 
+ * <p>Provides extended operations for Redis Sorted Set data structure including:
+ * <ul>
+ *   <li>Score range operations with limit and offset</li>
+ *   <li>Reverse score range queries</li>
+ *   <li>Lexicographical range operations</li>
+ *   <li>Composite range queries</li>
+ * </ul>
+ * 
+ * <p>Default expiration time: 1 hour
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see <a href="https://redis.io/commands#sorted_set">Redis Sorted Set Commands</a>
  */
 @OrangeRedisKey(expirationTime = @Timeout(value = 1, unit = TimeUnit.HOURS), key = "orange:zset:example2")
 public interface OrangeRedisZSetExample2Api extends StringOperationsTemplate {

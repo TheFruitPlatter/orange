@@ -18,6 +18,34 @@
  */
 package com.langwuyue.orange.example.redis.api.geo;
 
+/**
+ * Redis GEO Operations API Example 4 with JSON Storage
+ * 
+ * <p>Provides Redis GEO operations using JSON format storage, including:
+ * <ul>
+ *   <li>Add/Remove geo members (GEOADD)</li>
+ *   <li>Get member geo positions (GEOPOS)</li>
+ *   <li>Calculate distances between multiple locations (GEODIST)</li>
+ *   <li>Radius search (GEOSEARCH BYRADIUS)</li>
+ *   <li>Bounding box search (GEOSEARCH BYBOX)</li>
+ * </ul>
+ * 
+ * <p>Key Features:
+ * <ul>
+ *   <li>Uses JSONOperationsTemplate for JSON format data storage</li>
+ *   <li>Supports batch operations and result limiting (COUNT parameter)</li>
+ *   <li>Provides multiple search methods (coordinate-based or member-based)</li>
+ *   <li>Returns results including distance and complete JSON data</li>
+ * </ul>
+ * 
+ * <p>Applicable for scenarios requiring flexible data structures:
+ * <ul>
+ *   <li>Complex geo location services</li>
+ *   <li>Geo data with additional attributes</li>
+ *   <li>JSON-formatted geo location data processing</li>
+ * </ul>
+ */
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;

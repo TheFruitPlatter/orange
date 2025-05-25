@@ -93,13 +93,13 @@ public class OrangeRedisJSONSimpleTestCases {
 		
 	}
 	
-	@GetMapping("/v1/zsetOperations/revesedRank")
+	@GetMapping("/v1/zsetOperations/reversedRank")
 	public OrangeRedisExampleResponse testCase4(@RequestParam Long id,@RequestParam String name) {
 		try {
 			ZSetValue value = new ZSetValue();
 			value.setId(id);
 			value.setName(name);
-			return new OrangeRedisExampleResponse(zsetExample1Api.reveseRank(value));
+			return new OrangeRedisExampleResponse(zsetExample1Api.reverseRank(value));
 		}catch (Exception e) {
 			e.printStackTrace();
 			return new OrangeRedisExampleResponse(4,e.getMessage());
@@ -178,7 +178,7 @@ public class OrangeRedisJSONSimpleTestCases {
 	@PutMapping("/v1/zsetOperations/initMember")
 	public OrangeRedisExampleResponse testCase10(@Valid @RequestBody OrangeZSetExampleEntity entity) {
 		try {
-			zsetExample1Api.addIfAsent(entity.getValue(),entity.getScore());
+			zsetExample1Api.addIfAbsent(entity.getValue(),entity.getScore());
 			return new OrangeRedisExampleResponse();
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -194,7 +194,7 @@ public class OrangeRedisJSONSimpleTestCases {
 			for(OrangeZSetExampleEntity entity : entities) {
 				members.put(entity.getValue(), entity.getScore());
 			}
-			zsetExample1Api.addIfAsent(members);
+			zsetExample1Api.addIfAbsent(members);
 			return new OrangeRedisExampleResponse();
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -334,60 +334,60 @@ public class OrangeRedisJSONSimpleTestCases {
 		}
 	}
 	
-	@GetMapping("/v1/zsetOperations/revesedScoreRangeValues")
+	@GetMapping("/v1/zsetOperations/reversedScoreRangeValues")
 	public OrangeRedisExampleResponse testCase25(@RequestParam Double maxScore,@RequestParam Double minScore) {
 		try {
-			return new OrangeRedisExampleResponse(zsetExample1Api.reveseScoreRange(maxScore,minScore));
+			return new OrangeRedisExampleResponse(zsetExample1Api.reverseScoreRange(maxScore,minScore));
 		}catch (Exception e) {
 			e.printStackTrace();
 			return new OrangeRedisExampleResponse(25,e.getMessage());
 		}
 	}
 	
-	@GetMapping("/v1/zsetOperations/revesedScoreRangeValuesByPage")
+	@GetMapping("/v1/zsetOperations/reversedScoreRangeValuesByPage")
 	public OrangeRedisExampleResponse testCase26(@RequestParam Double maxScore,@RequestParam Double minScore,@RequestParam Long pageNo,@RequestParam Long pageSize) {
 		try {
-			return new OrangeRedisExampleResponse(zsetExample1Api.reveseScoreRange(maxScore,minScore,pageNo,pageSize));
+			return new OrangeRedisExampleResponse(zsetExample1Api.reverseScoreRange(maxScore,minScore,pageNo,pageSize));
 		}catch (Exception e) {
 			e.printStackTrace();
 			return new OrangeRedisExampleResponse(26,e.getMessage());
 		}
 	}
 	
-	@GetMapping("/v1/zsetOperations/revesedRankRangeValues")
+	@GetMapping("/v1/zsetOperations/reversedRankRangeValues")
 	public OrangeRedisExampleResponse testCase27(@RequestParam Long startIndex,@RequestParam Long endIndex) {
 		try {
-			return new OrangeRedisExampleResponse(zsetExample1Api.reveseRankRange(startIndex,endIndex));
+			return new OrangeRedisExampleResponse(zsetExample1Api.reverseRankRange(startIndex,endIndex));
 		}catch (Exception e) {
 			e.printStackTrace();
 			return new OrangeRedisExampleResponse(27,e.getMessage());
 		}
 	}
 	
-	@GetMapping("/v1/zsetOperations/revesedScoreRangeMembers")
+	@GetMapping("/v1/zsetOperations/reversedScoreRangeMembers")
 	public OrangeRedisExampleResponse testCase28(@RequestParam Double maxScore,@RequestParam Double minScore) {
 		try {
-			return new OrangeRedisExampleResponse(new OrangeMapToExampleEntitiesConverter().toEntities(zsetExample1Api.reveseScoreRangeWithScores(maxScore,minScore)));
+			return new OrangeRedisExampleResponse(new OrangeMapToExampleEntitiesConverter().toEntities(zsetExample1Api.reverseScoreRangeWithScores(maxScore,minScore)));
 		}catch (Exception e) {
 			e.printStackTrace();
 			return new OrangeRedisExampleResponse(28,e.getMessage());
 		}
 	}
 	
-	@GetMapping("/v1/zsetOperations/revesedScoreRangeMembersByPage")
+	@GetMapping("/v1/zsetOperations/reversedScoreRangeMembersByPage")
 	public OrangeRedisExampleResponse testCase29(@RequestParam Double maxScore,@RequestParam Double minScore,@RequestParam Long pageNo,@RequestParam Long pageSize) {
 		try {
-			return new OrangeRedisExampleResponse(new OrangeMapToExampleEntitiesConverter().toEntities(zsetExample1Api.reveseScoreRangeWithScores(maxScore,minScore,pageNo,pageSize)));
+			return new OrangeRedisExampleResponse(new OrangeMapToExampleEntitiesConverter().toEntities(zsetExample1Api.reverseScoreRangeWithScores(maxScore,minScore,pageNo,pageSize)));
 		}catch (Exception e) {
 			e.printStackTrace();
 			return new OrangeRedisExampleResponse(29,e.getMessage());
 		}
 	}
 	
-	@GetMapping("/v1/zsetOperations/revesedRankRangeMembers")
+	@GetMapping("/v1/zsetOperations/reversedRankRangeMembers")
 	public OrangeRedisExampleResponse testCase30(@RequestParam Long startIndex,@RequestParam Long endIndex) {
 		try {
-			return new OrangeRedisExampleResponse(new OrangeMapToExampleEntitiesConverter().toEntities(zsetExample1Api.reveseRankRangeWithScores(startIndex,endIndex)));
+			return new OrangeRedisExampleResponse(new OrangeMapToExampleEntitiesConverter().toEntities(zsetExample1Api.reverseRankRangeWithScores(startIndex,endIndex)));
 		}catch (Exception e) {
 			e.printStackTrace();
 			return new OrangeRedisExampleResponse(30,e.getMessage());
@@ -415,10 +415,10 @@ public class OrangeRedisJSONSimpleTestCases {
 		
 	}
 	
-	@PutMapping("/v1/zsetOperations/revesedRanks")
+	@PutMapping("/v1/zsetOperations/reversedRanks")
 	public OrangeRedisExampleResponse testCase33(@Valid @RequestBody OrangeZSetMultipleZSetValues values) {
 		try {
-			return new OrangeRedisExampleResponse(new OrangeMapToRankExampleEntitiesConverter().toEntities(zsetExample1Api.reveseRanks(values.getValues())));
+			return new OrangeRedisExampleResponse(new OrangeMapToRankExampleEntitiesConverter().toEntities(zsetExample1Api.reverseRanks(values.getValues())));
 		}catch (Exception e) {
 			e.printStackTrace();
 			return new OrangeRedisExampleResponse(33,e.getMessage());

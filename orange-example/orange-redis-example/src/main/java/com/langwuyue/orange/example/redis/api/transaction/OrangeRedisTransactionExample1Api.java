@@ -26,12 +26,25 @@ import com.langwuyue.orange.redis.annotation.Timeout;
 import com.langwuyue.orange.redis.template.transaction.JSONOperationsTemplate;
 
 /**
+ * Redis Transaction API Example 1
+ * 
+ * <p>This interface demonstrates basic Redis transaction operations using JSON serialization.
+ * It extends {@link JSONOperationsTemplate} to provide transaction-safe operations on {@link OrangeValueExampleEntity} objects.</p>
+ * 
+ * <p>The Redis key is configured with a 1-hour expiration time by default.</p>
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
  */
 @OrangeRedisKey(expirationTime = @Timeout(value = 1, unit = TimeUnit.HOURS), key = "orange:transaction:example1")
 public interface OrangeRedisTransactionExample1Api extends JSONOperationsTemplate<OrangeValueExampleEntity> {
 
+	/**
+	 * Retrieves the value from Redis in a transaction-safe manner
+	 * 
+	 * @return the deserialized {@link OrangeValueExampleEntity} object
+	 * @see JSONOperationsTemplate#getValue()
+	 */
 	@Override
 	OrangeValueExampleEntity getValue();
 }

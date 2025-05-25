@@ -35,8 +35,31 @@ import com.langwuyue.orange.redis.annotation.geo.Distance;
 import com.langwuyue.orange.redis.annotation.geo.SearchArgs;
 import com.langwuyue.orange.redis.template.geo.StringOperationsTemplate;
 
-
 /**
+ * Redis GEO Operations API Example 2 with String Identifiers
+ * 
+ * <p>Provides Redis GEO operations using string identifiers, including:
+ * <ul>
+ *   <li>Add/Remove geo members (GEOADD)</li>
+ *   <li>Get member geo positions (GEOPOS)</li>
+ *   <li>Calculate distances between multiple locations (GEODIST)</li>
+ *   <li>Radius search (GEOSEARCH BYRADIUS)</li>
+ *   <li>Bounding box search (GEOSEARCH BYBOX)</li>
+ * </ul>
+ * 
+ * <p>Key Features:
+ * <ul>
+ *   <li>Uses string identifiers for human-readable location references</li>
+ *   <li>Supports batch operations and paginated queries</li>
+ * </ul>
+ * 
+ * <p>Applicable for geo location services requiring named identifiers, such as:
+ * <ul>
+ *   <li>Name-based nearby location search</li>
+ *   <li>Geo-fencing services</li>
+ *   <li>Multi-location distance calculations</li>
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */

@@ -71,10 +71,10 @@ import com.langwuyue.orange.redis.annotation.zset.PageNo;
  * <p>Example usage:
  * <pre>{@code
  * // Add single member
- * api.add("myKey", "member1");
+ * api.add("member1");
  * 
  * // Check membership
- * boolean exists = api.isMember("myKey", "member1");
+ * boolean exists = api.isMember("member1");
  * }</pre>
  * 
  * 

@@ -41,7 +41,7 @@ public interface OrangeRedisZSetExample9Api extends JSONOperationsTemplate<Orang
 	}
 
 	@Override
-	default void addIfAsent(Map<OrangeValueExampleEntity, Double> members) {
+	default void addIfAbsent(Map<OrangeValueExampleEntity, Double> members) {
 	}
 
 	@Override
@@ -106,33 +106,33 @@ public interface OrangeRedisZSetExample9Api extends JSONOperationsTemplate<Orang
 	}
 
 	@Override
-	default Set<OrangeValueExampleEntity> reveseScoreRange(Double maxScore, Double minScore) {
+	default Set<OrangeValueExampleEntity> reverseScoreRange(Double maxScore, Double minScore) {
 		return null;
 	}
 
 	@Override
-	default Set<OrangeValueExampleEntity> reveseScoreRange(Double maxScore, Double minScore, Long pageNo, Long count) {
+	default Set<OrangeValueExampleEntity> reverseScoreRange(Double maxScore, Double minScore, Long pageNo, Long count) {
 		return null;
 	}
 
 	@Override
-	default Set<OrangeValueExampleEntity> reveseRankRange(Long startIndex, Long endIndex) {
+	default Set<OrangeValueExampleEntity> reverseRankRange(Long startIndex, Long endIndex) {
 		return null;
 	}
 
 	@Override
-	default Map<OrangeValueExampleEntity, Double> reveseScoreRangeWithScores(Double maxScore, Double minScore) {
+	default Map<OrangeValueExampleEntity, Double> reverseScoreRangeWithScores(Double maxScore, Double minScore) {
 		return null;
 	}
 
 	@Override
-	default Map<OrangeValueExampleEntity, Double> reveseScoreRangeWithScores(Double maxScore, Double minScore,
+	default Map<OrangeValueExampleEntity, Double> reverseScoreRangeWithScores(Double maxScore, Double minScore,
 			Long pageNo, Long count) {
 		return null;
 	}
 
 	@Override
-	default Map<OrangeValueExampleEntity, Double> reveseRankRangeWithScores(Long startIndex, Long endIndex) {
+	default Map<OrangeValueExampleEntity, Double> reverseRankRangeWithScores(Long startIndex, Long endIndex) {
 		return null;
 	}
 
@@ -183,7 +183,7 @@ public interface OrangeRedisZSetExample9Api extends JSONOperationsTemplate<Orang
 	}
 
 	@Override
-	default Map<OrangeValueExampleEntity, Long> reveseRanks(Set<OrangeValueExampleEntity> value) {
+	default Map<OrangeValueExampleEntity, Long> reverseRanks(Set<OrangeValueExampleEntity> value) {
 		return null;
 	}
 }

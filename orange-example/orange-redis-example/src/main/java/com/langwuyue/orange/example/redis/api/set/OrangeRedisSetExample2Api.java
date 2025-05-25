@@ -72,7 +72,7 @@ import com.langwuyue.orange.redis.template.set.StringOperationsTemplate;
  * String popped = api.pop();
  * 
  * // Get set size
- * Long size = api.size();
+ * Long size = api.getSize();
  * }</pre>
  * 
  * <p>Use cases and advantages:

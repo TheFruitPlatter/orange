@@ -62,13 +62,45 @@ import com.langwuyue.orange.redis.annotation.zset.Score;
 import com.langwuyue.orange.redis.annotation.zset.WithScores;
 
 /**
+ * Redis Sorted Set (ZSet) operations interface focusing on union and set operations.
+ * 
+ * <p>This interface provides comprehensive operations for Redis Sorted Sets including:
+ * <ul>
+ *   <li>Basic operations (add, remove, get)</li>
+ *   <li>Score-based operations (increment, decrement)</li>
+ *   <li>Range operations (by score, by rank)</li>
+ *   <li>Random member selection</li>
+ *   <li>Atomic pop operations</li>
+ * </ul>
+ * 
+ * <p>Key features:
+ * <ul>
+ *   <li>Automatic JSON serialization/deserialization</li>
+ *   <li>Default expiration time: 1 hour</li>
+ *   <li>Support for atomic operations</li>
+ *   <li>Batch operations with failure handling</li>
+ * </ul>
+ * 
+ * <p>Usage example:
+ * <pre>{@code
+ * @Autowired
+ * private OrangeRedisZSetExample4Api zsetApi;
+ * 
+ * // Add member with score
+ * zsetApi.add("key", new ZSetValue("member"), 1.0);
+ * 
+ * // Get score range
+ * Set<ZSetValue> values = zsetApi.getByScoreRange("key", 0.0, 2.0);
+ * }</pre>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see com.langwuyue.orange.redis.annotation.zset.OrangeRedisZSetClient
+ * @see com.langwuyue.orange.example.redis.entity.OrangeZSetExampleEntity.ZSetValue
  */
 @OrangeRedisZSetClient(valueType = RedisValueTypeEnum.JSON)
 @OrangeRedisKey(expirationTime = @Timeout(value = 1, unit = TimeUnit.HOURS), key = "orange:zset:example4:${var}")
 public interface OrangeRedisZSetExample4Api  {
-
 	@SetExpiration
 	default boolean setExpiration(@KeyVariable(name="var") String keyVar) {
 		
@@ -81,6 +113,12 @@ public interface OrangeRedisZSetExample4Api  {
 		return false;
 	}
 
+	/**
+	 * Gets the expiration time for the given key variable.
+	 * 
+	 * @param keyVar the key variable to check expiration for
+	 * @return the expiration time in milliseconds, or null if no expiration is set
+	 */
 	@GetExpiration
 	default Long getExpiration(@KeyVariable(name="var") String keyVar) {
 		
@@ -106,6 +144,7 @@ public interface OrangeRedisZSetExample4Api  {
 		return null;
 	}
 
+
 	@AddMembers
 	@IfAbsent(deleteInTheEnd=false)
 	default void addIfAsent(@KeyVariable(name="var") String keyVar,@RedisValue ZSetValue value,@Score Double score) {
@@ -120,7 +159,7 @@ public interface OrangeRedisZSetExample4Api  {
 		
 		
 	}
-	
+
 	@AddMembers
 	@IfAbsent(deleteInTheEnd=true)
 	void acquire(@RedisValue ZSetValue value, @Score Double score);

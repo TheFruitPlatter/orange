@@ -38,6 +38,24 @@ import com.langwuyue.orange.redis.template.geo.JSONOperationsTemplate;
 
 
 /**
+ * Redis GEO operations API Example 1
+ * 
+ * <p>Provides basic Redis GEO operations including:
+ * <ul>
+ *   <li>Add/Remove geo members (GEOADD)</li>
+ *   <li>Get member geo positions (GEOPOS)</li>
+ *   <li>Calculate distances between locations (GEODIST)</li>
+ *   <li>Radius search (GEOSEARCH BYRADIUS)</li>
+ *   <li>Bounding box search (GEOSEARCH BYBOX)</li>
+ * </ul>
+ * 
+ * <p>Suitable for scenarios requiring geo location storage and querying such as:
+ * <ul>
+ *   <li>Nearby location search</li>
+ *   <li>Geo-fencing</li>
+ *   <li>Distance calculation services</li>
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */

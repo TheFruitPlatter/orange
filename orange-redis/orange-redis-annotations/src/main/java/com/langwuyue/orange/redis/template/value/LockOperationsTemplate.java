@@ -49,27 +49,63 @@ import com.langwuyue.orange.redis.template.global.GlobalOperationsTemplate;
 public interface LockOperationsTemplate extends GlobalOperationsTemplate {
 	
 	/**
-	 * Acquires lock, notifies listeners (who will handle business logic)
+	 * Acquires a distributed Redis lock with automatic renewal and listener notification.
 	 * 
-	 * <p>
-	 * [Lock] -> [Notify listeners]  (listeners process business logic)-> [Release Lock]
-	 * 
-	 * 
-	 * <p>
-	 * Once the set operation process is completed, the {@code OrangeRedisValueSetIfAbsentListener} component ​​will be triggered​​. 
-	 * Developers should ​​configure​​ {@code OrangeRedisValueSetIfAbsentListener} to manage post-setting business logic. 
-	 * Note that the {@code OrangeRedisValueSetIfAbsentListener} implementation class must be annotated with Spring’s {@code @Component}
-	 * 
-	 * 
-	 * <p>
-	 * This method automatically extends the TTL if the listeners are still executing when the current TTL approaches expiration.
-	 * Automatically extends the TTL when:
-	 * - Remaining TTL ≤ {@link AutoRenew#threshold()} * {@link com.langwuyue.orange.redis.annotation.OrangeRedisKey#expirationTime()}  
-	 * 
-	 * 
-	 * <p>
-	 * Please review examples for more information.
-	 * 
+	 * <p>Key characteristics:
+	 * <ul>
+	 *   <li>Atomic lock acquisition using Redis SETNX</li>
+	 *   <li>Automatic TTL extension via {@code @AutoRenew}</li>
+	 *   <li>Listener notification mechanism</li>
+	 *   <li>Deadlock prevention through TTL</li>
+	 * </ul>
+	 *
+	 * <p>Lock lifecycle:
+	 * <ol>
+	 *   <li>Acquire lock (SETNX with TTL)</li>
+	 *   <li>Notify registered listeners</li>
+	 *   <li>Listeners execute business logic</li>
+	 *   <li>Release lock when done</li>
+	 * </ol>
+	 *
+	 * <p>Automatic renewal conditions:
+	 * <ul>
+	 *   <li>When remaining TTL ≤ (1/{@link AutoRenew#threshold()}) * key expiration time</li>
+	 *   <li>Only extends if lock is still held by current process</li>
+	 * </ul>
+	 *
+	 * <p>Best practices:
+	 * <ul>
+	 *   <li>Set reasonable TTL based on expected critical section duration</li>
+	 *   <li>Implement {@code OrangeRedisValueSetIfAbsentListener} as Spring {@code @Component}</li>
+	 *   <li>Ensure listener logic is idempotent</li>
+	 * </ul>
+	 *
+	 * <p>Example usage:
+	 * <pre>{@code
+	 * // 1. Define lock interface
+	 * @OrangeRedisKey("order:lock:${orderId}")
+	 * public interface OrderLockApi extends LockOperationsTemplate {
+	 *     
+	 * }
+	 *
+	 * // 2. Implement listener to handle lock events
+	 * @Component
+	 * public class OrderLockListener implements OrangeRedisValueSetIfAbsentListener {
+	 *     
+	 *     {@code @Override}
+	 *     public void onFailure(OrangeSetIfAbsentFailedEvent event) {
+	 *         log.warn("Failed to acquire lock for key: {}", event.getKey());
+	 *         // Handle lock acquisition failure
+	 *     }
+	 *     
+	 *     {@code @Override}
+	 *     public void onSuccess(OrangeSetIfAbsentSuccessEvent event) {
+	 *        //  Do business logic
+	 *     }
+	 * }
+	 * }</pre>
+	 *
+	 * @param args Optional arguments for lock key construction
 	 */
 	@Lock
 	@SetExpiration

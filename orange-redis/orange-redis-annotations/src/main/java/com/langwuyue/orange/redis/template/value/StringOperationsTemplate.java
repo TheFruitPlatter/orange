@@ -42,6 +42,39 @@ import com.langwuyue.orange.redis.annotation.value.OrangeRedisValueClient;
 @OrangeRedisValueClient(valueType = RedisValueTypeEnum.STRING)
 public interface StringOperationsTemplate extends JSONOperationsTemplate<String> {
 	
+	/**
+	 * Retrieves the string value from Redis.
+	 * <p>
+	 * This is the fundamental GET operation for string values in Redis.
+	 *
+	 * <p>Key characteristics:
+	 * <ul>
+	 *   <li>O(1) time complexity</li>
+	 *   <li>Returns null if key does not exist</li>
+	 *   <li>Supports strings up to 512MB in size</li>
+	 * </ul>
+	 *
+	 * <p>Typical use cases:
+	 * <ul>
+	 *   <li>Retrieving cached string data</li>
+	 *   <li>Getting configuration values</li>
+	 *   <li>Reading serialized objects stored as strings</li>
+	 * </ul>
+	 *
+	 * <p>Example usage:
+	 * <pre>{@code
+	 * String cachedData = getValue();
+	 * if (cachedData != null) {
+	 *     // Use cached data
+	 * } else {
+	 *     // Fetch from primary source
+	 * }
+	 * }</pre>
+	 *
+	 * @return the string value, or null if key does not exist
+	 * @throws RedisConnectionFailureException if unable to communicate with Redis
+	 * @throws SerializationException if value cannot be deserialized
+	 */
 	@Override
 	String getValue();
 }

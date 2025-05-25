@@ -29,12 +29,84 @@ import com.langwuyue.orange.redis.annotation.Timeout;
 import com.langwuyue.orange.redis.template.set.JSONOperationsTemplate;
 
 /**
+ * Basic Redis Set operations interface with JSON value support.
+ * 
+ * <p>This interface provides fundamental Redis Set operations for storing and manipulating
+ * JSON objects ({@link OrangeValueExampleEntity}). It extends {@link JSONOperationsTemplate}
+ * to inherit common Set operations with JSON serialization support.
+ * 
+ * <p><strong>Implementation Note:</strong> Currently all methods have default implementations
+ * that return null. In a production environment, these methods should be properly implemented
+ * to interact with Redis.
+ * 
+ * <p>Supported Redis commands include:
+ * <ul>
+ *   <li>SADD - Add members to the set</li>
+ *   <li>SPOP - Remove and return random members</li>
+ *   <li>SRANDMEMBER - Get random members without removing</li>
+ *   <li>SMEMBERS - Get all members</li>
+ *   <li>SISMEMBER - Check if values are members</li>
+ *   <li>SREM - Remove members</li>
+ *   <li>SSCAN - Incrementally iterate set elements</li>
+ * </ul>
+ * 
+ * <p>Key configuration:
+ * <ul>
+ *   <li>Fixed key: "orange:set:example1"</li>
+ *   <li>Default expiration: 1 hour</li>
+ *   <li>Value type: JSON ({@link OrangeValueExampleEntity})</li>
+ * </ul>
+ * 
+ * <p>Usage example:
+ * <pre>{@code
+ * // Add members to set
+ * Set<OrangeValueExampleEntity> members = new HashSet<>();
+ * members.add(new OrangeValueExampleEntity("id1"));
+ * members.add(new OrangeValueExampleEntity("id2"));
+ * Map<OrangeValueExampleEntity, Boolean> results = api.add(members);
+ * 
+ * // Get random members
+ * OrangeValueExampleEntity one = api.randomGetOne();
+ * List<OrangeValueExampleEntity> multiple = api.randomGetMembers(3L);
+ * Set<OrangeValueExampleEntity> distinct = api.distinctRandomGetMembers(3L);
+ * 
+ * // Check membership
+ * Set<OrangeValueExampleEntity> toCheck = new HashSet<>();
+ * toCheck.add(new OrangeValueExampleEntity("id1"));
+ * Map<OrangeValueExampleEntity, Boolean> membership = api.isMembers(toCheck);
+ * 
+ * // Remove members
+ * OrangeValueExampleEntity popped = api.pop();
+ * Set<OrangeValueExampleEntity> poppedMultiple = api.pop(2L);
+ * 
+ * // Scan set members
+ * Set<OrangeValueExampleEntity> batch = api.scan("*", 10L, 0L);
+ * }</pre>
+ * 
+ * <p>Use cases:
+ * <ul>
+ *   <li>Unique collection of complex objects</li>
+ *   <li>Random sampling from a pool of items</li>
+ *   <li>Membership testing for JSON entities</li>
+ *   <li>Deduplication of JSON objects</li>
+ * </ul>
+ * 
+ * <p>Performance considerations:
+ * <ul>
+ *   <li>Set operations are generally O(1), except for getting all members O(N)</li>
+ *   <li>JSON serialization/deserialization adds overhead compared to simple types</li>
+ *   <li>Use SSCAN for iterating large sets to avoid blocking</li>
+ *   <li>Batch operations (add/remove multiple members) reduce network round-trips</li>
+ * </ul>
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see JSONOperationsTemplate Base template for JSON Set operations
+ * @see OrangeValueExampleEntity Entity type for set members
+ * @see com.langwuyue.orange.redis.annotation.OrangeRedisKey Key configuration
  */
 @OrangeRedisKey(expirationTime = @Timeout(value = 1, unit = TimeUnit.HOURS), key = "orange:set:example4")
 public interface OrangeRedisSetExample4Api extends JSONOperationsTemplate<OrangeValueExampleEntity> {
-
 
 	@Override
 	default Map<OrangeValueExampleEntity, Boolean> add(Set<OrangeValueExampleEntity> members) {

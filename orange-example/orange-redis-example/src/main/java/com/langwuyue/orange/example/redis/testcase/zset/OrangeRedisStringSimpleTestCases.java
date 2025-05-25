@@ -85,10 +85,10 @@ public class OrangeRedisStringSimpleTestCases {
 		
 	}
 	
-	@GetMapping("/v1/zsetStringOperations/revesedRank")
+	@GetMapping("/v1/zsetStringOperations/reversedRank")
 	public OrangeRedisExampleResponse testCase4(@RequestParam String value) {
 		try {
-			return new OrangeRedisExampleResponse(zsetExample2Api.reveseRank(value));
+			return new OrangeRedisExampleResponse(zsetExample2Api.reverseRank(value));
 		}catch (Exception e) {
 			e.printStackTrace();
 			return new OrangeRedisExampleResponse(4,e.getMessage());
@@ -164,7 +164,7 @@ public class OrangeRedisStringSimpleTestCases {
 	@PutMapping("/v1/zsetStringOperations/initMember")
 	public OrangeRedisExampleResponse testCase10(@Valid @RequestBody OrangeZSetStringValueExampleEntity entity) {
 		try {
-			zsetExample2Api.addIfAsent(entity.getValue(),entity.getScore());
+			zsetExample2Api.addIfAbsent(entity.getValue(),entity.getScore());
 			return new OrangeRedisExampleResponse();
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -181,7 +181,7 @@ public class OrangeRedisStringSimpleTestCases {
 			for(OrangeZSetStringValueExampleEntity entity : entities) {
 				members.put(entity.getValue(), entity.getScore());
 			}
-			zsetExample2Api.addIfAsent(members);
+			zsetExample2Api.addIfAbsent(members);
 			return new OrangeRedisExampleResponse();
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -321,60 +321,60 @@ public class OrangeRedisStringSimpleTestCases {
 		}
 	}
 	
-	@GetMapping("/v1/zsetStringOperations/revesedScoreRangeValues")
+	@GetMapping("/v1/zsetStringOperations/reversedScoreRangeValues")
 	public OrangeRedisExampleResponse testCase25(@RequestParam Double maxScore,@RequestParam Double minScore) {
 		try {
-			return new OrangeRedisExampleResponse(zsetExample2Api.reveseScoreRange(maxScore,minScore));
+			return new OrangeRedisExampleResponse(zsetExample2Api.reverseScoreRange(maxScore,minScore));
 		}catch (Exception e) {
 			e.printStackTrace();
 			return new OrangeRedisExampleResponse(25,e.getMessage());
 		}
 	}
 	
-	@GetMapping("/v1/zsetStringOperations/revesedScoreRangeValuesByPage")
+	@GetMapping("/v1/zsetStringOperations/reversedScoreRangeValuesByPage")
 	public OrangeRedisExampleResponse testCase26(@RequestParam Double maxScore,@RequestParam Double minScore,@RequestParam Long pageNo,@RequestParam Long pageSize) {
 		try {
-			return new OrangeRedisExampleResponse(zsetExample2Api.reveseScoreRange(maxScore,minScore,pageNo,pageSize));
+			return new OrangeRedisExampleResponse(zsetExample2Api.reverseScoreRange(maxScore,minScore,pageNo,pageSize));
 		}catch (Exception e) {
 			e.printStackTrace();
 			return new OrangeRedisExampleResponse(26,e.getMessage());
 		}
 	}
 	
-	@GetMapping("/v1/zsetStringOperations/revesedRankRangeValues")
+	@GetMapping("/v1/zsetStringOperations/reversedRankRangeValues")
 	public OrangeRedisExampleResponse testCase27(@RequestParam Long startIndex,@RequestParam Long endIndex) {
 		try {
-			return new OrangeRedisExampleResponse(zsetExample2Api.reveseRankRange(startIndex,endIndex));
+			return new OrangeRedisExampleResponse(zsetExample2Api.reverseRankRange(startIndex,endIndex));
 		}catch (Exception e) {
 			e.printStackTrace();
 			return new OrangeRedisExampleResponse(27,e.getMessage());
 		}
 	}
 	
-	@GetMapping("/v1/zsetStringOperations/revesedScoreRangeMembers")
+	@GetMapping("/v1/zsetStringOperations/reversedScoreRangeMembers")
 	public OrangeRedisExampleResponse testCase28(@RequestParam Double maxScore,@RequestParam Double minScore) {
 		try {
-			return new OrangeRedisExampleResponse(zsetExample2Api.reveseScoreRangeWithScores(maxScore,minScore));
+			return new OrangeRedisExampleResponse(zsetExample2Api.reverseScoreRangeWithScores(maxScore,minScore));
 		}catch (Exception e) {
 			e.printStackTrace();
 			return new OrangeRedisExampleResponse(28,e.getMessage());
 		}
 	}
 	
-	@GetMapping("/v1/zsetStringOperations/revesedScoreRangeMembersByPage")
+	@GetMapping("/v1/zsetStringOperations/reversedScoreRangeMembersByPage")
 	public OrangeRedisExampleResponse testCase29(@RequestParam Double maxScore,@RequestParam Double minScore,@RequestParam Long pageNo,@RequestParam Long pageSize) {
 		try {
-			return new OrangeRedisExampleResponse(zsetExample2Api.reveseScoreRangeWithScores(maxScore,minScore,pageNo,pageSize));
+			return new OrangeRedisExampleResponse(zsetExample2Api.reverseScoreRangeWithScores(maxScore,minScore,pageNo,pageSize));
 		}catch (Exception e) {
 			e.printStackTrace();
 			return new OrangeRedisExampleResponse(29,e.getMessage());
 		}
 	}
 	
-	@GetMapping("/v1/zsetStringOperations/revesedRankRangeMembers")
+	@GetMapping("/v1/zsetStringOperations/reversedRankRangeMembers")
 	public OrangeRedisExampleResponse testCase30(@RequestParam Long startIndex,@RequestParam Long endIndex) {
 		try {
-			return new OrangeRedisExampleResponse(zsetExample2Api.reveseRankRangeWithScores(startIndex,endIndex));
+			return new OrangeRedisExampleResponse(zsetExample2Api.reverseRankRangeWithScores(startIndex,endIndex));
 		}catch (Exception e) {
 			e.printStackTrace();
 			return new OrangeRedisExampleResponse(30,e.getMessage());
@@ -402,10 +402,10 @@ public class OrangeRedisStringSimpleTestCases {
 		
 	}
 	
-	@PutMapping("/v1/zsetStringOperations/revesedRanks")
+	@PutMapping("/v1/zsetStringOperations/reversedRanks")
 	public OrangeRedisExampleResponse testCase33(@Valid @RequestBody OrangeZSetMultipleZSetStringValues values) {
 		try {
-			return new OrangeRedisExampleResponse(zsetExample2Api.reveseRanks(values.getValues()));
+			return new OrangeRedisExampleResponse(zsetExample2Api.reverseRanks(values.getValues()));
 		}catch (Exception e) {
 			e.printStackTrace();
 			return new OrangeRedisExampleResponse(33,e.getMessage());
@@ -539,7 +539,7 @@ public class OrangeRedisStringSimpleTestCases {
 	@PutMapping("/v1/zsetStringOperations/lock")
 	public OrangeRedisExampleResponse testCase44(@Valid @RequestBody OrangeZSetStringValueExampleEntity entity) {
 		try {
-			zsetExample2Api.addIfAsent(entity.getValue(),entity.getScore());
+			zsetExample2Api.addIfAbsent(entity.getValue(),entity.getScore());
 			return new OrangeRedisExampleResponse();
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -555,7 +555,7 @@ public class OrangeRedisStringSimpleTestCases {
 			for(OrangeZSetStringValueExampleEntity entity : entities) {
 				members.put(entity.getValue(), entity.getScore());
 			}
-			zsetExample2Api.addIfAsent(members);
+			zsetExample2Api.addIfAbsent(members);
 			return new OrangeRedisExampleResponse();
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -586,7 +586,7 @@ public class OrangeRedisStringSimpleTestCases {
 	@GetMapping("/v1/zsetStringOperations/reversedLexRangeMembers")
 	public OrangeRedisExampleResponse testCase48(@RequestParam String maxLex,@RequestParam String minLex) {
 		try {
-			return new OrangeRedisExampleResponse(zsetExample2Api.reveseByLexRange(maxLex, minLex));
+			return new OrangeRedisExampleResponse(zsetExample2Api.reverseByLexRange(maxLex, minLex));
 		}catch (Exception e) {
 			e.printStackTrace();
 			return new OrangeRedisExampleResponse(48,e.getMessage());
@@ -596,7 +596,7 @@ public class OrangeRedisStringSimpleTestCases {
 	@GetMapping("/v1/zsetStringOperations/reversedLexRangeMembersByPage")
 	public OrangeRedisExampleResponse testCase49(@RequestParam String maxLex,@RequestParam String minLex,@RequestParam Long pageNo,@RequestParam Long pageSize) {
 		try {
-			return new OrangeRedisExampleResponse(zsetExample2Api.reveseByLexRange(maxLex, minLex,pageNo,pageSize));
+			return new OrangeRedisExampleResponse(zsetExample2Api.reverseByLexRange(maxLex, minLex,pageNo,pageSize));
 		}catch (Exception e) {
 			e.printStackTrace();
 			return new OrangeRedisExampleResponse(49,e.getMessage());

@@ -29,8 +29,22 @@ import com.langwuyue.orange.redis.annotation.Timeout;
 import com.langwuyue.orange.redis.template.zset.JSONOperationsTemplate;
 
 /**
+ * Redis Sorted Set (ZSet) operations interface
+ * 
+ * <p>Provides comprehensive operations for Redis Sorted Set data structure including:
+ * <ul>
+ *   <li>Element addition with scores</li>
+ *   <li>Score-based range queries</li>
+ *   <li>Rank-based operations</li>
+ *   <li>Random element retrieval</li>
+ *   <li>Element removal operations</li>
+ * </ul>
+ * 
+ * <p>Default expiration time: 1 hour
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see <a href="https://redis.io/commands#sorted_set">Redis Sorted Set Commands</a>
  */
 @OrangeRedisKey(expirationTime = @Timeout(value = 1, unit = TimeUnit.HOURS), key = "orange:zset:example1")
 public interface OrangeRedisZSetExample1Api extends JSONOperationsTemplate<ZSetValue> {
@@ -41,7 +55,7 @@ public interface OrangeRedisZSetExample1Api extends JSONOperationsTemplate<ZSetV
 	}
 
 	@Override
-	default void addIfAsent(Map<ZSetValue, Double> members) {
+	default void addIfAbsent(Map<ZSetValue, Double> members) {
 	}
 
 	@Override
@@ -106,33 +120,33 @@ public interface OrangeRedisZSetExample1Api extends JSONOperationsTemplate<ZSetV
 	}
 
 	@Override
-	default Set<ZSetValue> reveseScoreRange(Double maxScore, Double minScore) {
+	default Set<ZSetValue> reverseScoreRange(Double maxScore, Double minScore) {
 		return null;
 	}
 
 	@Override
-	default Set<ZSetValue> reveseScoreRange(Double maxScore, Double minScore, Long pageNo, Long count) {
+	default Set<ZSetValue> reverseScoreRange(Double maxScore, Double minScore, Long pageNo, Long count) {
 		return null;
 	}
 
 	@Override
-	default Set<ZSetValue> reveseRankRange(Long startIndex, Long endIndex) {
+	default Set<ZSetValue> reverseRankRange(Long startIndex, Long endIndex) {
 		return null;
 	}
 
 	@Override
-	default Map<ZSetValue, Double> reveseScoreRangeWithScores(Double maxScore, Double minScore) {
+	default Map<ZSetValue, Double> reverseScoreRangeWithScores(Double maxScore, Double minScore) {
 		return null;
 	}
 
 	@Override
-	default Map<ZSetValue, Double> reveseScoreRangeWithScores(Double maxScore, Double minScore,
+	default Map<ZSetValue, Double> reverseScoreRangeWithScores(Double maxScore, Double minScore,
 			Long pageNo, Long count) {
 		return null;
 	}
 
 	@Override
-	default Map<ZSetValue, Double> reveseRankRangeWithScores(Long startIndex, Long endIndex) {
+	default Map<ZSetValue, Double> reverseRankRangeWithScores(Long startIndex, Long endIndex) {
 		return null;
 	}
 
@@ -183,7 +197,7 @@ public interface OrangeRedisZSetExample1Api extends JSONOperationsTemplate<ZSetV
 	}
 
 	@Override
-	default Map<ZSetValue, Long> reveseRanks(Set<ZSetValue> value) {
+	default Map<ZSetValue, Long> reverseRanks(Set<ZSetValue> value) {
 		return null;
 	}
 }

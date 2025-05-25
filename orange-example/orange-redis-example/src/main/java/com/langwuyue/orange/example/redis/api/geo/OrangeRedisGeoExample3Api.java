@@ -46,9 +46,31 @@ import com.langwuyue.orange.redis.annotation.geo.SearchArgs;
 import com.langwuyue.orange.redis.annotation.geo.Width;
 
 
-/**
+ /**
+ * Redis GEO Operations API for location-based services using String values.
+ *
+ * <p>This interface provides comprehensive GEO commands implementation for Redis,
+ * supporting operations like adding locations, calculating distances, and searching
+ * within radius/box areas. All operations use String-typed GEO members.
+ *
+ * <p><b>Key Features:</b>
+ * <ul>
+ *   <li>Supports both individual and batch GEO operations</li>
+ *   <li>Provides radius and rectangular area searches</li>
+ *   <li>Includes distance calculations between locations</li>
+ *   <li>Automatic key expiration (1 hour)</li>
+ * </ul>
+ *
+ * <p><b>Redis Key Pattern:</b> {@code orange:geo:example3:${var}}
+ *
  * @author Liang.Zhong
+ * @version 1.0.0
  * @since 1.0.0
+ *
+ * @see com.langwuyue.orange.redis.annotation.geo.OrangeRedisGeoClient
+ * @see com.langwuyue.orange.redis.annotation.OrangeRedisKey
+ * @see OrangeGeoStringExampleEntity
+ * @see OrangeGeoStringDistanceExampleEntity
  */
 @OrangeRedisGeoClient(valueType = RedisValueTypeEnum.STRING)
 @OrangeRedisKey(expirationTime = @Timeout(value = 1, unit = TimeUnit.HOURS), key = "orange:geo:example3:${var}")

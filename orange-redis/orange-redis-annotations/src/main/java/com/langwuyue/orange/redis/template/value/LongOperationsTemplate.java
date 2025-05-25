@@ -53,79 +53,205 @@ public interface LongOperationsTemplate extends GlobalOperationsTemplate {
 	
 	
 	/**
-	 * Set {@code value} if it does not already exists.
-	 * 
+	 * Set a value only if it does not already exist.
 	 * <p>
-	 * Once the set operation process is completed, the {@code OrangeRedisValueSetIfAbsentListener} component ​​will be triggered​​. 
-	 * Developers should ​​configure​​ {@code OrangeRedisValueSetIfAbsentListener} to manage post-setting business logic. 
-	 * Note that the {@code OrangeRedisValueSetIfAbsentListener} implementation class must be annotated with Spring’s {code @Component}
-	 * 
-	 * 
-	 * <p>
-	 * The property {@code deleteInTheEnd} of {@code @IfAbsent} determines if the value is deleted after operation completion.
-	 * True​​: Delete | ​​False​​: Keep
-	 * 
-	 * 
-	 * <p>
-	 * Please review examples for more information.
-	 * 
-	 * 
-	 * @param value the value.
+	 * Triggers the {@code OrangeRedisValueSetIfAbsentListener} upon completion.
+	 * The listener implementation must be annotated with Spring's {@code @Component}.
+	 *
+	 * <p>Configuration options:
+	 * <ul>
+	 *   <li>{@code deleteInTheEnd=true}: Removes the element after operation</li>
+	 *   <li>{@code deleteInTheEnd=false}: Keeps the element after operation</li>
+	 * </ul>
+	 *
+	 * @param value the element value to add (serialized as Long)
+	 * @return true if the value was added, false otherwise
 	 */
 	@SetValue
 	@IfAbsent(deleteInTheEnd = false)
 	Boolean init(@RedisValue Long value);
 	
 	/**
-	 * The {@code oldValue} will be overwritten by {@code newValue} only if it matches current value.
-	 * 
-	 * 
-	 * @param oldValue  The expected current value.
-	 * @param newValue  The new value to set if verification succeeds.
-	 * @return Boolean  True if the value was updated, false otherwise (e.g., if {@code oldValue} did not match).
+	 * Atomically compares and swaps the value (CAS operation).
+	 * <p>
+	 * This operation provides atomic compare-and-set semantics, similar to
+	 * {@link java.util.concurrent.atomic.AtomicLong#compareAndSet}.
+	 *
+	 * <p>Key characteristics:
+	 * <ul>
+	 *   <li>O(1) time complexity</li>
+	 *   <li>Fully atomic operation - no need for external locking</li>
+	 *   <li>Returns true only if the value was changed</li>
+	 *   <li>More efficient than WATCH/MULTI for simple CAS scenarios</li>
+	 * </ul>
+	 *
+	 * <p>Operation semantics:
+	 * <ul>
+	 *   <li>Compares current value with {@code oldValue}</li>
+	 *   <li>If equal, sets to {@code newValue} and returns true</li>
+	 *   <li>If not equal, leaves unchanged and returns false</li>
+	 * </ul>
+	 *
+	 * <p>Typical use cases:
+	 * <ul>
+	 *   <li>Optimistic locking strategies</li>
+	 *   <li>Atomic state transitions</li>
+	 *   <li>Race condition prevention</li>
+	 *   <li>Distributed counter updates</li>
+	 * </ul>
+	 *
+	 * <p>Example usage:
+	 * <pre>{@code
+	 * Long current = getValue();
+	 * if (compareAndSwap(current, current + 1)) {
+	 *     // Update succeeded
+	 * } else {
+	 *     // Retry or handle contention
+	 * }
+	 * }</pre>
+	 *
+	 * @param oldValue the expected current value
+	 * @param newValue the new value to set if verification succeeds
+	 * @return true if the value was updated, false otherwise
 	 */
 	@CAS
 	Boolean compareAndSwap(@RedisOldValue Long oldValue, @RedisValue Long newValue);
 	
 	/**
-	 * Get value.
-	 * 
-	 * @return value
+	 * Retrieves the long value from Redis.
+	 * <p>
+	 * This is the fundamental GET operation for long values in Redis.
+	 *
+	 * <p>Key characteristics:
+	 * <ul>
+	 *   <li>O(1) time complexity</li>
+	 *   <li>Returns null if key does not exist</li>
+	 *   <li>Supports 64-bit signed integers (-2^63 to 2^63-1)</li>
+	 *   <li>Values are stored and returned as Java Long objects</li>
+	 * </ul>
+	 *
+	 * <p>Typical use cases:
+	 * <ul>
+	 *   <li>Retrieving counters and statistics</li>
+	 *   <li>Reading numeric configuration values</li>
+	 *   <li>Getting numeric IDs or sequence numbers</li>
+	 * </ul>
+	 *
+	 * <p>Example usage:
+	 * <pre>{@code
+	 * Long visitCount = getValue();
+	 * if (visitCount != null) {
+	 *     // Use the numeric value
+	 * } else {
+	 *     // Initialize counter
+	 * }
+	 * }</pre>
+	 *
+	 * @return the long value, or null if key does not exist
 	 */
 	@GetValue
 	Long getValue();
 	
 	/**
-	 * Increments value by 1 and returns the new value.
-	 * 
-	 * @return New value
+	 * Atomically increments the value by 1 and returns the new value.
+	 * <p>
+	 * This operation uses Redis's INCR command which is atomic and thread-safe.
+	 *
+	 * <p>Key characteristics:
+	 * <ul>
+	 *   <li>O(1) time complexity</li>
+	 *   <li>Atomic operation - safe for concurrent access</li>
+	 *   <li>Returns the new value after increment</li>
+	 *   <li>If key doesn't exist, initializes to 0 before incrementing (returns 1)</li>
+	 *   <li>Throws exception if value is not an integer or out of range</li>
+	 * </ul>
+	 *
+	 * <p>Example usage:
+	 * <pre>{@code
+	 * Long newCount = increment(); // Thread-safe counter increment
+	 * }</pre>
+	 *
+	 * @return the new value after increment
+	 * @throws RedisConnectionFailureException if unable to communicate with Redis
+	 * @throws NumberFormatException if stored value cannot be parsed as long
+	 * @throws ArithmeticException if increment would overflow Long.MAX_VALUE
 	 */
 	@Increment
 	Long increment();
 	
 	/**
-	 * Increments value by {@code delta} and returns the new value.
-	 * 
-	 * @param delta
-	 * @return New value
+	 * Atomically increments the value by given delta and returns the new value.
+	 * <p>
+	 * This operation uses Redis's INCRBY command which is atomic and thread-safe.
+	 *
+	 * <p>Key characteristics:
+	 * <ul>
+	 *   <li>O(1) time complexity</li>
+	 *   <li>Atomic operation - safe for concurrent access</li>
+	 *   <li>Returns the new value after increment</li>
+	 *   <li>If key doesn't exist, initializes to 0 before incrementing</li>
+	 *   <li>Throws exception if value is not an integer or out of range</li>
+	 * </ul>
+	 *
+	 * <p>Example usage:
+	 * <pre>{@code
+	 * // Increase inventory count by 5
+	 * Long newStock = increment(5L);
+	 * }</pre>
+	 *
+	 * @param delta the value to increment by (positive or negative)
+	 * @return the new value after increment
 	 */
 	@Increment
-	Long increment(@RedisValue Long deltal);
+	Long increment(@RedisValue Long delta);
 	
 	/**
-	 * Decrements value by 1 and returns the new value.
-	 * 
-	 * @return New value
+	 * Atomically decrements the value by 1 and returns the new value.
+	 * <p>
+	 * This operation uses Redis's DECR command which is atomic and thread-safe.
+	 *
+	 * <p>Key characteristics:
+	 * <ul>
+	 *   <li>O(1) time complexity</li>
+	 *   <li>Atomic operation - safe for concurrent access</li>
+	 *   <li>Returns the new value after decrement</li>
+	 *   <li>If key doesn't exist, initializes to 0 before decrementing (returns -1)</li>
+	 *   <li>Throws exception if value is not an integer or out of range</li>
+	 * </ul>
+	 *
+	 * <p>Example usage:
+	 * <pre>{@code
+	 * Long remaining = decrement(); // Thread-safe counter decrement
+	 * }</pre>
+	 *
+	 * @return the new value after decrement
 	 */
 	@Decrement
 	Long decrement();
 	
 	/**
-	 * Decrements value by {@code delta} and returns the new value.
-	 * 
-	 * @param delta
-	 * @return New value
+	 * Atomically decrements the value by given delta and returns the new value.
+	 * <p>
+	 * This operation uses Redis's DECRBY command which is atomic and thread-safe.
+	 *
+	 * <p>Key characteristics:
+	 * <ul>
+	 *   <li>O(1) time complexity</li>
+	 *   <li>Atomic operation - safe for concurrent access</li>
+	 *   <li>Returns the new value after decrement</li>
+	 *   <li>If key doesn't exist, initializes to 0 before decrementing</li>
+	 *   <li>Throws exception if value is not an integer or out of range</li>
+	 * </ul>
+	 *
+	 * <p>Example usage:
+	 * <pre>{@code
+	 * // Reduce inventory count by 3
+	 * Long remainingStock = decrement(3L);
+	 * }</pre>
+	 *
+	 * @param delta the value to decrement by (positive or negative)
+	 * @return the new value after decrement
 	 */
 	@Decrement
-	Long decrement(@RedisValue Long deltal);
+	Long decrement(@RedisValue Long delta);
 }
