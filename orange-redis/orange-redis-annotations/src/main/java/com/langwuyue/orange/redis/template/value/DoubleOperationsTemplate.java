@@ -31,22 +31,46 @@ import com.langwuyue.orange.redis.annotation.value.SetValue;
 import com.langwuyue.orange.redis.template.global.GlobalOperationsTemplate;
 
 /**
- * Interface template for Redis Value operations. 
- * Developers should extend this interface and annotate the child interface with {@code OrangeRedisKey}.
- * 
- * <p>A example is:
+ * Interface template for Redis Double value operations with floating-point precision.
+ * <p>
+ * This template provides thread-safe operations for Redis Double values,
+ * supporting IEEE 754 double-precision floating-point numbers.
+ *
+ * <p>Key characteristics:
+ * <ul>
+ *   <li>Thread-safe: All operations are safe for concurrent use</li>
+ *   <li>Non-blocking: Operations do not wait for other threads</li>
+ *   <li>Precision: Values stored with up to 17 significant digits</li>
+ *   <li>Atomic operations: CAS operations supported</li>
+ * </ul>
+ *
+ * <p>Performance considerations:
+ * <ul>
+ *   <li>All operations are O(1) time complexity</li>
+ *   <li>Increment/decrement use Redis INCRBYFLOAT command</li>
+ *   <li>For high-precision requirements, consider BigDecimal alternatives</li>
+ * </ul>
+ *
+ * <p>Implementation requirements:
+ * <ul>
+ *   <li>Child interfaces must be annotated with {@code @OrangeRedisKey}</li>
+ *   <li>Values must be valid double-precision numbers</li>
+ *   <li>NaN and Infinity values are not supported</li>
+ * </ul>
+ *
+ * <p>Example implementation:
  * <blockquote><pre>
- *  {@code @OrangeRedisKey(expirationTime = @Timeout(value = 1, unit = TimeUnit.HOURS), key = "orange:value:example1")} 
- *  public interface OrangeRedisValueExample1Api extends DoubleOperationsTemplate{
- *  
- *  }
+ * {@code @OrangeRedisKey(expirationTime = @Timeout(value = 1, unit = TimeUnit.HOURS), key = "orange:value:example1")} 
+ * public interface OrangeRedisValueExample1Api extends DoubleOperationsTemplate {
+ *     // Custom operations can be added here
+ * }
  * </pre></blockquote>
- * 
- * 
- * <p>Please review examples for more information.
- * 
+ *
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see GlobalOperationsTemplate
+ * @see <a href="https://redis.io/commands/incrbyfloat">Redis INCRBYFLOAT command</a>
  */
 @OrangeRedisValueClient(valueType = RedisValueTypeEnum.DOUBLE)
 public interface DoubleOperationsTemplate extends GlobalOperationsTemplate {

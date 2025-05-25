@@ -31,22 +31,48 @@ import com.langwuyue.orange.redis.annotation.value.SetValue;
 import com.langwuyue.orange.redis.template.global.GlobalOperationsTemplate;
 
 /**
- * Interface template for Redis Value operations. 
- * Developers should extend this interface and annotate the child interface with {@code OrangeRedisKey}.
- * 
- * <p>A example is:
+ * Interface template for Redis Long value operations with atomic counters.
+ * <p>
+ * This template provides thread-safe operations for Redis Long values,
+ * supporting atomic increments, decrements, and compare-and-swap operations.
+ *
+ * <p>Key characteristics:
+ * <ul>
+ *   <li>Thread-safe: All operations are safe for concurrent use</li>
+ *   <li>Non-blocking: Operations do not wait for other threads</li>
+ *   <li>Atomic counters: Supports INCR, DECR, INCRBY, DECRBY commands</li>
+ *   <li>CAS operations: Atomic compare-and-swap support</li>
+ * </ul>
+ *
+ * <p>Performance considerations:
+ * <ul>
+ *   <li>All operations are O(1) time complexity</li>
+ *   <li>Atomic operations avoid explicit locking</li>
+ *   <li>Supports 64-bit signed integers (-2^63 to 2^63-1)</li>
+ *   <li>Overflow protection for increment/decrement operations</li>
+ * </ul>
+ *
+ * <p>Implementation requirements:
+ * <ul>
+ *   <li>Child interfaces must be annotated with {@code @OrangeRedisKey}</li>
+ *   <li>Values must be valid 64-bit signed integers</li>
+ *   <li>NaN and Infinity values are not supported</li>
+ * </ul>
+ *
+ * <p>Example implementation:
  * <blockquote><pre>
- *  {@code @OrangeRedisKey(expirationTime = @Timeout(value = 1, unit = TimeUnit.HOURS), key = "orange:value:example1")} 
- *  public interface OrangeRedisValueExample1Api extends LongOperationsTemplate {
- *  
- *  }
+ * {@code @OrangeRedisKey(expirationTime = @Timeout(value = 1, unit = TimeUnit.HOURS), key = "orange:value:example1")} 
+ * public interface VisitCounterApi extends LongOperationsTemplate {
+ *     // Custom operations can be added here
+ * }
  * </pre></blockquote>
- * 
- * 
- * <p>Please review examples for more information.
- * 
+ *
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see GlobalOperationsTemplate
+ * @see <a href="https://redis.io/commands/incr">Redis INCR command</a>
+ * @see <a href="https://redis.io/commands/decr">Redis DECR command</a>
  */
 @OrangeRedisValueClient(valueType = RedisValueTypeEnum.LONG)
 public interface LongOperationsTemplate extends GlobalOperationsTemplate {

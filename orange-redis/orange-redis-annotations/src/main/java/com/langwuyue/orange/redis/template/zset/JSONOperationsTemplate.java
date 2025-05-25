@@ -152,16 +152,38 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * <p>
 	 * Behavior control:
 	 * <ul>
-	 *   <li>{@code @ContinueOnFailure(true)}: Continues processing remaining elements after errors</li>
+	 *   <li>{@code @ContinueOnFailure(true)}: 
+	 *     <ul>
+	 *       <li>Continues processing remaining elements after errors</li>
+	 *       <li>Partial failures will not interrupt the entire batch</li>
+	 *       <li>Failed operations will trigger listener's onFailure callback</li>
+	 *     </ul>
+	 *   </li>
 	 *   <li>{@code @IfAbsent(deleteInTheEnd=false)}: Keeps elements after operation</li>
 	 * </ul>
 	 *
 	 * <p>Triggers {@code OrangeRedisZSetAddMembersIfAbsentListener} upon completion.
 	 * Listener implementation must be annotated with Spring's {@code @Component}.
 	 *
+	 * <p>Error handling:
+	 * <ul>
+	 *   <li>When {@code @ContinueOnFailure=true}:
+	 *     <ul>
+	 *       <li>Individual failures are logged</li>
+	 *       <li>Operation continues with remaining elements</li>
+	 *       <li>Listener receives completion events for operation</li>
+	 *     </ul>
+	 *   </li>
+	 *   <li>When {@code @ContinueOnFailure=false}:
+	 *     <ul>
+	 *       <li>First failure stops the entire batch</li>
+	 *       <li>Listener receives completion events for operation</li>
+	 *     </ul>
+	 *   </li>
+	 * </ul>
+	 *
 	 * @param members map of elements to add (key=value, value=score)
-
-	 * @throws SerializationException if any value cannot be serialized to JSON
+	 * @see com.langwuyue.orange.redis.annotation.ContinueOnFailure
 	 */
 	@AddMembers
 	@IfAbsent(deleteInTheEnd=false)
@@ -170,18 +192,30 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	
 	/**
 	 * Atomically acquires a distributed lock by adding a value to the sorted set if it doesn't exist.
-	 * 
+	 * <p>
+	 * This method implements a Redis-based distributed lock using ZSET operations with JSON serialization.
+	 * The lock is automatically released when the operation completes ({@code deleteInTheEnd=true}).
+	 *
 	 * <p>Key characteristics:
 	 * <ul>
-	 *   <li>Atomic operation using Redis SETNX semantics</li>
-	 *   <li>Triggers {@code OrangeRedisZSetAddMemberIfAbsentListener} upon completion</li>
-	 *   <li>Lock is automatically released when {@code deleteInTheEnd=true}</li>
+	 *   <li>Atomic operation using Redis ZADD with NX option</li>
+	 *   <li>Automatic lock release via {@code deleteInTheEnd=true}</li>
+	 *   <li>Thread-safe for concurrent access</li>
+	 *   <li>Supports JSON-serialized lock values</li>
+	 * </ul>
+	 *
+	 * <p>Performance considerations:
+	 * <ul>
+	 *   <li>Time complexity: O(log(N)) where N is number of elements in set</li>
+	 *   <li>Score should typically be a timestamp for fair lock acquisition</li>
+	 *   <li>Serialization overhead for complex lock values</li>
 	 * </ul>
 	 *
 	 * <p>Listener requirements:
 	 * <ul>
 	 *   <li>Must implement {@code OrangeRedisZSetAddMemberIfAbsentListener}</li>
 	 *   <li>Must be annotated with Spring {@code @Component}</li>
+	 *   <li>Listener logic should be idempotent</li>
 	 * </ul>
 	 *
 	 * <p>Example usage:
@@ -193,52 +227,103 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * }
 	 *
 	 * // 2. Implement listener
-	 * @Component
+	 * {@code @Component}
 	 * public class OrderLockListener implements OrangeRedisZSetAddMemberIfAbsentListener {
-	 *     @Override
+	 *     {@code @Override}
 	 *     public void onSuccess(OrangeSetIfAbsentSuccessEvent event) {
 	 *         // Process locked resource
 	 *     }
 	 *     
-	 *     @Override
+	 *     {@code @Override}
 	 *     public void onFailure(OrangeSetIfAbsentFailedEvent event) {
 	 *         // Handle lock acquisition failure
 	 *     }
 	 * }
 	 * }</pre>
 	 *
-	 * @param value the value to use as lock identifier
-	 * @param score the score to associate with the lock (typically timestamp)
+	 * @param value the value to use as lock identifier (will be JSON-serialized)
+	 * @param score the score to associate with the lock (typically current timestamp)
 	 * @see com.langwuyue.orange.redis.annotation.IfAbsent#deleteInTheEnd()
+	 * @see <a href="https://redis.io/commands/zadd">Redis ZADD command</a>
 	 */
 	@AddMembers
 	@IfAbsent(deleteInTheEnd=true)
 	void acquire(@RedisValue T value, @Score Double score);
 	
 	/**
-	 * Add {@code value} to a sorted set if it does not already exists.
-	 * 
+	 * Atomically acquires multiple distributed locks by adding values to the sorted set if they don't exist.
 	 * <p>
-	 * The {@code @ContinueOnFailure} annotation's value determines whether the method adding remaining members to the Redis set upon exceptions.
-	 * True: continue | False: break
-	 * 
-	 * 
-	 * <p>
-	 * Once the addition process is completed, the {@code OrangeRedisZSetAddMembersIfAbsentListener} component ​​will be triggered​​. 
-	 * Developers should ​​configure​​ {@code OrangeRedisZSetAddMembersIfAbsentListener} to manage post-addition business logic. 
-	 * Note that the {@code OrangeRedisZSetAddMembersIfAbsentListener} implementation class must be annotated with Spring’s {@code @Component}
-	 * 
-	 * 
-	 * <p>
-	 * The property {@code deleteInTheEnd} of {@code @IfAbsent} determines if the value is deleted after operation completion.
-	 * True​​: Delete | ​​False​​: Keep
-	 * 
-	 * 
-	 * <p>
-	 * Please review examples for more information.
-	 * 
-	 * 
-	 * @param members is map. The keys of this map are the values of a sorted set,and the values of this map are the scores.
+	 * This method implements a Redis-based batch distributed lock using ZSET operations with JSON serialization.
+	 * All locks are automatically released when the operation completes ({@code deleteInTheEnd=true}).
+	 *
+	 * <p>Key characteristics:
+	 * <ul>
+	 *   <li>Atomic batch operation using Redis pipeline</li>
+	 *   <li>All-or-nothing semantics for lock acquisition</li>
+	 *   <li>Automatic lock release via {@code deleteInTheEnd=true}</li>
+	 *   <li>Thread-safe for concurrent access</li>
+	 *   <li>Supports JSON-serialized lock values</li>
+	 *   <li>Controlled failure handling via {@code @ContinueOnFailure(true)}:
+	 *     <ul>
+	 *       <li>Continues processing remaining locks after errors</li>
+	 *       <li>Partial failures will not interrupt the entire batch</li>
+	 *       <li>Failed lock acquisitions will trigger listener's onFailure callback</li>
+	 *     </ul>
+	 *   </li>
+	 * </ul>
+	 *
+	 * <p>Performance considerations:
+	 * <ul>
+	 *   <li>Time complexity: O(M*log(N)) where M is number of elements added, N is set size</li>
+	 *   <li>Reduced network overhead compared to individual operations</li>
+	 *   <li>Score should typically be a timestamp for fair lock acquisition</li>
+	 *   <li>Serialization overhead for complex lock values</li>
+	 * </ul>
+	 *
+	 * <p>Listener requirements:
+	 * <ul>
+	 *   <li>Must implement {@code OrangeRedisZSetAddMembersIfAbsentListener}</li>
+	 *   <li>Must be annotated with Spring {@code @Component}</li>
+	 *   <li>Listener logic should be idempotent</li>
+	 * </ul>
+	 *
+	 * <p>Error handling:
+	 * <ul>
+	 *   <li>When {@code @ContinueOnFailure=true}:
+	 *     <ul>
+	 *       <li>Individual lock acquisition failures are logged</li>
+	 *       <li>Operation continues with remaining lock acquisitions</li>
+	 *       <li>Listener receives completion events for operation</li>
+	 *     </ul>
+	 *   </li>
+	 *   <li>When {@code @ContinueOnFailure=false}:
+	 *     <ul>
+	 *       <li>First failure stops the entire batch</li>
+	 *       <li>Listener receives completion events for operation</li>
+	 *     </ul>
+	 *   </li>
+	 * </ul>
+	 *
+	 * <p>Example usage:
+	 * <pre>{@code
+	 * // 1. Define batch lock interface
+	 * @OrangeRedisKey("order:batch:lock")
+	 * public interface OrderBatchLockService extends JSONOperationsTemplate&lt;String&gt; {
+	 *     void acquireBatchLocks(List&lt;String&gt; orderIds, double score);
+	 * }
+	 *
+	 * // 2. Implement listener (same as single lock)
+	 * {@code @Component}
+	 * public class OrderLockListener implements OrangeRedisZSetAddMembersIfAbsentListener {
+	 *     // ... same implementation as single lock
+	 * }
+	 * }</pre>
+	 *
+	 * @param members map of elements to add (key=value, value=score)
+	 * @see com.langwuyue.orange.redis.annotation.IfAbsent#deleteInTheEnd()
+	 * @see com.langwuyue.orange.redis.annotation.ContinueOnFailure
+	 * @see <a href="https://redis.io/commands/zadd">Redis ZADD command</a>
+	 * @see <a href="https://redis.io/topics/pipelining">Redis Pipeline</a>
 	 */
 	@AddMembers
 	@IfAbsent(deleteInTheEnd=true)
@@ -383,7 +468,6 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param count number of elements to return (must be positive)
 	 * @return list of {@code {value: score}} maps in random selection order,
 	 *         or empty list if set is empty
-	 * @throws IllegalArgumentException if count is null or not positive
 	 *
 	 * @example
 	 * // Get 3 random players with their scores
@@ -415,7 +499,6 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param count number of distinct elements to return (must be positive)
 	 * @return LinkedHashSet containing randomly selected distinct elements,
 	 *         preserving selection order, or empty set if input is invalid
-	 * @throws IllegalArgumentException if count is null or not positive
 	 *
 	 * @example
 	 * // Get 5 unique random players
@@ -546,8 +629,6 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param endIndex the end rank (0-based, inclusive)
 	 * @return set of matching elements ordered by score (ascending),
 	 *         or empty set if no elements in range
-	 * @throws RedisConnectionException if connection to Redis fails
-	 * @throws IllegalArgumentException if indices are invalid
 	 *
 	 * @note
 	 * - Time complexity: O(log(N)+M) where N is set size and M is number of elements returned
@@ -723,8 +804,6 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param count maximum number of elements per page
 	 * @return LinkedHashSet containing matching elements for the requested page,
 	 *         ordered by score (descending), or empty set if no elements in range
-	 * @throws RedisConnectionException if connection to Redis fails
-	 * @throws IllegalArgumentException if pageNo is negative or count is not positive
 	 *
 	 * @note
 	 * - Time complexity: O(log(N)+M) where N is set size and M is number of elements returned
@@ -758,8 +837,6 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param endIndex the end rank (0-based, inclusive)
 	 * @return LinkedHashSet containing elements in the specified reverse rank range,
 	 *         ordered from highest to lowest score
-	 * @throws RedisOperationException if Redis command fails
-	 * @throws IllegalArgumentException if invalid rank range provided
 	 *
 	 * @example
 	 * // Get top 10 players (reverse ranks 0-9)
@@ -849,8 +926,6 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param endIndex the end rank (0-based, inclusive)
 	 * @return LinkedHashMap containing matching elements to their scores ordered by score (descending),
 	 *         or empty map if no elements in range
-	 * @throws RedisConnectionException if connection to Redis fails
-	 * @throws IllegalArgumentException if indices are invalid
 	 *
 	 * @note
 	 * - Time complexity: O(log(N)+M) where N is set size and M is number of elements returned
@@ -893,7 +968,6 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 *
 	 * @return map containing the popped element and its score,
 	 *         or empty map if the set is empty
-	 * @throws RedisCommandTimeoutException if operation times out
 	 */
 	@PopMembers
 	@MaxScore
@@ -924,7 +998,6 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 *
 	 * @return map containing the popped element and its score,
 	 *         or empty map if the set is empty
-	 * @throws RedisCommandTimeoutException if operation times out
 	 */
 	@PopMembers
 	@MinScore
@@ -954,7 +1027,6 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param count maximum number of elements to pop (must be positive)
 	 * @return map of popped elements to their scores, ordered by descending score,
 	 *         or empty map if set is empty
-	 * @throws IllegalArgumentException if count is null or not positive
 	 *
 	 * @example
 	 * // Pop top 3 highest scored players
@@ -997,7 +1069,6 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param count maximum number of elements to pop (must be positive)
 	 * @return map of popped elements to their scores, ordered by ascending score,
 	 *         or empty map if set is empty
-	 * @throws IllegalArgumentException if count is null or not positive
 	 *
 	 * @example
 	 * // Pop 3 lowest scored players
@@ -1043,8 +1114,6 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param unit the time unit of the timeout argument (cannot be null)
 	 * @return map containing the popped element and its score,
 	 *         or empty map if timeout occurs
-	 * @throws IllegalArgumentException if unit is null or value is negative
-	 * @throws InterruptedException if the thread is interrupted while waiting
 	 *
 	 * @example
 	 * // Wait up to 5 seconds for a high score player
@@ -1089,8 +1158,6 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param unit the time unit of the timeout argument (cannot be null)
 	 * @return map containing the popped element and its score,
 	 *         or empty map if timeout occurs
-	 * @throws IllegalArgumentException if unit is null or value is negative
-	 * @throws InterruptedException if the thread is interrupted while waiting
 	 *
 	 * @example
 	 * // Wait up to 5 seconds for a low score player
@@ -1122,8 +1189,6 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 *
 	 * @param value the element whose rank to return (cannot be null)
 	 * @return the rank of the element (0-based) or null if element does not exist
-	 * @throws IllegalArgumentException if value is null
-	 * @throws RedisConnectionException if connection fails
 	 *
 	 * @example
 	 * // Get player's rank in leaderboard
@@ -1170,8 +1235,6 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param value set of elements whose ranks to return (cannot be null)
 	 * @return LinkedHashMap mapping elements to their ranks,
 	 *         excluding non-existent elements
-	 * @throws IllegalArgumentException if value is null
-	 * @throws RedisConnectionException if connection fails
 	 *
 	 * @example
 	 * // Get ranks for multiple players

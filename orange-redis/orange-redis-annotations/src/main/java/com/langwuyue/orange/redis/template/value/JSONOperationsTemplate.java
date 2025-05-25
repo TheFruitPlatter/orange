@@ -30,27 +30,52 @@ import com.langwuyue.orange.redis.annotation.value.SetValue;
 import com.langwuyue.orange.redis.template.global.GlobalOperationsTemplate;
 
 /**
- * Interface template for Redis Value operations. 
- * Developers should extend this interface and annotate the child interface with {@code OrangeRedisKey}.
- * 
- * <p>A example is:
+ * Interface template for Redis JSON value operations with automatic serialization.
+ * <p>
+ * This template provides thread-safe operations for Redis values with automatic
+ * JSON serialization/deserialization using Jackson.
+ *
+ * <p>Key characteristics:
+ * <ul>
+ *   <li>Thread-safe: All operations are safe for concurrent use</li>
+ *   <li>Non-blocking: Operations do not wait for other threads</li>
+ *   <li>JSON support: Automatic serialization/deserialization of complex objects</li>
+ *   <li>Atomic operations: CAS and SETNX operations supported</li>
+ * </ul>
+ *
+ * <p>Performance considerations:
+ * <ul>
+ *   <li>Serialization overhead increases with object complexity</li>
+ *   <li>Recommended payload size under 1MB for optimal performance</li>
+ *   <li>Large objects may trigger Redis maxmemory policies</li>
+ * </ul>
+ *
+ * <p>Implementation requirements:
+ * <ul>
+ *   <li>Child interfaces must be annotated with {@code @OrangeRedisKey}</li>
+ *   <li>Must override getValue() method</li>
+ *   <li>Type T must be JSON-serializable by Jackson</li>
+ * </ul>
+ *
+ * <p>Example implementation:
  * <blockquote><pre>
- *  {@code @OrangeRedisKey(expirationTime = @Timeout(value = 1, unit = TimeUnit.HOURS), key = "orange:value:example1")} 
- *  public interface OrangeRedisValueExample1Api extends JSONOperationsTemplate{@code<Value>} {
- *  	
- *  	{@code @Override}
- *  	Value getValue();
+ * {@code @OrangeRedisKey(expirationTime = @Timeout(value = 1, unit = TimeUnit.HOURS), key = "orange:value:example1")} 
+ * public interface OrangeRedisValueExample1Api extends JSONOperationsTemplate{@code<User>} {
  *  
- *  	// Custom operations can be added here
- *  }
+ *     {@code @Override}
+ *     User getValue();
+ *
+ *     // Custom operations can be added here
+ * }
  * </pre></blockquote>
- * 
- * 
- * <p>Please review examples for more information.
- * 
- * @param <T> The type of elements stored in the Redis Value (will be serialized as JSON)
+ *
+ *
+ * @param <T> The type of elements stored in the Redis Value (must be JSON-serializable)
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see GlobalOperationsTemplate
+ * @see <a href="https://redis.io/commands/set">Redis SET command</a>
+ * @see <a href="https://redis.io/commands/get">Redis GET command</a>
  */
 @OrangeRedisValueClient(valueType = RedisValueTypeEnum.JSON)
 public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {

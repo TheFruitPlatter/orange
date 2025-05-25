@@ -26,24 +26,48 @@ import com.langwuyue.orange.redis.annotation.value.OrangeRedisValueClient;
 import com.langwuyue.orange.redis.template.global.GlobalOperationsTemplate;
 
 /**
- * Interface template for Redis Value operations. 
- * Developers should extend this interface and annotate the child interface with {@code OrangeRedisKey}.
- * 
- * <p>A example is:
+ * Interface template for distributed Redis lock operations with automatic renewal.
+ * <p>
+ * This template provides a high-level abstraction for Redis-based distributed locks,
+ * supporting automatic renewal and listener notification mechanisms.
+ *
+ * <p>Key characteristics:
+ * <ul>
+ *   <li>Atomic lock acquisition using Redis SETNX</li>
+ *   <li>Deadlock prevention through TTL expiration</li>
+ *   <li>Automatic lock renewal before expiration</li>
+ *   <li>Listener notification for lock events</li>
+ *   <li>Thread-safe for concurrent access</li>
+ * </ul>
+ *
+ * <p>Performance considerations:
+ * <ul>
+ *   <li>Lock acquisition is O(1) time complexity</li>
+ *   <li>Renewal operations occur in background threads</li>
+ *   <li>Network latency impacts lock acquisition time</li>
+ *   <li>Recommended TTL ≥ expected critical section duration</li>
+ * </ul>
+ *
+ * <p>Implementation requirements:
+ * <ul>
+ *   <li>Child interfaces must be annotated with {@code @OrangeRedisKey}</li>
+ *   <li>Must implement {@code OrangeRedisValueSetIfAbsentListener} beans</li>
+ *   <li>Listener logic should be idempotent</li>
+ * </ul>
+ *
+ * <p>Example implementation:
  * <blockquote><pre>
- *  {@code @OrangeRedisKey(expirationTime = @Timeout(value = 1, unit = TimeUnit.HOURS), key = "orange:value:example1")} 
- *  public interface OrangeRedisValueExample1Api extends LockOperationsTemplate {
- *  	
- *  	// Custom operations can be added here
- *  }
+ * {@code @OrangeRedisKey(expirationTime = @Timeout(value = 1, unit = TimeUnit.HOURS), key = "orange:value:example1")} 
+ * public interface OrderLockApi extends LockOperationsTemplate {
+ *     // Custom operations can be added here
+ * }
  * </pre></blockquote>
- * 
- * 
- * <p>Please review examples for more information.
- * 
- * @param <T> The type of elements stored in the Redis Value (will be serialized as JSON)
+ *
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see GlobalOperationsTemplate
+ * @see <a href="https://redis.io/topics/distlock">Redis Distributed Lock</a>
  */
 @OrangeRedisValueClient(valueType = RedisValueTypeEnum.STRING)
 public interface LockOperationsTemplate extends GlobalOperationsTemplate {
