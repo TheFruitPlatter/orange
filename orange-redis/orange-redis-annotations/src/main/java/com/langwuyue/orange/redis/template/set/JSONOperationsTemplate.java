@@ -851,7 +851,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * <p>Pagination behavior:
 	 * <ul>
 	 *   <li>count - hint for number of elements per page (actual may vary)</li>
-	 *   <li>pageNo - 0-based page number</li>
+	 *   <li>pageNo - 1-based page number</li>
 	 *   <li>Returns empty set when page exceeds available results</li>
 	 * </ul>
 	 *
@@ -875,7 +875,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 *
 	 * @param pattern glob-style pattern to match (required)
 	 * @param count approximate number of elements per page
-	 * @param pageNo 0-based page number
+	 * @param pageNo 1-based page number
 	 * @return LinkedHashSet of matching members (maintaining scan order)
 	 *
 	 * @note

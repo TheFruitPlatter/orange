@@ -580,7 +580,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 *
 	 * <p>Pagination parameters:
 	 * <ul>
-	 *   <li>{@code pageNo}: page number (1-based)</li>
+	 *   <li></li>
 	 *   <li>{@code count}: maximum number of elements per page</li>
 	 * </ul>
 	 *
@@ -592,7 +592,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 *
 	 * @param maxScore maximum score (inclusive)
 	 * @param minScore minimum score (inclusive)
-	 * @param pageNo page number (0-based)
+	 * @param pageNo page number (1-based)
 	 * @param count maximum number of elements per page
 	 * @return set of matching elements for the requested page (empty if none found)
 	 */
@@ -684,7 +684,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 *
 	 * <p>Pagination parameters:
 	 * <ul>
-	 *   <li>{@code pageNo}: page number (1-based)</li>
+	 *   <li></li>
 	 *   <li>{@code count}: maximum number of elements per page</li>
 	 * </ul>
 	 *
@@ -702,7 +702,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 *
 	 * @param maxScore maximum score (inclusive)
 	 * @param minScore minimum score (inclusive)
-	 * @param pageNo page number (0-based)
+	 * @param pageNo page number (1-based)
 	 * @param count maximum number of elements per page
 	 * @return map of elements to their scores for the requested page (empty if no matches)
 	 */
@@ -780,7 +780,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 *
 	 * <p>Pagination parameters:
 	 * <ul>
-	 *   <li>{@code pageNo}: page number (0-based)</li>
+	 *   <li>{@code pageNo}: page number (1-based)</li>
 	 *   <li>{@code count}: maximum number of elements per page</li>
 	 * </ul>
 	 *
@@ -800,7 +800,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 *
 	 * @param maxScore maximum score bound (inclusive)
 	 * @param minScore minimum score bound (inclusive)
-	 * @param pageNo page number (0-based)
+	 * @param pageNo page number (1-based)
 	 * @param count maximum number of elements per page
 	 * @return LinkedHashSet containing matching elements for the requested page,
 	 *         ordered by score (descending), or empty set if no elements in range
@@ -875,7 +875,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * 
 	 * @param maxScore maximum score (inclusive)
 	 * @param minScore minimum score (inclusive)
-	 * @param pageNo page number (0-based)
+	 * @param pageNo page number (1-based)
 	 * @param count maximum number of elements per page
 	 * @return a LinkedHashMap mapping values to their scores, sorted by score in descending order
 	 */
