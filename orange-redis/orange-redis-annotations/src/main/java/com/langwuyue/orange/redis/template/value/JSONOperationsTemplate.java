@@ -114,8 +114,6 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * }</pre>
 	 *
 	 * @param value the object to serialize and store, may be null
-	 * @throws RedisConnectionFailureException if unable to communicate with Redis
-	 * @throws JsonProcessingException if object cannot be serialized to JSON
 	 */
 	@SetValue
 	void setValue(@RedisValue T value);
@@ -154,8 +152,6 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * }</pre>
 	 *
 	 * @param value the object to serialize and store, may be null
-	 * @throws RedisConnectionFailureException if unable to communicate with Redis
-	 * @throws JsonProcessingException if object cannot be serialized to JSON
 	 */
 	@SetValue
 	@SetExpiration
@@ -197,7 +193,6 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * <p>For TTL version see: {@link JSONOperationsTemplate#setValueIfAbsentWithExpiration(Object)}
 	 *
 	 * @param value the JSON-serializable object to set if key is absent
-	 * @see OrangeRedisValueSetIfAbsentListener
 	 */
 	@SetValue
 	@IfAbsent(deleteInTheEnd = false)
@@ -243,7 +238,6 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * }</pre>
 	 *
 	 * @param value the JSON-serializable object to set if key is absent
-	 * @see OrangeRedisValueSetIfAbsentListener
 	 */
 	@SetValue
 	@IfAbsent(deleteInTheEnd = true)

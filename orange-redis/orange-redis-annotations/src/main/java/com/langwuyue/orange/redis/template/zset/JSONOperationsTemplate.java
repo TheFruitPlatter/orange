@@ -375,11 +375,11 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 *
 	 * @return the randomly selected element, or null if set is empty
 	 *
-	 * @example
+	 * Usage example:
 	 * // Get a random player
 	 * {@code Player randomPlayer = randomGetValue();}
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(1)
 	 * - For random selection with score, use {@link #randomGetMember}
 	 * - For multiple random selections, use {@link #randomGetValues}
@@ -469,11 +469,11 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @return list of {@code {value: score}} maps in random selection order,
 	 *         or empty list if set is empty
 	 *
-	 * @example
+	 * Usage example:
 	 * // Get 3 random players with their scores
 	 * {@code List<Map<Player, Double>> randomPlayers = randomGetMembers(3);}
 	 * 
-	 * @note
+	 * Node:
 	 * - Time complexity: O(N) where N is the number of elements returned
 	 * - Elements may be duplicated if count > set size
 	 * - For distinct random selection, use {@link #distinctRandomGetMembers}
@@ -500,11 +500,11 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @return LinkedHashSet containing randomly selected distinct elements,
 	 *         preserving selection order, or empty set if input is invalid
 	 *
-	 * @example
+	 * Usage example:
 	 * // Get 5 unique random players
 	 * {@code Set<Player> randomPlayers = distinctRandomGetValues(5);}
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(N) where N is the number of elements in the set
 	 * - Returns at most all elements in the set (when count >= set size)
 	 * - For non-distinct random selection, use {@link #randomGetMembers}
@@ -630,7 +630,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @return set of matching elements ordered by score (ascending),
 	 *         or empty set if no elements in range
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(log(N)+M) where N is set size and M is number of elements returned
 	 * - For retrieving elements with scores, use {@link #getByRankRangeWithScores}
 	 * - For retrieving elements in reverse order, use {@link #reverseRankRange}
@@ -805,7 +805,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @return LinkedHashSet containing matching elements for the requested page,
 	 *         ordered by score (descending), or empty set if no elements in range
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(log(N)+M) where N is set size and M is number of elements returned
 	 * - For non-paginated results, use {@link #reverseScoreRange(Double, Double)}
 	 * - For ascending order, use {@link #getByScoreRange(Double, Double, Long, Long)}
@@ -838,11 +838,11 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @return LinkedHashSet containing elements in the specified reverse rank range,
 	 *         ordered from highest to lowest score
 	 *
-	 * @example
+	 * Usage example:
 	 * // Get top 10 players (reverse ranks 0-9)
 	 * {@code Set<Player> top10 = reverseRankRange(0L, 9L);}
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(log(N)+M) where N is set size and M is number of elements returned
 	 * - For score-based reverse range queries, use {@link #reverseScoreRange}
 	 * - For forward rank ranges, use {@link #getByRankRange}
@@ -927,7 +927,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @return LinkedHashMap containing matching elements to their scores ordered by score (descending),
 	 *         or empty map if no elements in range
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(log(N)+M) where N is set size and M is number of elements returned
 	 * - For retrieving elements without scores, use {@link #reverseRankRange}
 	 * - For retrieving elements in ascending order with scores, use {@link #getByRankRangeWithScores}
@@ -1028,11 +1028,11 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @return map of popped elements to their scores, ordered by descending score,
 	 *         or empty map if set is empty
 	 *
-	 * @example
+	 * Usage example:
 	 * // Pop top 3 highest scored players
 	 * {@code Map<Player, Double> top3 = popMax(3);}
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(log(N)+M) where N is set size and M is count
 	 * - For single element pop, use {@link #popMax()}
 	 * - For lowest score pops, use {@link #popMin()} or {@link #popMin(Integer)}
@@ -1070,11 +1070,11 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @return map of popped elements to their scores, ordered by ascending score,
 	 *         or empty map if set is empty
 	 *
-	 * @example
+	 * Usage example:
 	 * // Pop 3 lowest scored players
 	 * {@code Map<Player, Double> bottom3 = popMin(3);}
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(log(N)+M) where N is set size and M is count
 	 * - For single element pop, use {@link #popMin()}
 	 * - For highest score pops, use {@link #popMax()} or {@link #popMax(Integer)}
@@ -1115,11 +1115,11 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @return map containing the popped element and its score,
 	 *         or empty map if timeout occurs
 	 *
-	 * @example
+	 * Usage example:
 	 * // Wait up to 5 seconds for a high score player
 	 * {@code Map<Player, Double> topPlayer = timeLimitedPopMax(5, TimeUnit.SECONDS);}
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(log(N)) for the pop operation
 	 * - For non-blocking version, use {@link #popMax()}
 	 * - For lowest score version, use {@link #timeLimitedPopMin}
@@ -1159,11 +1159,11 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @return map containing the popped element and its score,
 	 *         or empty map if timeout occurs
 	 *
-	 * @example
+	 * Usage example:
 	 * // Wait up to 5 seconds for a low score player
 	 * {@code Map<Player, Double> bottomPlayer = timeLimitedPopMin(5, TimeUnit.SECONDS);}
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(log(N)) for the pop operation
 	 * - For non-blocking version, use {@link #popMin()}
 	 * - For highest score version, use {@link #timeLimitedPopMax}
@@ -1190,14 +1190,14 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param value the element whose rank to return (cannot be null)
 	 * @return the rank of the element (0-based) or null if element does not exist
 	 *
-	 * @example
+	 * Usage example:
 	 * // Get player's rank in leaderboard
 	 * {@code Long rank = getRank(player);}
 	 * {@code if (rank != null) {
 	 *     System.out.println("Player is ranked #" + (rank + 1));
 	 * }}
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(log(N)) where N is the number of elements
 	 * - For reverse ranking (high to low), use {@link #reverseRank}
 	 * - For multiple element ranks, use {@link #getRanks}
@@ -1236,7 +1236,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @return LinkedHashMap mapping elements to their ranks,
 	 *         excluding non-existent elements
 	 *
-	 * @example
+	 * Usage example:
 	 * // Get ranks for multiple players
 	 * {@code Set<Player> players = Set.of(player1, player2, player3);
 	 * Map<Player, Long> ranks = getRanks(players);
@@ -1244,7 +1244,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 *     System.out.println(player.getName() + " is ranked #" + (rank + 1))
 	 * );}
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(log(N)) for each element
 	 * - For reverse ranking, use {@link #reverseRanks}
 	 * - For single element rank, use {@link #getRank}
@@ -1273,14 +1273,14 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param value the element whose score to retrieve (cannot be null)
 	 * @return the score of the element as Double, or null if element does not exist
 	 *
-	 * @example
+	 * Usage example:
 	 * // Get a player's current score
 	 * {@code Double score = getScore(player);
 	 * if (score != null) {
 	 *     System.out.println("Player score: " + score);
 	 * }}
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(1)
 	 * - For retrieving scores of multiple elements, use {@link #getScores}
 	 * - To update scores, use {@link #increment} or {@link #decrement}
@@ -1317,7 +1317,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @return LinkedHashMap mapping existing elements to their scores,
 	 *         preserving input order
 	 *
-	 * @example
+	 * Usage example:
 	 * // Get scores for multiple players
 	 * {@code Set<Player> players = Set.of(player1, player2, player3);
 	 * Map<Player, Double> scores = getScores(players);
@@ -1325,7 +1325,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 *     System.out.println(player.getName() + ": " + score)
 	 * );}
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(N) where N is number of elements requested
 	 * - For single element score retrieval, use {@link #getScore}
 	 * - To update scores, use {@link #increment} or {@link #decrement}
@@ -1353,14 +1353,14 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param value the element whose reverse rank to return (cannot be null)
 	 * @return the reverse rank of the element (0-based) or null if element does not exist
 	 *
-	 * @example
+	 * Usage example:
 	 * // Get player's reverse rank in leaderboard
 	 * {@code Long revRank = reverseRank(player);}
 	 * {@code if (revRank != null) {
 	 *     System.out.println("Player is ranked #" + (revRank + 1) + " from top");
 	 * }}
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(log(N)) where N is the number of elements
 	 * - For standard ranking (low to high), use {@link #getRank}
 	 * - For multiple element reverse ranks, use {@link #reverseRanks}
@@ -1400,7 +1400,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @return LinkedHashMap mapping elements to their reverse ranks,
 	 *         excluding non-existent elements
 	 *
-	 * @example
+	 * Usage example:
 	 * // Get reverse ranks for multiple players
 	 * {@code Set<Player> players = Set.of(player1, player2, player3);
 	 * Map<Player, Long> revRanks = reverseRanks(players);
@@ -1408,7 +1408,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 *     System.out.println(player.getName() + " is ranked #" + (rank + 1) + " from top")
 	 * );}
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(log(N)) for each element
 	 * - For single element reverse rank, use {@link #reverseRank}
 	 * - For standard ranking (low to high), use {@link #getRanks}
@@ -1437,11 +1437,11 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 *
 	 * @return the number of elements in the sorted set
 	 *
-	 * @example
+	 * Usage example:
 	 * // Get total number of players in leaderboard
 	 * {@code Long totalPlayers = getSize();}
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(1)
 	 * - For size within score range, use {@link #getSizeByScoreRange}
 	 *
@@ -1508,7 +1508,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param value the element to remove from the sorted set (cannot be null)
 	 * @return true if the element was present and removed, false if it was not present
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(log(N)) where N is the number of elements
 	 * - For removing multiple elements, use {@link #remove(Set)}
 	 * - For removing by score range, use {@link #removeByScoreRange}
@@ -1559,7 +1559,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param values set of elements to remove from the sorted set (cannot be null)
 	 * @return LinkedHashMap mapping each input element to a boolean indicating whether it was removed
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(M*log(N)) where N is set size and M is number of elements to remove
 	 * - For removing a single element, use {@link #remove(Object)}
 	 * - For removing by score or rank range, use {@link #removeByScoreRange} or {@link #removeByRankRange}
@@ -1600,7 +1600,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param endIndex end rank (inclusive, 0-based)
 	 * @return the number of elements removed
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(log(N)+M) where N is set size and M is number of elements removed
 	 * - For removing by score range, use {@link #removeByScoreRange}
 	 * - For removing specific elements, use {@link #remove(Object)} or {@link #remove(Set)}
@@ -1639,7 +1639,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param minScore minimum score bound (inclusive)
 	 * @return the number of elements removed
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(log(N)+M) where N is set size and M is number of elements removed
 	 * - For removing by rank range, use {@link #removeByRankRange}
 	 * - For removing specific elements, use {@link #remove(Object)} or {@link #remove(Set)}
@@ -1675,7 +1675,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param value the element whose score to increment (cannot be null)
 	 * @return the new score after incrementing
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(log(N)) where N is the number of elements
 	 * - For custom increment values, use {@link #increment(Object, Double)}
 	 * - For decrementing, use {@link #decrement}
@@ -1712,7 +1712,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param value the element whose score to decrement (cannot be null)
 	 * @return the new score after decrementing
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(log(N)) where N is the number of elements
 	 * - For custom decrement values, use {@link #decrement(Object, Double)}
 	 * - For incrementing, use {@link #increment}
@@ -1753,7 +1753,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param delta the amount to increment the score by (can be positive or negative)
 	 * @return the new score after incrementing
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(log(N)) where N is the number of elements
 	 * - For fixed increment of 1.0, use {@link #increment(Object)}
 	 * - For decrementing by custom values, use negative delta or {@link #decrement(Object, Double)}
@@ -1793,7 +1793,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param delta the amount to decrement the score by (must be positive)
 	 * @return the new score after decrementing
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(log(N)) where N is the number of elements
 	 * - For fixed decrement of 1.0, use {@link #decrement(Object)}
 	 * - For incrementing by custom values, use {@link #increment(Object, Double)}

@@ -189,7 +189,6 @@ public interface LongOperationsTemplate extends GlobalOperationsTemplate {
 	 *   <li>Atomic operation - safe for concurrent access</li>
 	 *   <li>Returns the new value after increment</li>
 	 *   <li>If key doesn't exist, initializes to 0 before incrementing (returns 1)</li>
-	 *   <li>Throws exception if value is not an integer or out of range</li>
 	 * </ul>
 	 *
 	 * <p>Example usage:
@@ -198,9 +197,6 @@ public interface LongOperationsTemplate extends GlobalOperationsTemplate {
 	 * }</pre>
 	 *
 	 * @return the new value after increment
-	 * @throws RedisConnectionFailureException if unable to communicate with Redis
-	 * @throws NumberFormatException if stored value cannot be parsed as long
-	 * @throws ArithmeticException if increment would overflow Long.MAX_VALUE
 	 */
 	@Increment
 	Long increment();
@@ -216,7 +212,6 @@ public interface LongOperationsTemplate extends GlobalOperationsTemplate {
 	 *   <li>Atomic operation - safe for concurrent access</li>
 	 *   <li>Returns the new value after increment</li>
 	 *   <li>If key doesn't exist, initializes to 0 before incrementing</li>
-	 *   <li>Throws exception if value is not an integer or out of range</li>
 	 * </ul>
 	 *
 	 * <p>Example usage:
@@ -242,7 +237,6 @@ public interface LongOperationsTemplate extends GlobalOperationsTemplate {
 	 *   <li>Atomic operation - safe for concurrent access</li>
 	 *   <li>Returns the new value after decrement</li>
 	 *   <li>If key doesn't exist, initializes to 0 before decrementing (returns -1)</li>
-	 *   <li>Throws exception if value is not an integer or out of range</li>
 	 * </ul>
 	 *
 	 * <p>Example usage:
@@ -266,7 +260,6 @@ public interface LongOperationsTemplate extends GlobalOperationsTemplate {
 	 *   <li>Atomic operation - safe for concurrent access</li>
 	 *   <li>Returns the new value after decrement</li>
 	 *   <li>If key doesn't exist, initializes to 0 before decrementing</li>
-	 *   <li>Throws exception if value is not an integer or out of range</li>
 	 * </ul>
 	 *
 	 * <p>Example usage:

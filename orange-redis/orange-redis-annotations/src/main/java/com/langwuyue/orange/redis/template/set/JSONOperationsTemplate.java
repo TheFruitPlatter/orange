@@ -168,7 +168,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @return LinkedHashMap where keys are the members and values indicate whether each 
 	 *         member was successfully added (true) or already existed/failed (false)
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(N) where N is number of elements
 	 * - For single element addition, use {@link #add(Object)}
 	 * - To check existence before adding, use {@link #isMember(Object)} or {@link #isMembers(Set)}
@@ -214,7 +214,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 *
 	 * @param value the member to add (must not be null)
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(1)
 	 * - For unconditional add, use {@link #add(Object)}
 	 * - For batch conditional add, use {@link #addIfAbsent(Set)}
@@ -269,7 +269,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 *
 	 * @param members set of members to add (must not be null or contain null)
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(N) where N is number of members
 	 * - For single element conditional add, use {@link #addIfAbsent(Object)}
 	 * - For unconditional batch add, use {@link #add(Set)}
@@ -323,7 +323,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param newValue the new value to set (must not be null)
 	 * @return true if swap was successful, false otherwise
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(1) for the comparison and O(N) for the swap where N is set size
 	 * - For simple value addition, use {@link #add(Object)}
 	 * - For conditional addition, use {@link #addIfAbsent(Object)}
@@ -370,7 +370,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 *
 	 * @return randomly selected member, or null if set is empty
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(1)
 	 * - For getting with removal, use {@link #pop()}
 	 * - For multiple random members, use {@link #randomGetMembers(Long)} or {@link #distinctRandomGetMembers(Long)}
@@ -394,8 +394,8 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 *
 	 * <p>Behavior details:
 	 * <ul>
-	 *   <li>When count > 0: returns up to count elements (may contain duplicates if count > set size)</li>
-	 *   <li>When count < 0: returns exactly |count| elements (always contains duplicates if |count| > set size)</li>
+	 *   <li>When count &gt; 0: returns up to count elements (may contain duplicates if count > set size)</li>
+	 *   <li>When count &lt; 0: returns exactly |count| elements (always contains duplicates if |count| > set size)</li>
 	 *   <li>When count = 0: returns empty list</li>
 	 *   <li>Elements are selected with uniform probability</li>
 	 *   <li>Return order matches selection sequence</li>
@@ -417,7 +417,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 *              - zero: return empty list
 	 * @return ArrayList of randomly selected members (may contain duplicates)
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(N) where N is absolute value of count
 	 * - For distinct random elements, use {@link #distinctRandomGetMembers(Long)}
 	 * - For single random element, use {@link #randomGetOne()}
@@ -442,7 +442,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 *
 	 * <p>Behavior details:
 	 * <ul>
-	 *   <li>Returns empty set if count <= 0 or set is empty</li>
+	 *   <li>Returns empty set if count &le; 0 or set is empty</li>
 	 *   <li>Returns fewer members than requested if set has insufficient members</li>
 	 *   <li>Member selection is random but uniform</li>
 	 *   <li>Original set remains unchanged</li>
@@ -461,7 +461,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param count number of distinct members to retrieve (must be positive)
 	 * @return LinkedHashSet of randomly selected distinct members (may be empty)
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(N) where N is count
 	 * - For getting with possible duplicates, use {@link #randomGetMembers(Long)}
 	 * - For single random member, use {@link #randomGetOne()}
@@ -512,7 +512,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 *
 	 * @return LinkedHashSet containing all members (may be empty)
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(N) where N is set size
 	 * - For paginated access, use {@link #scan(String, Long, Long)}
 	 * - For checking existence, use {@link #isMember(Object)} or {@link #isMembers(Set)}
@@ -552,7 +552,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param member the value to check for existence (must not be null)
 	 * @return true if the member exists in the set, false otherwise
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(1)
 	 * - For checking multiple members at once, use {@link #isMembers(Set)}
 	 * - For String values, consider using {@link StringOperationsTemplate}
@@ -604,7 +604,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @return LinkedHashMap where keys are the input members and values indicate
 	 *         whether each exists in the set
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(N) where N is number of members
 	 * - More efficient than multiple isMember() calls for N > 1
 	 * - For String values, consider using {@link StringOperationsTemplate}
@@ -644,7 +644,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 *
 	 * @return the removed member, or null if the set is empty
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(1)
 	 * - For removing multiple members at once, use {@link #pop(Long)}
 	 * - To get without removing, use {@link #randomGetOne()}
@@ -665,7 +665,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * <p>Behavior details:
 	 * <ul>
 	 *   <li>Operation is atomic - either fully succeeds or fails</li>
-	 *   <li>Returns empty set if input count <= 0 or set is empty</li>
+	 *   <li>Returns empty set if input count &le; 0 or set is empty</li>
 	 *   <li>Returns fewer members than requested if set has insufficient members</li>
 	 *   <li>Member selection is random but uniform</li>
 	 *   <li>Removes all returned members from the set</li>
@@ -685,13 +685,11 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param count number of members to pop (must be positive)
 	 * @return LinkedHashSet of removed members (may be empty)
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(N) where N is count
 	 * - More efficient than multiple pop() calls for N > 1
-	 * - To get without removing, use {@link #randomGet(Long)}
 	 *
 	 * @see #pop()
-	 * @see #randomGet(Long)
 	 * @see <a href="https://redis.io/commands/spop">Redis SPOP command</a>
 	 */
 	@PopMembers
@@ -729,7 +727,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 *
 	 * @return the current size of the set (0 if empty or non-existent)
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(1)
 	 * - For checking existence of specific elements, use {@link #isMember(Object)} or {@link #isMembers(Set)}
 	 * - For getting actual elements, use {@link #getMembers()} or {@link #scan(String, Long, Long)}
@@ -770,7 +768,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param value the element to remove from the set (must not be null)
 	 * @return true if the member was removed, false if it did not exist
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(1)
 	 * - For removing multiple members at once, use {@link #remove(Set)}
 	 * - For String values, consider using {@link StringOperationsTemplate}
@@ -821,7 +819,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @return LinkedHashMap where keys are input members and values indicate
 	 *         whether each was successfully removed (true) or didn't exist (false)
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(N) where N is number of members
 	 * - For single element removal, use {@link #remove(Object)}
 	 * - For simple count of removed elements, use Redis native SREM command
@@ -878,7 +876,7 @@ public interface JSONOperationsTemplate<T> extends GlobalOperationsTemplate {
 	 * @param pageNo 1-based page number
 	 * @return LinkedHashSet of matching members (maintaining scan order)
 	 *
-	 * @note
+	 * Node:
 	 * - Time complexity: O(N) where N is set size
 	 * - For small sets, consider {@link #getMembers()} with client-side filtering
 	 * - For simple existence checks, use {@link #isMember(Object)}

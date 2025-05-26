@@ -89,7 +89,7 @@ public interface StringOperationsTemplate extends JSONOperationsTemplate<String>
 	 * <ul>
 	 *   <li>Follows Redis's byte-by-byte comparison</li>
 	 *   <li>Case-sensitive comparison</li>
-	 *   <li>Numbers are ordered as strings (e.g., "10" < "2")</li>
+	 *   <li>Numbers are ordered as strings (e.g., "10" &lt; "2")</li>
 	 * </ul>
 	 *
 	 * <p>Special values:

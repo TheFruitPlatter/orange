@@ -97,8 +97,6 @@ public interface StringOperationsTemplate extends JSONOperationsTemplate<String>
 	 * }</pre>
 	 *
 	 * @return the string value, or null if key does not exist
-	 * @throws RedisConnectionFailureException if unable to communicate with Redis
-	 * @throws SerializationException if value cannot be deserialized
 	 */
 	@Override
 	String getValue();
