@@ -36,7 +36,7 @@ public @interface ContinueOnFailure {
 	/**
 	 * Batch operation 
 	 * 
-	 * return boolean Continue if true, break otherwise.  
+	 * @return boolean Continue if true, break otherwise.  
 	 */
 	boolean value();
 }

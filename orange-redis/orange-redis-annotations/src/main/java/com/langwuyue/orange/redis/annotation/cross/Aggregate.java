@@ -36,19 +36,15 @@ public @interface Aggregate {
 	/**
 	 * The weights of the keys.
 	 * 
-	 * <p>
-	 * Weights define the multiplier applied to each input sorted set's scores during aggregation.
-	 * 
-	 * 
 	 *  <p>
 	 *  The weights and keys must have the same length.
 	 *  
+	 * @return double[] Weights define the multiplier applied to each input sorted set's scores during aggregation.
 	 */
 	double[] weights();
 	
 	/**
-	 * Defines the aggregation operator to apply to scores during a sorted set operation.
-	 * 
+	 * @return Operator Defines the aggregation operator to apply to scores during a sorted set operation.
 	 * @see Operator  Available aggregation operators (SUM, MIN, MAX).
 	 */
 	Operator operator(); 

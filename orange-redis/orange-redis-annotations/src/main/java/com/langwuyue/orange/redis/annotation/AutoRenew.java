@@ -34,9 +34,9 @@ import java.lang.annotation.Target;
 public @interface AutoRenew {
 	
 	/**
-	 * Triggers auto-renew when remaining TTL ≤ (initialTTL / n).
+	 * Triggers auto-renew when remaining TTL &le; (initialTTL / n).
 	 * Default: 3 (renew at 1/3 of initial TTL).
-	 * return int Auto-renew threshold
+	 * @return int Auto-renew threshold
 	 */
 	int threshold() default 3;
 	
@@ -45,7 +45,7 @@ public @interface AutoRenew {
 	 * the auto-renew mechanism will: 
 	 * 1. Ignore {@link com.langwuyue.orange.redis.annotation.OrangeRedisKey#expirationTime()}
 	 * 2. Calculate a new TTL 
-	 * return boolean Auto generate key's TTL if true, use 'expirationTime' of {@code OrangeRedisKey} otherwise.
+	 * @return boolean Auto generate key's TTL if true, use 'expirationTime' of {@code OrangeRedisKey} otherwise.
 	 * @see OrangeRedisKey
 	 */
 	boolean autoInitKeyExpirationTime();

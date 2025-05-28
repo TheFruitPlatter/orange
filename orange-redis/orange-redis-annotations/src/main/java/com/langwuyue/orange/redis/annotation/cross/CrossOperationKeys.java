@@ -34,7 +34,7 @@ import java.lang.annotation.Target;
 public @interface CrossOperationKeys {
 
 	/**
-	 * The keys involved in the multi-key operation. 
+	 * @return Class The keys involved in the multi-key operation. 
 	 */
 	Class<?>[] value();
 	

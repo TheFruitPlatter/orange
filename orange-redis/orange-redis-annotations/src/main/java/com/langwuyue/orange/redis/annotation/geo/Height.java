@@ -35,5 +35,8 @@ import com.langwuyue.orange.redis.GeoDistanceUnitEnum;
 @Documented
 public @interface Height {
 
+	/**
+	 * @return GeoDistanceUnitEnum The height unit
+	 */
 	GeoDistanceUnitEnum unit() default GeoDistanceUnitEnum.METERS;
 }

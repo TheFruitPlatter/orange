@@ -34,13 +34,13 @@ import java.lang.annotation.Target;
 public @interface ExecuteLuaScript {
 
 	/**
-	 * Lua script 
+	 * @return String Lua script 
 	 * 
 	 */
 	String script();
 	
 	/**
-	 * The keys of the lua script. 
+	 * @return Class[] The keys of the lua script. 
 	 */
 	Class<?>[] keys();
 }

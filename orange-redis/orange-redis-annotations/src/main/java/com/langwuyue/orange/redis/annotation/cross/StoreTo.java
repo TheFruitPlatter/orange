@@ -34,7 +34,7 @@ import java.lang.annotation.Target;
 public @interface StoreTo {
 
 	/**
-	 * The key to store the result. 
+	 * @return Class The key to store the result. 
 	 */
 	Class<?> value();
 }

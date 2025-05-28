@@ -35,5 +35,8 @@ import com.langwuyue.orange.redis.RedisValueTypeEnum;
 @Documented
 public @interface ScriptArg {
 
+	/**
+	 * @return RedisValueTypeEnum The type of lua script arguments.
+	 */
 	RedisValueTypeEnum argType();
 }

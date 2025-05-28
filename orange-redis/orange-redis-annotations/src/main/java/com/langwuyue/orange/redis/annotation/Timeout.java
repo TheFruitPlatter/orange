@@ -32,7 +32,6 @@ import java.util.concurrent.TimeUnit;
  * 
  * @author Liang.Zhong
  * @since 1.0.0
- * @see Lock
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

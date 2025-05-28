@@ -35,7 +35,13 @@ import com.langwuyue.orange.redis.ListMoveDirectionEnum;
 @Documented
 public @interface ListMoveDirection {
 
+	/**
+	 * @return ListMoveDirectionEnum Movement direction of source key.
+	 */
 	ListMoveDirectionEnum from();
 	
+	/**
+	 * @return ListMoveDirectionEnum Movement direction of destination key.
+	 */
 	ListMoveDirectionEnum to();
 }

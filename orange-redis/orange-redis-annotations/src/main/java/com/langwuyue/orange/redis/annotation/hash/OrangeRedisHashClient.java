@@ -38,19 +38,26 @@ import com.langwuyue.orange.redis.RedisValueTypeEnum;
 public @interface OrangeRedisHashClient {
 	
 	
+	/**
+	 * @return RedisValueTypeEnum The hash key structure stored in Redis Hash
+	 */
 	RedisValueTypeEnum hashKeyType();
 	
+	/**
+	 * @return RedisValueTypeEnum The value structure stored in Redis Hash 
+	 */
 	RedisValueTypeEnum hashValueType();
 	
+	
 	/**
-	 * Breaker class
+	 * @return Class Breaker class
 	 */
 	Class<? extends OrangeRedisCircuitBreaker> breaker() default OrangeRedisDefaultCircuitBreaker.class;
 	
 	/**
 	 * Breaker class name 
 	 * 
-	 * If {@link #breakerClassName()} is not empty and {@link #breaker()} returns OrangeRedisDefaultCircuitBreaker.class,
+	 * @return String If {@link #breakerClassName()} is not empty and {@link #breaker()} returns OrangeRedisDefaultCircuitBreaker.class,
 	 * then this non-empty value will be used instead
 	 */
 	String breakerClassName() default "";
