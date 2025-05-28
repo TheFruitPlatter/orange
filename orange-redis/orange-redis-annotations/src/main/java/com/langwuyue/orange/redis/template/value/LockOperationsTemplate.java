@@ -113,7 +113,7 @@ public interface LockOperationsTemplate extends GlobalOperationsTemplate {
 	 * }
 	 *
 	 * // 2. Implement listener to handle lock events
-	 * @Component
+	 * {@code @Component}
 	 * public class OrderLockListener implements OrangeRedisValueSetIfAbsentListener {
 	 *     
 	 *     {@code @Override}

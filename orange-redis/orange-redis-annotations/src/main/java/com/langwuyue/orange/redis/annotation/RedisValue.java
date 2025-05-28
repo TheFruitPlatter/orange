@@ -25,12 +25,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Marks a parameter or field as a Redis value to be stored or retrieved.
+ * This annotation is used to identify the data that should be serialized and
+ * stored in Redis or deserialized from Redis.
+ * 
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
  */
-@Target({ElementType.PARAMETER,ElementType.FIELD})
+@Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface RedisValue {
-	
+    // Marker annotation - no attributes needed
 }

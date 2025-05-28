@@ -102,23 +102,23 @@ public interface DoubleOperationsTemplate extends GlobalOperationsTemplate {
 	 * <p>Key characteristics:
 	 * <ul>
 	 *   <li>O(1) time complexity</li>
-   *   <li>Not truly atomic due to floating-point comparison limitations</li>
-   *   <li>Returns true only if the value was changed</li>
-   *   <li>More efficient than WATCH/MULTI for simple CAS scenarios</li>
+     *   <li>Not truly atomic due to floating-point comparison limitations</li>
+     *   <li>Returns true only if the value was changed</li>
+     *   <li>More efficient than WATCH/MULTI for simple CAS scenarios</li>
 	 * </ul>
 	 *
 	 * <p>Important considerations:
 	 * <ul>
-   *   <li>Uses exact equality comparison - may fail due to floating-point precision</li>
-   *   <li>Not suitable for values that may have accumulated rounding errors</li>
-   *   <li>For monetary values, consider using fixed-point arithmetic instead</li>
+     *   <li>Uses exact equality comparison - may fail due to floating-point precision</li>
+     *   <li>Not suitable for values that may have accumulated rounding errors</li>
+     *   <li>For monetary values, consider using fixed-point arithmetic instead</li>
 	 * </ul>
 	 *
 	 * <p>Operation semantics:
 	 * <ul>
-   *   <li>Compares current value with {@code oldValue} using exact equality</li>
-   *   <li>If equal, sets to {@code newValue} and returns true</li>
-   *   <li>If not equal, leaves unchanged and returns false</li>
+     *  <li>Compares current value with {@code oldValue} using exact equality</li>
+     *  <li>If equal, sets to {@code newValue} and returns true</li>
+     *  <li>If not equal, leaves unchanged and returns false</li>
 	 * </ul>
 	 *
 	 * <p>Example usage:

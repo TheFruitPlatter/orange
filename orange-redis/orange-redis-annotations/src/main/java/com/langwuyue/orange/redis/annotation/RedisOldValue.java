@@ -25,12 +25,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Marks a parameter or field to receive the existing Redis value before an operation.
+ * This annotation is primarily used in Compare-and-Set (CAS) operations to implement
+ * atomic updates by comparing the current value with an expected value before making
+ * modifications.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see RedisValue
+ * @see CAS
  */
-@Target({ElementType.PARAMETER,ElementType.FIELD})
+@Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface RedisOldValue {
-
+    // Marker annotation - no attributes needed
 }

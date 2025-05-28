@@ -25,12 +25,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Enables atomic Compare-And-Set (CAS) operations for Redis values.
+ * This annotation marks a method to perform an atomic update operation that
+ * only succeeds if the current value in Redis matches the expected value.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see RedisValue
+ * @see RedisOldValue
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface CAS {
-
+    // Marker annotation - no attributes needed
 }

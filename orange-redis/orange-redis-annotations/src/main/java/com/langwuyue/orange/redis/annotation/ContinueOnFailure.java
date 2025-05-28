@@ -34,7 +34,9 @@ import java.lang.annotation.Target;
 public @interface ContinueOnFailure {
 
 	/**
-	 * Continue if true, break otherwise. 
+	 * Batch operation 
+	 * 
+	 * return boolean Continue if true, break otherwise.  
 	 */
 	boolean value();
 }

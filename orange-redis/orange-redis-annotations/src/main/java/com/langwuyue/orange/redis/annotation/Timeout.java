@@ -26,16 +26,65 @@ import java.lang.annotation.Target;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * Configures timeout/expiration settings for Redis operations.
+ * This annotation can be used at both method and type level to specify
+ * the duration and time unit for various timeout scenarios.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see Lock
  */
-@Target({ElementType.METHOD,ElementType.TYPE})
+@Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Timeout {
-	
-	long value();
-	
-	TimeUnit unit() default TimeUnit.SECONDS;
-	
+    
+    /**
+     * Specifies the timeout duration in the units specified by {@link #unit()}.
+     * 
+     * <p>The interpretation of this value depends on the context:
+     * <ul>
+     *   <li>For key expiration - Time until key expires</li>
+     *   <li>For locks - Maximum lock hold time</li>
+     *   <li>For operations - Maximum operation wait time</li>
+     * </ul>
+     * 
+     * <p>Guidelines:
+     * <ul>
+     *   <li>Must be positive</li>
+     *   <li>Consider operation complexity</li>
+     *   <li>Account for network latency</li>
+     *   <li>Plan for worst-case scenarios</li>
+     * </ul>
+     * 
+     * @return the timeout duration
+     */
+    long value();
+    
+    /**
+     * Specifies the time unit for the {@link #value()}.
+     * Defaults to {@link TimeUnit#SECONDS} if not specified.
+     * 
+     * <p>Supported Time Units:
+     * <ul>
+     *   <li>{@link TimeUnit#NANOSECONDS} - Rarely used, may cause precision loss</li>
+     *   <li>{@link TimeUnit#MICROSECONDS} - Rarely used, may cause precision loss</li>
+     *   <li>{@link TimeUnit#MILLISECONDS} - High precision, good for short operations</li>
+     *   <li>{@link TimeUnit#SECONDS} - Default, most common, good balance</li>
+     *   <li>{@link TimeUnit#MINUTES} - Medium duration, good for sessions</li>
+     *   <li>{@link TimeUnit#HOURS} - Long duration, good for caching</li>
+     *   <li>{@link TimeUnit#DAYS} - Very long duration, good for persistence</li>
+     * </ul>
+     * 
+     * <p>Selection Guidelines:
+     * <ul>
+     *   <li>Use SECONDS for most operations</li>
+     *   <li>Use MILLISECONDS for precise timing</li>
+     *   <li>Use MINUTES/HOURS for caching</li>
+     *   <li>Use DAYS for long-term storage</li>
+     * </ul>
+     * 
+     * @return the time unit for the timeout value
+     */
+    TimeUnit unit() default TimeUnit.SECONDS;
 }

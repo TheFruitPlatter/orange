@@ -25,14 +25,56 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Binds method parameters to variables in Redis key patterns.
+ * This annotation is used to map method parameters to placeholders in the
+ * Redis key pattern defined by {@link OrangeRedisKey}.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeRedisKey
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface KeyVariable {
-	
-	String name();
-	
+    
+    /**
+     * Specifies the variable name in the Redis key pattern.
+     * This name must match a placeholder in the key pattern defined by
+     * {@link OrangeRedisKey#key()}.
+     * 
+     * <p>Pattern Formats:
+     * <ul>
+     *   <li>Curly Braces: {variableName}</li>
+     *   <li>SpEL: ${expression}</li>
+     *   <li>Property Access: ${object.property}</li>
+     * </ul>
+     * 
+     * <p>Examples:
+     * <pre>{@code
+     * // Simple variable
+     * "user:{userId}:profile"
+     * 
+     * // Multiple variables
+     * "org:{orgId}:dept:{deptId}"
+     * 
+     * // SpEL expression
+     * "product:${product.category}:${product.id}"
+     * 
+     * // Complex pattern
+     * "order:${order.type}:{year}:{month}:{orderId}"
+     * }</pre>
+     * 
+     * <p>Naming Rules:
+     * <ul>
+     *   <li>Must be a valid Java identifier</li>
+     *   <li>Case-sensitive</li>
+     *   <li>Should be descriptive and meaningful</li>
+     *   <li>Should match the parameter's semantic meaning</li>
+     *   <li>Should be consistent across related methods</li>
+     * </ul>
+     * 
+     * @return the variable name to bind the parameter to
+     */
+    String name();
 }

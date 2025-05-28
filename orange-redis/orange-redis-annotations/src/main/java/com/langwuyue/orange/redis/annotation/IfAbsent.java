@@ -25,13 +25,39 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Indicates that a method should only execute if the specified Redis key does not exist.
+ * This annotation provides a simple way to implement distributed locks or prevent duplicate
+ * processing in distributed systems.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeRedisKey
+ * @see KeyVariable
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface IfAbsent {
 
-	boolean deleteInTheEnd() default true;
+    /**
+     * Specifies whether to delete the Redis key after method execution.
+     *
+     * <p>When set to true (default):
+     * <ul>
+     *   <li>The key is automatically removed after method completion</li>
+     *   <li>Cleanup occurs in a finally block to ensure execution</li>
+     *   <li>Suitable for temporary locks and one-time operations</li>
+     * </ul>
+     *
+     * <p>When set to false:
+     * <ul>
+     *   <li>The key remains after method execution</li>
+     *   <li>Useful for tracking completed operations</li>
+     *   <li>May require manual cleanup or TTL setting</li>
+     * </ul>
+     *
+     * @return true if the key should be deleted after method execution,
+     *         false if it should be preserved
+     */
+    boolean deleteInTheEnd() default true;
 }
