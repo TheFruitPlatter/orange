@@ -34,7 +34,7 @@ package com.langwuyue.orange.redis.listener.value;
  * that were provided during the operation, the exception that caused the failure (if available),
  * and a reason message explaining the failure.
  * 
- * <p>This class is used as a parameter type in {@link OrangeRedisValueSetIfAbsentListener#onFailure(OrangeSetIfAbsentFailedEvent)}
+ * <p>This class is used as a parameter type in {@link OrangeRedisValueSetIfAbsentListener#onFailure(Object)}
  * to provide information about the failed operation to event handlers.
  * 
  * <p>Example usage:

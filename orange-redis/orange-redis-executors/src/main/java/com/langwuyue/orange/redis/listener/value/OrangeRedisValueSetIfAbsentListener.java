@@ -33,30 +33,6 @@ import com.langwuyue.orange.redis.listener.OrangeRedisSetIfAbsentListener;
  *   <li>{@link OrangeSetIfAbsentFailedEvent} for failed set-if-absent operations</li>
  *   <li>{@link OrangeRemoveFailedEvent} for failed remove operations</li>
  * </ul>
- * 
- * <p>Example usage:
- * <pre>{@code
- * @Component
- * public class UserCacheListener implements OrangeRedisValueSetIfAbsentListener {
- *     @Override
- *     public void onSuccess(OrangeSetIfAbsentSuccessEvent event) {
- *         // Handle successful set-if-absent operation for user cache
- *         logger.info("Successfully cached user: {}", event.getValue());
- *     }
- *     
- *     @Override
- *     public void onFailure(OrangeSetIfAbsentFailedEvent event) {
- *         // Handle failed set-if-absent operation
- *         logger.warn("Failed to cache user: {}", event.getReason());
- *     }
- *     
- *     @Override
- *     public void onRemoveFailed(OrangeRemoveFailedEvent event) {
- *         // Handle failed remove operation
- *         logger.error("Failed to remove user from cache: {}", event.getKey());
- *     }
- * }
- * }</pre>
  *
  * @author Liang.Zhong
  * @since 1.0.0

@@ -25,7 +25,7 @@ package com.langwuyue.orange.redis.listener.value;
  * successfully sets a value because the key did not previously exist. The event contains
  * the value that was set and any additional arguments that were provided during the operation.
  * 
- * <p>This class is used as a parameter type in {@link OrangeRedisValueSetIfAbsentListener#onSuccess(OrangeSetIfAbsentSuccessEvent)}
+ * <p>This class is used as a parameter type in {@link OrangeRedisValueSetIfAbsentListener#onSuccess(Object)}
  * to provide information about the successful operation to event handlers.
  * 
  * <p>Example usage:

@@ -30,16 +30,7 @@ package com.langwuyue.orange.redis.listener.value;
  *   <li>Other operational exceptions</li>
  * </ul>
  * 
- * <p>This class extends {@link OrangeSetIfAbsentFailedEvent} to maintain consistency
- * in error handling across different Redis operations. It inherits the following properties:
- * <ul>
- *   <li>The value that was attempted to be removed</li>
- *   <li>Any additional arguments that were provided during the operation</li>
- *   <li>The exception that caused the failure (if available)</li>
- *   <li>A reason message explaining the failure</li>
- * </ul>
- * 
- * <p>This class is used as a parameter type in {@link OrangeRedisValueSetIfAbsentListener#onRemoveFailed(OrangeRemoveFailedEvent)}
+ * <p>This class is used as a parameter type in {@link OrangeRedisValueSetIfAbsentListener#onRemoveFailed(Object)}
  * to provide information about the failed remove operation to event handlers.
  * 
  * <p>Example usage:

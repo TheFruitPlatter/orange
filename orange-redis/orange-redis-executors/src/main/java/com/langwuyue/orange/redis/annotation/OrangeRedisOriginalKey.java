@@ -39,7 +39,6 @@ import java.lang.annotation.Target;
  * for filtering and matching purposes, before any variable resolution occurs.</p>
  *
  *
- * @see OrangeRedisListener
  * @author Liang.Zhong
  * @since 1.0.0
  */
