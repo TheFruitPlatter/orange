@@ -19,8 +19,33 @@
 package com.langwuyue.orange.redis.listener.value;
 
 /**
+ * Event class representing a successful set-if-absent operation for Redis value type.
+ * 
+ * <p>This event is triggered when a Redis set-if-absent operation (similar to SETNX command)
+ * successfully sets a value because the key did not previously exist. The event contains
+ * the value that was set and any additional arguments that were provided during the operation.
+ * 
+ * <p>This class is used as a parameter type in {@link OrangeRedisValueSetIfAbsentListener#onSuccess(OrangeSetIfAbsentSuccessEvent)}
+ * to provide information about the successful operation to event handlers.
+ * 
+ * <p>Example usage:
+ * <pre>{@code
+ * @Override
+ * public void onSuccess(OrangeSetIfAbsentSuccessEvent event) {
+ *     Object value = event.getValue();
+ *     Object[] args = event.getArgs();
+ *     
+ *     logger.info("Successfully set value: {}", value);
+ *     // Process additional arguments if needed
+ *     if (args.length > 0) {
+ *         logger.info("Operation arguments: {}", Arrays.toString(args));
+ *     }
+ * }
+ * }</pre>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeRedisValueSetIfAbsentListener
  */
 public class OrangeSetIfAbsentSuccessEvent {
 	

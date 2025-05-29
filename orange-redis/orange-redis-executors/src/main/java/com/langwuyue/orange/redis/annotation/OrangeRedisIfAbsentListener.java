@@ -25,6 +25,23 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Marks a class as a listener for Redis key absence events.
+ * This annotation is used to define listeners that will be notified
+ * when specified Redis keys are not found in the cache.
+ *
+ * <p>Classes annotated with {@code @OrangeRedisIfAbsentListener} must specify
+ * one or more target classes that are annotated with {@code @OrangeRedisKey}.
+ * When a cache miss occurs for any of the specified keys, the listener will
+ * be invoked to handle the absence.</p>
+ *
+ * <p>The handler methods in the listener class can use {@code @OrangeRedisOriginalKey}
+ * to identify which parameter represents the original key pattern (containing variables)
+ * that triggered the absence event. This is useful when you need to know both the
+ * original pattern and the resolved key that was missing.</p>
+ *
+ *
+ * @see OrangeRedisKey
+ * @see OrangeRedisOriginalKey
  * @author Liang.Zhong
  * @since 1.0.0
  */
@@ -33,6 +50,18 @@ import java.lang.annotation.Target;
 @Documented
 public @interface OrangeRedisIfAbsentListener {
 
+	/**
+	 * Specifies the classes that define the Redis keys to be monitored.
+	 * Each class in the array must be annotated with {@code @OrangeRedisKey}.
+	 * When any of the keys defined in these classes are not found in Redis,
+	 * the listener will be notified.
+	 *
+	 * <p>The specified classes serve as key definitions and should contain
+	 * the Redis key patterns or templates that this listener is interested in.
+	 * At least one class must be specified.</p>
+	 *
+	 * @return an array of classes that are annotated with {@code @OrangeRedisKey}
+	 */
 	Class<?>[] keys();
 	
 }

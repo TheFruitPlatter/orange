@@ -29,6 +29,20 @@ import com.langwuyue.orange.redis.context.builder.OrangeOperationArgHandler;
 import com.langwuyue.orange.redis.context.builder.OrangeOperationArgSimpleHandler;
 
 /**
+ * Defines a mapping between a field and a method parameter annotation for Redis operations.
+ * This annotation is used to bind field values to method parameters in Redis operations,
+ * allowing for dynamic parameter handling and value transformation, particularly useful
+ * in resolving dynamic Redis key patterns.
+ *
+ * <p>The annotation provides two key components:</p>
+ * <ul>
+ *   <li>A binding to another annotation that marks method parameters</li>
+ *   <li>A handler class that processes the parameter values</li>
+ * </ul>
+ *
+ *
+ * @see OrangeOperationArgHandler
+ * @see OrangeOperationArgSimpleHandler
  * @author Liang.Zhong
  * @since 1.0.0
  */
@@ -37,8 +51,32 @@ import com.langwuyue.orange.redis.context.builder.OrangeOperationArgSimpleHandle
 @Documented
 public @interface OrangeRedisOperationArg {
 	
+	/**
+	 * Specifies the annotation class that will be used to mark method parameters.
+	 * This creates a binding between the annotated field and method parameters
+	 * that are marked with the specified annotation.
+	 *
+	 * <p>When a Redis operation is executed, the framework will look for method
+	 * parameters annotated with this binding annotation and apply the field's
+	 * value to those parameters.</p>
+	 *
+	 * @return the annotation class that will be used to identify target method parameters
+	 */
 	Class<? extends Annotation> binding();
 	
+	/**
+	 * Specifies the handler class that will process the field's value before
+	 * it is applied to method parameters. This handler can perform value
+	 * transformations, validations, or other custom processing.
+	 *
+	 * <p>The default handler ({@link OrangeOperationArgSimpleHandler}) performs
+	 * a direct value assignment without any transformation. Custom handlers can
+	 * be implemented by extending {@link OrangeOperationArgHandler}.</p>
+	 *
+	 * @return the handler class that will process the field's value
+	 * @see OrangeOperationArgHandler
+	 * @see OrangeOperationArgSimpleHandler
+	 */
 	Class<? extends OrangeOperationArgHandler> valueHandler() default OrangeOperationArgSimpleHandler.class;
 	
 	

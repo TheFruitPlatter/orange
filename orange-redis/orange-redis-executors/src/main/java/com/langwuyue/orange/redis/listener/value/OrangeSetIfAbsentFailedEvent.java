@@ -19,8 +19,42 @@
 package com.langwuyue.orange.redis.listener.value;
 
 /**
+ * Event class representing a failed set-if-absent operation for Redis value type.
+ * 
+ * <p>This event is triggered when a Redis set-if-absent operation (similar to SETNX command)
+ * fails to set a value. The failure could be due to various reasons such as:
+ * <ul>
+ *   <li>The key already exists in Redis</li>
+ *   <li>Connection issues with Redis server</li>
+ *   <li>Redis server errors</li>
+ *   <li>Other operational exceptions</li>
+ * </ul>
+ * 
+ * <p>The event contains the value that was attempted to be set, any additional arguments
+ * that were provided during the operation, the exception that caused the failure (if available),
+ * and a reason message explaining the failure.
+ * 
+ * <p>This class is used as a parameter type in {@link OrangeRedisValueSetIfAbsentListener#onFailure(OrangeSetIfAbsentFailedEvent)}
+ * to provide information about the failed operation to event handlers.
+ * 
+ * <p>Example usage:
+ * <pre>{@code
+ * @Override
+ * public void onFailure(OrangeSetIfAbsentFailedEvent event) {
+ *     Object value = event.getValue();
+ *     String reason = event.getReason();
+ *     Exception exception = event.getException();
+ *     
+ *     logger.warn("Failed to set value: {}, reason: {}", value, reason);
+ *     if (exception != null) {
+ *         logger.error("Exception details:", exception);
+ *     }
+ * }
+ * }</pre>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeRedisValueSetIfAbsentListener
  */
 public class OrangeSetIfAbsentFailedEvent {
 	

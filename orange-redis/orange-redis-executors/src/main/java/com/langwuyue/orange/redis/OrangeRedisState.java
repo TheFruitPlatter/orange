@@ -21,21 +21,59 @@ package com.langwuyue.orange.redis;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
+ * Manages the service state of Orange Redis components.
+ * This utility class provides thread-safe operations to control and check
+ * the service status of Redis-related functionalities.
+ *
+ * <p>The state is managed through an atomic boolean flag that indicates
+ * whether the service is out of service (down) or in service (up).
+ * All state transitions are handled atomically to ensure thread safety.</p>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeRedisState {
 	
-	private static volatile AtomicBoolean outOfService = new AtomicBoolean(false);
+	/**
+	 * Thread-safe atomic boolean flag that tracks the service state.
+	 * When {@code true}, the Redis service is considered out of service (down).
+	 * When {@code false}, the Redis service is considered in service (up).
+	 * Default state is {@code false} (in service).
+	 */
+	private static final AtomicBoolean outOfService = new AtomicBoolean(false);
+	
+	/**
+	 * Private constructor to prevent instantiation of this utility class.
+	 * This class only provides static methods and should not be instantiated.
+	 */
+	private OrangeRedisState() {}
 
+	/**
+	 * Checks if the Redis service is currently out of service.
+	 *
+	 * @return {@code true} if the service is down (out of service),
+	 *         {@code false} if the service is up and running
+	 */
 	public static boolean isOutOfService() {
 		return outOfService.get();
 	}
 
+	/**
+	 * Marks the Redis service as out of service (down).
+	 * This operation is performed atomically using compare-and-set
+	 * to ensure thread safety. The state will only change if
+	 * the service is currently up.
+	 */
 	public static void down() {
 		outOfService.compareAndSet(false, true);
 	}
 	
+	/**
+	 * Marks the Redis service as in service (up).
+	 * This operation is performed atomically using compare-and-set
+	 * to ensure thread safety. The state will only change if
+	 * the service is currently down.
+	 */
 	public static void up() {
 		outOfService.compareAndSet(true, false);
 	}

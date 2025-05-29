@@ -18,6 +18,7 @@
  */
 package com.langwuyue.orange.redis;
 
+
 /**
  * @author Liang.Zhong
  * @since 1.0.0
@@ -34,10 +35,20 @@ public enum GeoDistanceUnitEnum {
 		this.abbreviation = abbreviation;
 	}
 
+	/**
+	 * Returns the multiplier to calculate metrics values from a base scale.
+	 *
+	 * @return
+	 */
 	public double getMultiplier() {
 		return multiplier;
 	}
 
+	/**
+	 * Returns the scientific abbreviation of the unit the {@link GeoDistanceUnitEnum} is in.
+	 *
+	 * @return
+	 */
 	public String getAbbreviation() {
 		return abbreviation;
 	}

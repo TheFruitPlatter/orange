@@ -19,6 +19,8 @@
 package com.langwuyue.orange.redis;
 
 /**
+ * List move direction.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
  */

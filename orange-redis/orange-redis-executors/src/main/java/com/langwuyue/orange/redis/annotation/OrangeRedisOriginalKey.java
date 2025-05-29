@@ -25,6 +25,21 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Marks a method parameter as the original Redis key pattern in listener methods.
+ * This annotation is used to identify which parameter represents the unprocessed
+ * key pattern that may contain variable placeholders.
+ *
+ * <p>In Redis listeners, keys often contain variables that need to be resolved
+ * at runtime. For example, a key pattern like "user:profile:${userId}" contains
+ * a variable placeholder ${userId}. The listener's proxy needs to know the original
+ * key pattern (with unresolved variables) to properly filter and route Redis events.</p>
+ *
+ * <p>When a method parameter is annotated with {@code @OrangeRedisOriginalKey},
+ * the listener's proxy will use this parameter value as the original key pattern
+ * for filtering and matching purposes, before any variable resolution occurs.</p>
+ *
+ *
+ * @see OrangeRedisListener
  * @author Liang.Zhong
  * @since 1.0.0
  */

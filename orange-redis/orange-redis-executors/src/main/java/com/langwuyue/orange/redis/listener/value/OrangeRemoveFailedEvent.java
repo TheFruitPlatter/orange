@@ -19,8 +19,48 @@
 package com.langwuyue.orange.redis.listener.value;
 
 /**
+ * Event class representing a failed remove operation for Redis value type.
+ * 
+ * <p>This event is triggered when a Redis remove operation (similar to DEL command)
+ * fails to delete a value. The failure could be due to various reasons such as:
+ * <ul>
+ *   <li>Connection issues with Redis server</li>
+ *   <li>Redis server errors</li>
+ *   <li>Insufficient permissions</li>
+ *   <li>Other operational exceptions</li>
+ * </ul>
+ * 
+ * <p>This class extends {@link OrangeSetIfAbsentFailedEvent} to maintain consistency
+ * in error handling across different Redis operations. It inherits the following properties:
+ * <ul>
+ *   <li>The value that was attempted to be removed</li>
+ *   <li>Any additional arguments that were provided during the operation</li>
+ *   <li>The exception that caused the failure (if available)</li>
+ *   <li>A reason message explaining the failure</li>
+ * </ul>
+ * 
+ * <p>This class is used as a parameter type in {@link OrangeRedisValueSetIfAbsentListener#onRemoveFailed(OrangeRemoveFailedEvent)}
+ * to provide information about the failed remove operation to event handlers.
+ * 
+ * <p>Example usage:
+ * <pre>{@code
+ * @Override
+ * public void onRemoveFailed(OrangeRemoveFailedEvent event) {
+ *     Object value = event.getValue();
+ *     String reason = event.getReason();
+ *     Exception exception = event.getException();
+ *     
+ *     logger.warn("Failed to remove value: {}, reason: {}", value, reason);
+ *     if (exception != null) {
+ *         logger.error("Exception details:", exception);
+ *     }
+ * }
+ * }</pre>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeSetIfAbsentFailedEvent
+ * @see OrangeRedisValueSetIfAbsentListener
  */
 public class OrangeRemoveFailedEvent extends OrangeSetIfAbsentFailedEvent{
 

@@ -29,17 +29,42 @@ import com.langwuyue.orange.redis.annotation.OrangeRedisIfAbsentListener;
 import com.langwuyue.orange.redis.annotation.OrangeRedisKey;
 
 /**
+ * A filter handler for Redis if-absent operation listeners that implements the proxy pattern.
+ * This class filters Redis operations based on configured keys and manages the invocation
+ * of the actual listener methods.
+ * 
+ * <p>The filter supports key-based filtering through {@link OrangeRedisIfAbsentListener} annotation,
+ * where specific Redis keys can be defined to limit which operations the listener should respond to.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeRedisIfAbsentListener
+ * @see OrangeRedisKey
  */
 public class OrangeIfAbsentListenerFilter implements InvocationHandler {
 	
+	/** The target listener object being proxied */
 	private Object target;
 	
+	/** Set of Redis keys that this filter should process */
 	private Set<String> keys;
 	
+	/** Map storing the parameter index of the original key for each method */
 	private Map<Method,Integer> originalKeyIndexMap;
 	
+	/**
+	 * Constructs a new filter for Redis if-absent operation listeners.
+	 * 
+	 * <p>This constructor initializes the filter with the target listener and its configuration.
+	 * It processes the {@link OrangeRedisIfAbsentListener} annotation on the target class to
+	 * determine which Redis keys should be monitored.
+	 *
+	 * @param target the actual listener object that will handle the events
+	 * @param originalKeyIndexMap a map containing method to key parameter index mappings
+	 * @param keyPrefix the prefix to be added to all Redis keys
+	 * @throws OrangeRedisException if the key classes specified in the listener annotation
+	 *         are not properly annotated with {@link OrangeRedisKey}
+	 */
 	public OrangeIfAbsentListenerFilter(Object target, Map<Method,Integer> originalKeyIndexMap,String keyPrefix) {
 		super();
 		this.target = target;

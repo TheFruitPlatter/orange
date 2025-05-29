@@ -19,7 +19,6 @@
 package com.langwuyue.orange.redis;
 
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.data.geo.Metric;
