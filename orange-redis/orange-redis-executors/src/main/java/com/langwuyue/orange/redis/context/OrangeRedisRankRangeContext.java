@@ -30,14 +30,58 @@ import com.langwuyue.orange.redis.annotation.zset.RankRange;
 import com.langwuyue.orange.redis.utils.OrangeReflectionUtils;
 
 /**
+ * Context class for handling rank range operations in Redis Sorted Sets.
+ * 
+ * <p>This class provides support for operations that require a range of ranks
+ * (positions) within a Redis Sorted Set, such as retrieving elements by their
+ * position in the sorted set. It handles the parsing and validation of rank
+ * range parameters marked with the {@link RankRange} annotation.
+ * 
+ * <p>The class supports two ways of specifying rank ranges:
+ * <ul>
+ *   <li>Using a {@link com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations.RankRange}
+ *       object directly</li>
+ *   <li>Using a custom object with fields annotated with {@link StartIndex} and
+ *       {@link EndIndex}</li>
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations.RankRange
+ * @see RankRange
+ * @see StartIndex
+ * @see EndIndex
  */
 public class OrangeRedisRankRangeContext extends OrangeRedisContext {
 	
+	/**
+	 * The rank range object for Redis sorted set operations.
+	 * 
+	 * <p>This field is automatically populated with the value of the method parameter
+	 * annotated with {@link RankRange}. It can be either:
+	 * <ul>
+	 *   <li>A {@link com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations.RankRange} object</li>
+	 *   <li>A custom object with fields annotated with {@link StartIndex} and {@link EndIndex}</li>
+	 * </ul>
+	 * 
+	 * <p>The field is marked with {@link OrangeRedisOperationArg} to indicate that
+	 * it should be bound to parameters annotated with {@link RankRange}.
+	 */
 	@OrangeRedisOperationArg(binding = RankRange.class)
 	private Object rankRange;
 
+	/**
+	 * Constructs a new Redis rank range context with the specified parameters.
+	 * 
+	 * <p>This constructor initializes the context with the necessary information
+	 * for handling rank range operations on Redis sorted sets.
+	 *
+	 * @param operationOwner the class that owns the Redis operation method
+	 * @param operationMethod the method representing the Redis operation
+	 * @param args the arguments to be passed to the operation method
+	 * @param redisKey the Redis key information
+	 * @param valueType the type of Redis value being operated on
+	 */
 	public OrangeRedisRankRangeContext(
 		Class<?> operationOwner, 
 		Method operationMethod, 
@@ -48,6 +92,32 @@ public class OrangeRedisRankRangeContext extends OrangeRedisContext {
 		super(operationOwner, operationMethod, args, redisKey,valueType);
 	}
 
+	/**
+	 * Extracts and returns the rank range for Redis sorted set operations.
+	 * 
+	 * <p>This method processes the object annotated with {@link RankRange} and
+	 * converts it to a {@link com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations.RankRange}
+	 * object that can be used in Redis operations. The method handles two cases:
+	 * 
+	 * <ol>
+	 *   <li>If the object is already a {@code RankRange}, it is returned directly</li>
+	 *   <li>If the object is a custom class, it looks for fields annotated with
+	 *       {@link StartIndex} and {@link EndIndex}, extracts their values, and
+	 *       creates a new {@code RankRange} object</li>
+	 * </ol>
+	 * 
+	 * <p>The method performs extensive validation to ensure that:
+	 * <ul>
+	 *   <li>The rank range object is not null</li>
+	 *   <li>The custom object has both {@code StartIndex} and {@code EndIndex} annotated fields</li>
+	 *   <li>The start and end index values are not null</li>
+	 *   <li>The start and end index values are either integers or strings that can be parsed as integers</li>
+	 * </ul>
+	 *
+	 * @return a {@link com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations.RankRange} object
+	 * @throws OrangeRedisException if the rank range is null, missing required annotations,
+	 *         or contains invalid values
+	 */
 	public com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations.RankRange getRankRange() {
 		if(rankRange == null) {
 			throw new OrangeRedisException(String.format("The argument annotated @%s cannot be null", RankRange.class));

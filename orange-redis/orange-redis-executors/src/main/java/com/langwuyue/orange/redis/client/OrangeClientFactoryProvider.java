@@ -21,11 +21,34 @@ package com.langwuyue.orange.redis.client;
 import java.lang.annotation.Annotation;
 
 /**
+ * Provider interface for obtaining Redis client factory classes based on annotations.
+ * 
+ * <p>This interface serves as a factory provider that maps annotation types to their
+ * corresponding factory classes. It is used in the Orange Redis framework to dynamically
+ * create appropriate Redis client factories based on the annotations used in the code.
+ * 
+ * <p>Implementations of this interface should maintain a mapping between annotation
+ * classes and their corresponding factory classes. This allows for flexible and
+ * extensible client factory creation based on different annotation configurations.
+ * 
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public interface OrangeClientFactoryProvider {
 
-	Class getFactoryClass(Class<? extends Annotation> annotationClass);
+    /**
+     * Returns the factory class associated with the given annotation class.
+     * 
+     * <p>This method is responsible for determining which factory class should be used
+     * to create Redis clients based on the annotation present on the client class.
+     * Implementations should maintain a mapping of annotation types to their corresponding
+     * factory classes.
+     * 
+     *
+     * @param annotationClass the annotation class to look up the factory for
+     * @return the factory class associated with the annotation, or null if no factory is found
+     */
+    Class getFactoryClass(Class<? extends Annotation> annotationClass);
 
 }

@@ -26,14 +26,37 @@ import com.langwuyue.orange.redis.annotation.OrangeRedisOperationArg;
 import com.langwuyue.orange.redis.annotation.RedisOldValue;
 
 /**
+ * Context class for Redis Compare-And-Swap (CAS) operations.
+ * 
+ * <p>This class extends {@link OrangeRedisValueContext} to provide support for atomic
+ * Compare-And-Swap operations in Redis. CAS operations are used to update a value
+ * only if it matches an expected old value, ensuring atomic updates in concurrent
+ * environments.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeCompareAndSwapContext extends OrangeRedisValueContext {
 	
+	/**
+	 * The expected old value for the CAS operation.
+	 * 
+	 * <p>This field is automatically populated with the value of the method parameter
+	 * annotated with {@link RedisOldValue}. It represents the expected current value
+	 * in Redis that must match for the CAS operation to succeed.
+	 */
 	@OrangeRedisOperationArg(binding = RedisOldValue.class)
 	private Object oldValue;
 	
+	/**
+	 * Constructs a new CAS operation context with the specified parameters.
+	 *
+	 * @param operationOwner the class that owns the Redis operation method
+	 * @param operationMethod the method representing the Redis operation
+	 * @param args the arguments to be passed to the operation method
+	 * @param redisKey the Redis key information
+	 * @param valueType the type of Redis value being operated on
+	 */
 	public OrangeCompareAndSwapContext(
 		Class<?> operationOwner, 
 		Method operationMethod, 
@@ -44,6 +67,16 @@ public class OrangeCompareAndSwapContext extends OrangeRedisValueContext {
 		super(operationOwner, operationMethod, args, redisKey,valueType);
 	}
 
+	/**
+	 * Returns the expected old value for the CAS operation.
+	 * 
+	 * <p>This method ensures that the old value is not null before returning it.
+	 * If the old value is null, it indicates that the method parameter annotated
+	 * with {@link RedisOldValue} was not properly provided.
+	 *
+	 * @return the non-null old value for the CAS operation
+	 * @throws OrangeRedisException if the old value is null
+	 */
 	public Object getOldValue() {
 		if(oldValue == null) {
 			throw new OrangeRedisException(String.format("The argument annotated with @%s cannot be null", RedisOldValue.class));
@@ -51,6 +84,15 @@ public class OrangeCompareAndSwapContext extends OrangeRedisValueContext {
 		return oldValue;
 	}
 	
+	/**
+	 * Returns the old value for the CAS operation, which may be null.
+	 * 
+	 * <p>Unlike {@link #getOldValue()}, this method does not throw an exception
+	 * if the old value is null. This can be useful in cases where null old values
+	 * need to be handled specially.
+	 *
+	 * @return the old value for the CAS operation, may be null
+	 */
 	public Object getNullableOldValue() {
 		return oldValue;
 	}
