@@ -57,19 +57,32 @@ public class OrangeRedisContextBuilder {
 	
 	/**
 	 * The class that owns the Redis operation method.
-	 * This is typically the interface or class that defines the Redis operations.
+	 * <p>This represents the interface or class that defines the Redis operations,
+	 * typically containing method declarations annotated with Redis operation annotations.
 	 */
 	private Class<?> operationOwner;
 	
 	/**
-	 * The method representing the Redis operation.
-	 * This is the method that will be invoked to perform the Redis operation.
+	 * The method being invoked in the implementation class.
+	 * <p>This represents either:
+	 * <ul>
+	 *   <li>An overridden method in a subclass that typically only has the {@code @Override} annotation
+	 *       and inherits Redis-specific annotations from its parent interface/class</li>
+	 *   <li>A direct implementation method with Redis annotations when not using inheritance</li>
+	 * </ul>
+	 * <p>When using inheritance, this method and {@link #actualMethod} are different.
+	 * When directly implementing Redis operations without inheritance, this method and
+	 * {@link #actualMethod} reference the same method.
 	 */
 	private Method operationMethod;
 	
 	/**
-	 * The actual method being called, which may be different from the operation method
-	 * in case of proxy-based invocation or method overriding.
+	 * The original method containing Redis operation annotations.
+	 * <p>This represents the original method declaration (typically in an interface or parent class)
+	 * that contains the Redis operation annotations (e.g., {@code @GetValue}, {@code @SetValue}).
+	 * These annotations are crucial as they define the Redis commands to be executed.
+	 * When a method is overridden, the annotations from this original method are used
+	 * rather than from the overridden method.
 	 */
 	private Method actualMethod;
 	
@@ -90,7 +103,7 @@ public class OrangeRedisContextBuilder {
 	private Key redisKey;
 	
 	/**
-	 * The type of Redis value being operated on (e.g., STRING, LIST, HASH).
+	 * The type of Redis value being operated on (e.g., STRING, JSON).
 	 */
 	private RedisValueTypeEnum valueType;
 	

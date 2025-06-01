@@ -27,11 +27,48 @@ import com.langwuyue.orange.redis.client.OrangeClientFactoryProvider;
 import com.langwuyue.orange.redis.mapping.OrangeRedisExecutorsMapping;
 
 /**
+ * Handler mapping for Redis Set operations involving multiple keys.
+ * 
+ * <p>This class extends {@link OrangeCrossKeysOperationArgHandlerMapping} to provide
+ * specialized handling for Redis Set operations across multiple keys. It manages the
+ * mapping of method arguments to Redis Set operations and ensures proper type handling
+ * for set members.
+ * 
+ * <p>Key features include:
+ * <ul>
+ *   <li>Support for {@link OrangeRedisSetClient} annotation processing</li>
+ *   <li>Set-specific value type extraction and validation</li>
+ *   <li>Cross-key set operations handling (e.g., union, intersection, difference)</li>
+ * </ul>
+ * 
+ * <p>This handler is particularly useful for operations that involve:
+ * <ul>
+ *   <li>Set operations between multiple keys (SUNION, SINTER, SDIFF)</li>
+ *   <li>Moving members between sets</li>
+ *   <li>Comparing members across multiple sets</li>
+ * </ul>
+ * 
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeRedisSetClient
+ * @see OrangeCrossKeysOperationArgHandlerMapping
  */
 public class OrangeSetCrossKeysOperationArgHandlerMapping extends OrangeCrossKeysOperationArgHandlerMapping {
 
+	/**
+	 * Constructs a new OrangeSetCrossKeysOperationArgHandlerMapping instance.
+	 * 
+	 * <p>Initializes a handler mapping for Redis Set operations that work with multiple keys.
+	 * This constructor sets up the necessary components for handling Set operations and
+	 * their arguments.
+	 *
+	 * @param executorsMapping the mapping of executors for Redis operations
+	 * @param operationOwner the class that owns the Redis operations
+	 * @param valueHandlerMap map of value handlers for different argument types
+	 * @param provider provider for Redis client factories
+	 * @param clientAnnotationClass the annotation class used to mark Redis Set clients
+	 */
 	public OrangeSetCrossKeysOperationArgHandlerMapping(
 			OrangeRedisExecutorsMapping executorsMapping,
 			Class operationOwner,
@@ -40,6 +77,24 @@ public class OrangeSetCrossKeysOperationArgHandlerMapping extends OrangeCrossKey
 		super(executorsMapping, operationOwner, valueHandlerMap, provider, clientAnnotationClass);
 	}
 
+	/**
+	 * Extracts the Redis value type from a Set client annotation.
+	 * 
+	 * <p>This method retrieves the value type configuration from an {@link OrangeRedisSetClient}
+	 * annotation. The value type determines how set members are serialized and
+	 * deserialized during Redis operations.
+	 * 
+	 * <p>The extracted value type is used to:
+	 * <ul>
+	 *   <li>Select appropriate serialization/deserialization strategies</li>
+	 *   <li>Validate type compatibility across set operations</li>
+	 *   <li>Ensure consistent data handling across multiple set keys</li>
+	 * </ul>
+	 *
+	 * @param annotation the client annotation to extract value type from (must be {@link OrangeRedisSetClient})
+	 * @return the {@link RedisValueTypeEnum} specified in the annotation
+	 * @throws ClassCastException if the annotation is not a Set client annotation
+	 */
 	@Override
 	protected RedisValueTypeEnum getValueType(Annotation annotation) {
 		OrangeRedisSetClient setClient = (OrangeRedisSetClient)annotation;

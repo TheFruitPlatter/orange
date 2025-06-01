@@ -27,8 +27,31 @@ import com.langwuyue.orange.redis.client.OrangeClientFactoryProvider;
 import com.langwuyue.orange.redis.mapping.OrangeRedisExecutorsMapping;
 
 /**
+ * Handler mapping for Redis List operations involving multiple keys.
+ * 
+ * <p>This class extends {@link OrangeCrossKeysOperationArgHandlerMapping} to provide
+ * specialized handling for Redis List operations across multiple keys. It manages the
+ * mapping of method arguments to Redis List operations and ensures proper type handling
+ * for list values.
+ * 
+ * <p>Key features include:
+ * <ul>
+ *   <li>Support for {@link OrangeRedisListClient} annotation processing</li>
+ *   <li>List-specific value type extraction and validation</li>
+ *   <li>Cross-key list operations handling (e.g., list merging, copying)</li>
+ * </ul>
+ * 
+ * <p>This handler is particularly useful for operations that involve:
+ * <ul>
+ *   <li>Moving elements between multiple lists</li>
+ *   <li>Combining elements from multiple lists</li>
+ *   <li>Cross-list operations like merging or comparing</li>
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeRedisListClient
+ * @see OrangeCrossKeysOperationArgHandlerMapping
  */
 public class OrangeListCrossKeysOperationArgHandlerMapping extends OrangeCrossKeysOperationArgHandlerMapping {
 
@@ -40,6 +63,23 @@ public class OrangeListCrossKeysOperationArgHandlerMapping extends OrangeCrossKe
 		super(executorsMapping, operationOwner, valueHandlerMap, provider, clientAnnotationClass);
 	}
 
+	/**
+	 * Extracts the Redis value type from a List client annotation.
+	 * 
+	 * <p>This method retrieves the value type configuration from an {@link OrangeRedisListClient}
+	 * annotation. The value type determines how list elements are serialized and
+	 * deserialized during Redis operations.
+	 * 
+	 * <p>The extracted value type is used to:
+	 * <ul>
+	 *   <li>Select appropriate serialization/deserialization strategies</li>
+	 *   <li>Validate type compatibility across operations</li>
+	 *   <li>Ensure consistent data handling across multiple list keys</li>
+	 * </ul>
+	 *
+	 * @param annotation the client annotation to extract value type from (must be {@link OrangeRedisListClient})
+	 * @return the {@link RedisValueTypeEnum} specified in the annotation
+	 */
 	@Override
 	protected RedisValueTypeEnum getValueType(Annotation annotation) {
 		OrangeRedisListClient setClient = (OrangeRedisListClient)annotation;

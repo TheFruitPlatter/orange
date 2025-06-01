@@ -29,13 +29,40 @@ import com.langwuyue.orange.redis.mapping.OrangeRedisExecutorsMapping;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Specialized argument handler mapping for Redis Lua script operations.
+ * 
+ * <p>This class extends {@link OrangeOperationArgHandlerMapping} to provide specific
+ * handling for Lua script execution in Redis. It manages the mapping between operation
+ * methods and their key parameters as defined in {@link ExecuteLuaScript} annotations.
+ * 
+ * <p>Key features:
+ * <ul>
+ *   <li>Extracts and stores key parameter classes from {@link ExecuteLuaScript} annotations</li>
+ *   <li>Provides access to key classes for script execution</li>
+ *   <li>Maintains thread-safe mapping of methods to their key parameters</li>
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see ExecuteLuaScript
+ * @see OrangeOperationArgHandlerMapping
  */
 public class OrangeScriptArgHandlerMapping extends OrangeOperationArgHandlerMapping {
 	
+	/**
+	 * Thread-safe mapping between operation methods and their key parameter classes.
+	 * This map stores the key parameter types defined in {@link ExecuteLuaScript} annotations
+	 * for each Lua script operation method.
+	 */
 	private static final Map<Method, List<Class<?>>> OPEATION_KEYS_MAPPING = new ConcurrentHashMap<>();
 	
+	/**
+	 * Creates a new instance of OrangeScriptArgHandlerMapping.
+	 *
+	 * @param executorsMapping the mapping of Redis executors
+	 * @param operationOwner the class that owns the Redis operations
+	 * @param valueHandlerMap map of value handlers for different parameter types
+	 */
 	public OrangeScriptArgHandlerMapping(
 		OrangeRedisExecutorsMapping executorsMapping, 
 		Class<?> operationOwner,
@@ -44,6 +71,20 @@ public class OrangeScriptArgHandlerMapping extends OrangeOperationArgHandlerMapp
 		super(executorsMapping,operationOwner,valueHandlerMap);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * <p>Extends the parent implementation to handle Lua script operations:
+	 * <ol>
+	 *   <li>Gets the executor from parent implementation</li>
+	 *   <li>Retrieves the actual method from executor mapping</li>
+	 *   <li>Extracts key classes from {@link ExecuteLuaScript} annotation</li>
+	 *   <li>Stores the key classes in the mapping for later use</li>
+	 * </ol>
+	 *
+	 * @param method the method to get executor for
+	 * @return the Redis executor for the method
+	 */
 	@Override
 	protected OrangeRedisExecutor getOrangeRedisExecutor(Method method) {
 		OrangeRedisExecutor executor = super.getOrangeRedisExecutor(method);
@@ -53,6 +94,15 @@ public class OrangeScriptArgHandlerMapping extends OrangeOperationArgHandlerMapp
 		return executor;
 	}
 	
+	/**
+	 * Retrieves the list of key parameter classes for a given method.
+	 * 
+	 * <p>These classes represent the types of keys that will be passed to the
+	 * Lua script as defined in the {@link ExecuteLuaScript} annotation.
+	 *
+	 * @param method the method to get key classes for
+	 * @return list of classes representing the key parameters, or null if method not found
+	 */
 	public List<Class<?>> getKeyClasses(Method method){
 		return OPEATION_KEYS_MAPPING.get(method);
 	}

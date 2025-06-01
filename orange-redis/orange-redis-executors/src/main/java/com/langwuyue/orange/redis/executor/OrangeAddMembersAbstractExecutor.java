@@ -35,18 +35,78 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 import com.langwuyue.orange.redis.utils.OrangeReflectionUtils;
 
 /**
+ * Abstract executor for Redis operations that add members to collections (Sets, Lists, etc.).
+ * 
+ * <p>This executor handles bulk member addition operations with support for:
+ * <ul>
+ *   <li>Single and multiple member additions</li>
+ *   <li>Success/failure tracking per member when returning Map</li>
+ *   <li>Configurable failure handling with {@link ContinueOnFailure}</li>
+ *   <li>Batch operations through {@link Multiple} annotation</li>
+ * </ul>
+ * 
+ * <p>Key features:
+ * <ul>
+ *   <li>Supports both single-value and bulk addition operations</li>
+ *   <li>Provides detailed operation results through Map return type</li>
+ *   <li>Handles operation failures gracefully with configurable behavior</li>
+ *   <li>Integrates with logging system for operation tracking</li>
+ * </ul>
+ * 
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see AddMembers
+ * @see Multiple
+ * @see ContinueOnFailure
+ * @see OrangeRedisMultipleValueContext
  */
 public abstract class OrangeAddMembersAbstractExecutor extends OrangeRedisAbstractExecutor {
 	
+	/**
+	 * Logger for recording operation results and errors.
+	 */
 	private OrangeRedisLogger logger;
 	
+	/**
+	 * Creates a new instance of OrangeAddMembersAbstractExecutor.
+	 *
+	 * @param idGenerator the generator for creating unique executor IDs
+	 * @param logger the logger for recording operation results and errors
+	 */
 	protected OrangeAddMembersAbstractExecutor(OrangeRedisExecutorIdGenerator idGenerator,OrangeRedisLogger logger) {
 		super(idGenerator);
 		this.logger = logger;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * <p>Executes the member addition operation with the following logic:
+	 * <ol>
+	 *   <li>If return type is not Map, performs single addition operation</li>
+	 *   <li>For Map return type:
+	 *     <ul>
+	 *       <li>Creates result map to track success/failure per member</li>
+	 *       <li>Iterates through members performing individual additions</li>
+	 *       <li>Records success/failure status in result map</li>
+	 *       <li>Handles failures according to {@link ContinueOnFailure} setting</li>
+	 *     </ul>
+	 *   </li>
+	 * </ol>
+	 *
+	 * <p>Error handling:
+	 * <ul>
+	 *   <li>With {@link ContinueOnFailure(false)}: throws exception on first failure</li>
+	 *   <li>With {@link ContinueOnFailure(true)}: logs errors and continues processing</li>
+	 *   <li>Network errors and timeouts are logged with detailed context</li>
+	 * </ul>
+	 *
+	 * @param context the Redis operation context
+	 * @return Long for single operations, Map<Object, Boolean> for bulk operations
+	 * @throws OrangeRedisException if operation fails and continueOnFailure is false
+	 * @throws Exception if any unhandled error occurs
+	 */
 	@Override
 	public Object execute(OrangeRedisContext context) throws Exception {
 		OrangeRedisIterableContext ctx = (OrangeRedisIterableContext)context;
