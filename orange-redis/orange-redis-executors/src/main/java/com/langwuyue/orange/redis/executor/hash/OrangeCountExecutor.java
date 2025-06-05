@@ -30,8 +30,31 @@ import com.langwuyue.orange.redis.operations.OrangeRedisHashOperations;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor for counting the number of members in a Redis Hash.
+ *
+ * <p>This executor provides functionality to get the size (number of fields) of a Redis Hash.
+ * The operation returns the count as a long value.
+ *
+ * <p>The executor supports the following annotation:
+ * <ul>
+ *   <li>{@link GetSize} - Marks this as a hash size operation</li>
+ * </ul>
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Returns the number of fields in the hash as a long value</li>
+ *   <li>Uses Redis's HLEN command internally</li>
+ *   <li>Supports any hash key type</li>
+ * </ul>
+ *
+ * <p>Performance considerations:
+ * The HLEN operation has a time complexity of O(1), making it very efficient
+ * regardless of the hash size.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeRedisHashOperations
+ * @see GetSize
  */
 public class OrangeCountExecutor extends OrangeRedisAbstractExecutor {
 	

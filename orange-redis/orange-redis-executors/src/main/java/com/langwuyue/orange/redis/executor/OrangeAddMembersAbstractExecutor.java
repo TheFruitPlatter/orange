@@ -155,10 +155,47 @@ public abstract class OrangeAddMembersAbstractExecutor extends OrangeRedisAbstra
 		return resultMap;
 	}
 	
+	/**
+	 * Performs a bulk member addition operation using the provided context.
+	 * 
+	 * <p>This method is called when executing a bulk addition operation where multiple
+	 * members are added at once. Subclasses must implement this method to perform
+	 * the actual Redis bulk addition operation for their specific collection type.
+	 * The context should contain all the members to be added.
+	 *
+	 * @param ctx the Redis operation context containing key and multiple member information
+	 * @return the number of members successfully added
+	 * @throws Exception if the bulk addition operation fails
+	 */
 	protected abstract Long doAdd(OrangeRedisContext ctx) throws Exception;
 	
+	/**
+	 * Performs a single member addition operation for a specific value.
+	 * 
+	 * <p>This method is called when adding a single member to the Redis collection.
+	 * It handles the addition of one specific value. Subclasses must implement this
+	 * method to perform the actual Redis addition operation for their specific
+	 * collection type.
+	 *
+	 * @param ctx the Redis operation context containing key information
+	 * @param value the single member value to add to the collection
+	 * @return the number of members added (1 for success, 0 if member already exists)
+	 * @throws Exception if the addition operation fails
+	 */
 	protected abstract Long doAdd(OrangeRedisContext ctx,Object value) throws Exception;
 
+	/**
+	 * Returns the list of annotation classes supported by this executor.
+	 * 
+	 * <p>This executor supports the following annotations:
+	 * <ul>
+	 *   <li>{@link AddMembers} - Marks methods that add members to Redis collections</li>
+	 *   <li>{@link Multiple} - Indicates bulk operations with multiple values</li>
+	 *   <li>{@link ContinueOnFailure} - Controls behavior when individual operations fail</li>
+	 * </ul>
+	 *
+	 * @return a list of supported annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(AddMembers.class,Multiple.class,ContinueOnFailure.class);

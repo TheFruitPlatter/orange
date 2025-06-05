@@ -30,18 +30,60 @@ import com.langwuyue.orange.redis.mapping.OrangeRedisExecutorIdGenerator;
 import com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 /**
+ * Executor for retrieving the rank (position) of a member in a Redis Sorted Set.
+ * 
+ * <p>This executor provides functionality to get the rank (zero-based position) of
+ * a member in a Redis Sorted Set. The rank is determined by the member's score,
+ * with members being ordered from the lowest to the highest score.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Returns the zero-based position of the member in the sorted set</li>
+ *   <li>Returns null if the member does not exist in the set</li>
+ *   <li>Supports both simple types and complex objects as members</li>
+ *   <li>Uses ascending score order for ranking</li>
+ * </ul>
+ *
+ * <p>The executor uses {@link OrangeRedisZSetOperations} to perform the actual
+ * Redis operation and supports both {@link GetIndexs} and {@link RedisValue} annotations
+ * for method mapping.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeGetRankExecutor extends OrangeRedisAbstractExecutor {
 
+	/** The Redis Sorted Set operations implementation */
 	private OrangeRedisZSetOperations operations;
 
+	/**
+	 * Constructs a new OrangeGetRankExecutor.
+	 *
+	 * @param operations the Redis Sorted Set operations implementation
+	 * @param idGenerator the executor ID generator for tracking and monitoring
+	 */
 	public OrangeGetRankExecutor(OrangeRedisZSetOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Executes the rank retrieval operation for a member in a Redis Sorted Set.
+	 *
+	 * <p>This method retrieves the zero-based position of a member in the sorted set.
+	 * The position is determined by the member's score in ascending order.
+	 *
+	 * <p>The method:
+	 * <ul>
+	 *   <li>Extracts the key and member value from the context</li>
+	 *   <li>Queries Redis for the member's rank</li>
+	 *   <li>Returns null if the member is not found in the set</li>
+	 * </ul>
+	 *
+	 * @param context the execution context containing key and member information
+	 * @return the rank of the member as a Long, or null if the member doesn't exist
+	 * @throws Exception if an error occurs during the operation
+	 */
 	@Override
 	public Object execute(OrangeRedisContext context) throws Exception {
 		OrangeRedisValueContext ctx = (OrangeRedisValueContext) context;
@@ -52,11 +94,33 @@ public class OrangeGetRankExecutor extends OrangeRedisAbstractExecutor {
 		return result;
 	}
 
+	/**
+	 * Returns the list of supported annotations for this executor.
+	 *
+	 * <p>This executor supports:
+	 * <ul>
+	 *   <li>{@link GetIndexs} - for marking methods that retrieve member ranks</li>
+	 *   <li>{@link RedisValue} - for marking parameters that represent set members</li>
+	 * </ul>
+	 *
+	 * @return a list of supported annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(GetIndexs.class,RedisValue.class);
 	}
 	
+	/**
+	 * Returns the context class used by this executor.
+	 *
+	 * <p>This executor uses {@link OrangeRedisValueContext} to handle:
+	 * <ul>
+	 *   <li>Redis key information</li>
+	 *   <li>Member value and type information</li>
+	 * </ul>
+	 *
+	 * @return the class of the context used by this executor
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeRedisValueContext.class;

@@ -36,6 +36,37 @@ import com.langwuyue.orange.redis.operations.OrangeRedisHashOperations;
 import com.langwuyue.orange.redis.utils.OrangeReflectionUtils;
 
 /**
+ * Executor for randomly retrieving a single member from a Redis Hash.
+ *
+ * <p>This executor provides functionality to get a random key-value pair from a Redis Hash.
+ * The operation is useful for scenarios requiring random sampling or display of hash members.
+ *
+ * <p>The executor supports the following annotation:
+ * <ul>
+ *   <li>{@link Random} - Marks this as a random member retrieval operation</li>
+ * </ul>
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Returns exactly one random member from the hash</li>
+ *   <li>Uses Redis's HRANDFIELD command internally</li>
+ *   <li>Supports both simple and complex return types</li>
+ *   <li>Automatically handles type conversion of returned values</li>
+ * </ul>
+ *
+ * <p>Return value handling:
+ * <ul>
+ *   <li>For non-collection return types: returns a single random member</li>
+ *   <li>For collection/array return types: returns a collection with one random member</li>
+ * </ul>
+ *
+ * <p>Performance considerations:
+ * The HRANDFIELD operation has a time complexity of O(1), making it very efficient
+ * regardless of the hash size.
+ *
+ * <p>Note: For retrieving multiple random members, use {@link OrangeRandomMembersExecutor}.
+ * For retrieving multiple distinct random members, use {@link OrangeRandomAndDistinctMembersExecutor}.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */

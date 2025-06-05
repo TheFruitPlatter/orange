@@ -30,11 +30,28 @@ import com.langwuyue.orange.redis.mapping.OrangeRedisExecutorIdGenerator;
 import com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations;
 
 /**
+ * Annotation-based ZSet member conditional addition executor with expiration support.
+ * 
+ * <p>Features:
+ * <ul>
+ *   <li>Extends {@link OrangeAddIfAbsentByMemberAnnotationExecutor} base implementation</li>
+ *   <li>Supports setting key expiration via {@link SetExpiration} annotation</li>
+ *   <li>Sets key expiration before adding members</li>
+ *   <li>Maintains all conditional addition functionality from parent class</li>
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeAddIfAbsentByMemberAnnotationWithExpirationExecutor extends OrangeAddIfAbsentByMemberAnnotationExecutor {
 
+	/**
+	 * Constructs a new executor instance with expiration support.
+	 *
+	 * @param operations Redis ZSet operations interface instance
+	 * @param idGenerator Executor ID generator
+	 * @param listeners Conditional addition listeners collection
+	 */
 	public OrangeAddIfAbsentByMemberAnnotationWithExpirationExecutor(
 		OrangeRedisZSetOperations operations,
 		OrangeRedisExecutorIdGenerator idGenerator,
@@ -43,6 +60,20 @@ public class OrangeAddIfAbsentByMemberAnnotationWithExpirationExecutor extends O
 		super(operations,idGenerator,listeners);
 	}
 
+	/**
+	 * Executes conditional member addition operation with expiration time.
+	 *
+	 * <p>Execution flow:
+	 * <ol>
+	 *   <li>Gets Redis key information from context</li>
+	 *   <li>Sets key expiration time</li>
+	 *   <li>Calls parent class method to perform conditional addition</li>
+	 * </ol>
+	 *
+	 * @param context Redis operation context
+	 * @return Addition result, inherits parent class's return value handling logic
+	 * @throws Exception Possible exceptions during execution
+	 */
 	@Override
 	public Object execute(OrangeRedisContext context) throws Exception {
 		Key key = context.getRedisKey();
@@ -50,6 +81,16 @@ public class OrangeAddIfAbsentByMemberAnnotationWithExpirationExecutor extends O
 		return super.execute(context);
 	}
 	
+	/**
+	 * Gets the list of annotation types supported by this executor.
+	 *
+	 * <p>Adds to the parent class supported annotations:
+	 * <ul>
+	 *   <li>{@link SetExpiration} - Sets key expiration time</li>
+	 * </ul>
+	 *
+	 * @return Immutable list of annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		List<Class<? extends Annotation>> classes = super.getSupportedAnnotationClasses();

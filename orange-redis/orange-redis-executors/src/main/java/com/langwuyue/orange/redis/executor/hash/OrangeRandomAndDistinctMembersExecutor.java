@@ -32,6 +32,45 @@ import com.langwuyue.orange.redis.mapping.OrangeRedisExecutorIdGenerator;
 import com.langwuyue.orange.redis.operations.OrangeRedisHashOperations;
 
 /**
+ * Executor for randomly retrieving multiple distinct members from a Redis Hash.
+ *
+ * <p>This executor provides functionality to get multiple random key-value pairs from a Redis Hash
+ * with guaranteed uniqueness (no duplicates). The operation is useful for scenarios requiring
+ * multiple random samples where duplicates are not acceptable.
+ *
+ * <p>The executor supports the following annotations:
+ * <ul>
+ *   <li>{@link Random} - Marks this as a random member retrieval operation</li>
+ *   <li>{@link Count} - Specifies the number of random members to retrieve</li>
+ *   <li>{@link Distinct} - Ensures all returned members are distinct</li>
+ * </ul>
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Returns multiple random members from the hash with no duplicates</li>
+ *   <li>Uses Redis's HRANDFIELD command with COUNT parameter internally</li>
+ *   <li>Supports both simple and complex return types</li>
+ *   <li>Automatically handles type conversion of returned values</li>
+ *   <li>Guarantees uniqueness of returned members</li>
+ * </ul>
+ *
+ * <p>Return value handling:
+ * <ul>
+ *   <li>For collection/array return types: returns all distinct random members in the collection</li>
+ *   <li>For non-collection return types: returns the first random member</li>
+ * </ul>
+ *
+ * <p>Performance considerations:
+ * The HRANDFIELD operation with COUNT parameter has a time complexity of O(N) where N is the
+ * number of requested members. Performance is generally good but degrades as the requested
+ * count approaches the total hash size.
+ *
+ * <p>Note: 
+ * <ul>
+ *   <li>For retrieving a single random member, use {@link OrangeRandomMemberExecutor}</li>
+ *   <li>For retrieving multiple random members that may contain duplicates, use {@link OrangeRandomMembersExecutor}</li>
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */

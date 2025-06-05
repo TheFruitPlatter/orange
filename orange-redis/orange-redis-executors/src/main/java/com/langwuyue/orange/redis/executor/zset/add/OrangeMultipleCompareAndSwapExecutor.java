@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.langwuyue.orange.redis.annotation.AddMembers;
 import com.langwuyue.orange.redis.annotation.CAS;
 import com.langwuyue.orange.redis.annotation.ContinueOnFailure;
 import com.langwuyue.orange.redis.annotation.Multiple;
@@ -38,15 +37,56 @@ import com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations.ZSetEntry
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Redis executor for performing multiple Compare-And-Swap (CAS) operations on Redis Sorted Sets (ZSet).
+ * 
+ * <p>This executor handles the {@link Multiple} and {@link CAS} annotations to perform atomic
+ * score updates on multiple members in a Redis ZSet. Each update is only performed if the current
+ * score matches the expected old score (compare-and-swap semantics). This provides a way to
+ * implement optimistic locking for multiple ZSet entries.
+ * 
+ * <p>The {@link ContinueOnFailure} annotation can be used to control whether the operation
+ * should continue processing remaining entries if one of the CAS operations fails.
+ * 
+ * 
+ * <p>The return value is a Map where keys are the member values and values are boolean flags
+ * indicating whether the CAS operation succeeded for that member.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeMultipleCompareAndSwapExecutor extends OrangeCompareAndSwapExecutor {
 	
+	/**
+	 * Constructs a new multiple compare-and-swap executor for Redis ZSet operations.
+	 *
+	 * @param operations The Redis script operations template used for executing atomic
+	 *                  Lua scripts that perform the CAS operations
+	 * @param idGenerator Generator for creating unique executor IDs, used for
+	 *                    tracking and debugging executor instances
+	 * @param logger Logger instance for recording operation results and any
+	 *               potential failures during CAS operations
+	 */
 	public OrangeMultipleCompareAndSwapExecutor(OrangeRedisScriptOperations operations,OrangeRedisExecutorIdGenerator idGenerator,OrangeRedisLogger logger) {
 		super(operations,idGenerator,logger);
 	}
 
+	/**
+	 * Executes multiple Compare-And-Swap (CAS) operations on a Redis ZSet.
+	 * 
+	 * <p>This method iterates through a set of entries and performs CAS operations
+	 * for each one. For each entry, it attempts to update the score only if the
+	 * current score matches the expected old score. The operation can be configured
+	 * to either continue or stop on failure using the continueOnFailure flag.
+	 *
+	 * @param context The Redis operation context containing:
+	 *                - Redis key for the target ZSet
+	 *                - Set of ZSetEntry objects with CAS operation details
+	 *                - Flag indicating whether to continue on individual failures
+	 * @return Map&lt;Object, Boolean&gt; A map where keys are member values and values
+	 *         indicate whether the CAS operation succeeded for that member. The map
+	 *         maintains insertion order using LinkedHashMap.
+	 * @throws Exception if the operation fails due to Redis errors or invalid context
+	 */
 	@Override
 	public Object execute(OrangeRedisContext context) throws Exception {
 		OrangeMultipleCompareAndSwapContext ctx = (OrangeMultipleCompareAndSwapContext)context;
@@ -79,11 +119,30 @@ public class OrangeMultipleCompareAndSwapExecutor extends OrangeCompareAndSwapEx
 		return result;
 	}
 
+	/**
+	 * Returns the list of annotations supported by this executor.
+	 * 
+	 * @return List containing:
+	 *         <ul>
+	 *           <li>{@link Multiple} - Marks methods that perform multiple operations</li>
+	 *           <li>{@link CAS} - Marks methods that perform Compare-And-Swap operations</li>
+	 *           <li>{@link ContinueOnFailure} - Controls whether to continue processing
+	 *               on individual operation failures</li>
+	 *         </ul>
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(Multiple.class,CAS.class,ContinueOnFailure.class);
 	}
 
+	/**
+	 * Returns the context class used by this executor.
+	 * 
+	 * @return {@link OrangeMultipleCompareAndSwapContext} class which contains:
+	 *         - The Redis key for the target ZSet
+	 *         - Set of entries with CAS operation details
+	 *         - Configuration for failure handling behavior
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeMultipleCompareAndSwapContext.class;

@@ -33,11 +33,28 @@ import com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Annotation-based conditional ZSet member addition executor implementation.
+ * 
+ * <p>Features:
+ * <ul>
+ *   <li>Driven by {@link AddMembers}, {@link Member} and {@link IfAbsent} annotations</li>
+ *   <li>Only performs addition when member doesn't exist</li>
+ *   <li>Supports notification listeners for addition results</li>
+ *   <li>Extends {@link OrangeAddMemberIfAbsentExecutor} base implementation</li>
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeAddIfAbsentByMemberAnnotationExecutor extends OrangeAddMemberIfAbsentExecutor {
 
+	/**
+	 * Constructor.
+	 *
+	 * @param operations Redis ZSet operations interface instance
+	 * @param idGenerator Executor ID generator
+	 * @param listeners Conditional addition listeners collection
+	 */
 	public OrangeAddIfAbsentByMemberAnnotationExecutor(
 			OrangeRedisZSetOperations operations,
 			OrangeRedisExecutorIdGenerator idGenerator,
@@ -46,11 +63,35 @@ public class OrangeAddIfAbsentByMemberAnnotationExecutor extends OrangeAddMember
 		super(operations,idGenerator,listeners);
 	}
 
+	/**
+	 * Gets the list of annotation types supported by this executor.
+	 *
+	 * <p>Supported annotation types:
+	 * <ul>
+	 *   <li>{@link AddMembers} - Marks batch addition operation</li>
+	 *   <li>{@link Member} - Specifies member information</li>
+	 *   <li>{@link IfAbsent} - Marks conditional addition operation</li>
+	 * </ul>
+	 *
+	 * @return Immutable list of annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(AddMembers.class,Member.class,IfAbsent.class);
 	}
 
+	/**
+	 * Gets the context class required by this executor.
+	 *
+	 * <p>Requires {@link OrangeAddMemberIfAbsentContext} to provide:
+	 * <ul>
+	 *   <li>Redis key information</li>
+	 *   <li>Member information</li>
+	 *   <li>Conditional addition parameters</li>
+	 * </ul>
+	 *
+	 * @return Required context class
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeAddMemberIfAbsentContext.class;

@@ -35,18 +35,65 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 import com.langwuyue.orange.redis.utils.OrangeReflectionUtils;
 
 /**
+ * Abstract executor for Redis member removal operations.
+ * 
+ * <p>This abstract class provides the base implementation for executors that handle
+ * member removal operations in Redis collections (such as Sets or Sorted Sets). It supports
+ * both single and multiple member removal operations with flexible return type handling.
+ *
+ * <p>The executor supports the following features:
+ * <ul>
+ *   <li>Single and batch member removal</li>
+ *   <li>Configurable error handling with continue-on-failure support</li>
+ *   <li>Flexible return types (Long, Integer, Map)</li>
+ *   <li>Operation result tracking for batch operations</li>
+ * </ul>
+ *
+ * <p>When returning a Map, the executor tracks the success status of each removal operation,
+ * with the removed member as the key and a boolean success indicator as the value.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public abstract class OrangeRemoveMembersAbstractExecutor extends OrangeRedisAbstractExecutor {
 	
 	private OrangeRedisLogger logger;
-	
+
+	/**
+	 * Constructs a new member removal executor.
+	 * 
+	 * <p>Initializes the executor with the specified ID generator and logger.
+	 * The ID generator is used for generating unique operation identifiers,
+	 * while the logger is used for recording execution events and errors.
+	 *
+	 * @param idGenerator the generator for creating unique operation IDs
+	 * @param logger the logger for recording execution events and errors
+	 */
 	protected OrangeRemoveMembersAbstractExecutor(OrangeRedisExecutorIdGenerator idGenerator,OrangeRedisLogger logger) {
 		super(idGenerator);
 		this.logger = logger;
 	}
 
+	/**
+	 * Executes the member removal operation based on the provided context.
+	 * 
+	 * <p>This method handles different return types for removal operations:
+	 * <ul>
+	 *   <li>Long/Integer: Returns the number of successfully removed members</li>
+	 *   <li>Map: Returns a map of members to their removal status (boolean)</li>
+	 * </ul>
+	 *
+	 * <p>For batch operations, the method respects the continue-on-failure flag:
+	 * <ul>
+	 *   <li>If enabled: continues processing after errors, logging them</li>
+	 *   <li>If disabled: stops on the first error and throws an exception</li>
+	 * </ul>
+	 *
+	 * @param context the context containing operation parameters and configuration
+	 * @return the operation result as either a number (Long/Integer) or a Map
+	 * @throws OrangeRedisException if an error occurs during execution and continue-on-failure is disabled
+	 * @throws Exception if any other error occurs during execution
+	 */
 	@Override
 	public Object execute(OrangeRedisContext context) throws Exception {
 		OrangeRedisIterableContext ctx = (OrangeRedisIterableContext)context;
@@ -111,15 +158,56 @@ public abstract class OrangeRemoveMembersAbstractExecutor extends OrangeRedisAbs
 		return resultMap;
 	}
 	
+	/**
+	 * Performs the actual member removal operation for all values in the context.
+	 * 
+	 * <p>This abstract method should be implemented by concrete classes to perform
+	 * the actual Redis member removal operation for all values in the context.
+	 *
+	 * @param ctx the context containing the operation parameters
+	 * @return the number of members successfully removed, or null if the operation failed
+	 * @throws Exception if an error occurs during the removal operation
+	 */
 	protected abstract Long doRemove(OrangeRedisContext ctx) throws Exception;
 	
+	/**
+	 * Performs the actual member removal operation for a specific value.
+	 * 
+	 * <p>This abstract method should be implemented by concrete classes to perform
+	 * the actual Redis member removal operation for a single value.
+	 *
+	 * @param ctx the context containing the operation parameters
+	 * @param value the specific value to remove
+	 * @return the number of members successfully removed, or null if the operation failed
+	 * @throws Exception if an error occurs during the removal operation
+	 */
 	protected abstract Long doRemove(OrangeRedisContext ctx,Object value) throws Exception;
 	
+	/**
+	 * Returns the list of annotation classes supported by this executor.
+	 * 
+	 * <p>This executor supports the following annotations:
+	 * <ul>
+	 *   <li>{@link RemoveMembers} - Marks methods that remove members from Redis collections</li>
+	 *   <li>{@link Multiple} - Indicates that the operation handles multiple values</li>
+	 *   <li>{@link ContinueOnFailure} - Specifies error handling behavior</li>
+	 * </ul>
+	 *
+	 * @return a list of supported annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(RemoveMembers.class,Multiple.class,ContinueOnFailure.class);
 	}
 
+	/**
+	 * Returns the context class used by this executor.
+	 * 
+	 * <p>This executor uses {@link OrangeRedisMultipleValueContext} to handle
+	 * multiple value operations and support batch member removal.
+	 *
+	 * @return the class of {@link OrangeRedisMultipleValueContext}
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeRedisMultipleValueContext.class;

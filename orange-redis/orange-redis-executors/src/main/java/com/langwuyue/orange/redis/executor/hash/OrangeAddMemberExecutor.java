@@ -33,6 +33,25 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 import com.langwuyue.orange.redis.utils.OrangeReflectionUtils;
 
 /**
+ * Executor for adding a single member to a Redis Hash.
+ *
+ * <p>This executor provides functionality to add a single key-value pair to a Redis Hash.
+ * The operation supports various return types including boolean, integer and void.
+ *
+ * <p>The executor supports the following annotations:
+ * <ul>
+ *   <li>{@link AddMembers} - Marks this as a hash add operation</li>
+ *   <li>{@link HashKey} - Specifies the hash key</li>
+ *   <li>{@link RedisValue} - Marks the value parameter</li>
+ * </ul>
+ *
+ * <p>Return value handling:
+ * <ul>
+ *   <li>Boolean/boolean return type: returns true</li>
+ *   <li>Numeric return type: returns 1</li>
+ *   <li>Void return type: returns null</li>
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */

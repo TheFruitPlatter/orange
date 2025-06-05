@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.langwuyue.orange.redis.RedisValueTypeEnum;
-import com.langwuyue.orange.redis.annotation.AddMembers;
 import com.langwuyue.orange.redis.annotation.CAS;
 import com.langwuyue.orange.redis.annotation.RedisValue;
 import com.langwuyue.orange.redis.annotation.zset.OldScore;
@@ -39,13 +38,38 @@ import com.langwuyue.orange.redis.operations.OrangeRedisScriptOperations;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Redis ZSet Compare-And-Swap (CAS) operation executor.
+ * 
+ * <p>Features:
+ * <ul>
+ *   <li>Atomic score updates using CAS operation</li>
+ *   <li>Support for null score values (member removal)</li>
+ *   <li>Debug mode with detailed operation logging</li>
+ *   <li>Trace ID support for operation tracking</li>
+ * </ul>
+ *
+ * <p>The executor uses Lua scripts to ensure atomicity of the CAS operation.
+ * It supports both production and debug modes, with the latter providing
+ * detailed logging of the operation steps.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeCompareAndSwapExecutor extends OrangeRedisAbstractExecutor {
 	
 	/**
-	 * Script for production
+	 * Lua script for atomic Compare-And-Swap operation in Redis ZSet.
+	 * 
+	 * <p>Script logic:
+	 * <ol>
+	 *   <li>Extract key, member, expected score and new score from arguments</li>
+	 *   <li>Get current score for the member</li>
+	 *   <li>Compare current score with expected score (handles nil case)</li>
+	 *   <li>If match, update score or remove member (if new score is nil)</li>
+	 *   <li>Return '1' for success, '0' for failure</li>
+	 * </ol>
+	 * 
+	 * <p>This script ensures atomicity of the CAS operation in production environments.
 	 */
 	private static final String CAS_LUA_SCRIPT = String.join("\n",
 	    "local key = KEYS[1];",
@@ -68,7 +92,19 @@ public class OrangeCompareAndSwapExecutor extends OrangeRedisAbstractExecutor {
 	);
 	
 	/**
-	 * Script for debug
+	 * Debug version of the CAS Lua script with detailed logging.
+	 * 
+	 * <p>Extends the production script by adding comprehensive logging:
+	 * <ul>
+	 *   <li>Trace ID for operation tracking</li>
+	 *   <li>Key and member information</li>
+	 *   <li>Expected, current, and new score values</li>
+	 *   <li>Operation steps and decisions</li>
+	 * </ul>
+	 * 
+	 * <p>This script should only be used in development/testing environments
+	 * as it generates additional log entries that may impact performance.
+	 * The debug mode is automatically enabled when logger's debug level is set.
 	 */
 	private static final String CAS_LUA_SCRIPT_DEBUG = String.join("\n",
 		"local traceId = tostring(ARGV[4]);",
@@ -99,22 +135,55 @@ public class OrangeCompareAndSwapExecutor extends OrangeRedisAbstractExecutor {
 	    "end;"
 	);
 	
+	/**
+	 * Redis script operations for executing Lua scripts against Redis.
+	 * Provides functionality to execute scripts with proper argument handling.
+	 */
 	private OrangeRedisScriptOperations operations;
 	
+	/**
+	 * Logger for recording operation details and debug information.
+	 * Controls whether debug mode is enabled for script execution.
+	 */
 	private OrangeRedisLogger logger;
 
-	public OrangeCompareAndSwapExecutor(OrangeRedisScriptOperations operations,OrangeRedisExecutorIdGenerator idGenerator,OrangeRedisLogger logger) {
+	/**
+	 * Constructs a new CAS executor for Redis ZSet operations.
+	 *
+	 * @param operations The Redis script operations for executing Lua scripts
+	 * @param idGenerator Generator for creating unique executor IDs
+	 * @param logger Logger for recording operation details and debug information
+	 */
+	public OrangeCompareAndSwapExecutor(OrangeRedisScriptOperations operations, OrangeRedisExecutorIdGenerator idGenerator, OrangeRedisLogger logger) {
 		super(idGenerator);
 		this.operations = operations;
 		this.logger = logger;
 	}
 
+	/**
+	 * Executes the CAS operation using the provided Redis context.
+	 *
+	 * @param context The Redis operation context containing key, value, and score information
+	 * @return Boolean indicating whether the CAS operation succeeded
+	 * @throws Exception if the operation fails
+	 */
 	@Override
 	public Object execute(OrangeRedisContext context) throws Exception {
 		OrangeCompareAndSwapContext ctx = (OrangeCompareAndSwapContext)context;
 		return casExecute(ctx.getRedisKey().getValue(),ctx.getValue(),ctx.getValueType(),ctx.getOldScore(),ctx.getNullableScore());
 	}
 	
+	/**
+	 * Performs the atomic Compare-And-Swap operation on a Redis ZSet.
+	 *
+	 * @param key The Redis key for the ZSet
+	 * @param value The member value to update
+	 * @param valueType The type of the member value
+	 * @param oldScore The expected current score (null means member should not exist)
+	 * @param score The new score to set (null means remove the member)
+	 * @return true if the operation succeeded, false if the current score didn't match the expected score
+	 * @throws Exception if the operation fails
+	 */
 	protected boolean casExecute(String key,Object value,RedisValueTypeEnum valueType,Double oldScore,Double score) throws Exception {
 		Map<Object, RedisValueTypeEnum> argsValueTypes = new LinkedHashMap<>();
 		if(oldScore == null) {
@@ -155,11 +224,29 @@ public class OrangeCompareAndSwapExecutor extends OrangeRedisAbstractExecutor {
 		return "1".equals(result);
 	}
 
+	/**
+	 * Returns the list of annotations supported by this executor.
+	 * 
+	 * @return List of supported annotation classes including:
+	 *         <ul>
+	 *           <li>{@link RedisValue} - Marks the member value parameter</li>
+	 *           <li>{@link Score} - Marks the new score parameter</li>
+	 *           <li>{@link OldScore} - Marks the expected score parameter</li>
+	 *           <li>{@link CAS} - Indicates the method uses CAS operation</li>
+	 *         </ul>
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(RedisValue.class,Score.class,OldScore.class,CAS.class);
 	}
 
+	/**
+	 * Returns the context class used by this executor.
+	 * 
+	 * @return {@link OrangeCompareAndSwapContext} class which contains all necessary
+	 *         information for performing CAS operations on Redis ZSet, including
+	 *         key, member value, expected score and new score
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeCompareAndSwapContext.class;

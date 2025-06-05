@@ -51,7 +51,7 @@ public abstract class OrangeRedisGetOneAbstractExecutor extends OrangeRedisGetAb
 	 *
 	 * @param idGenerator the generator for creating unique executor IDs
 	 */
-	public OrangeRedisGetOneAbstractExecutor(OrangeRedisExecutorIdGenerator idGenerator) {
+	protected OrangeRedisGetOneAbstractExecutor(OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 	}
 

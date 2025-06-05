@@ -34,6 +34,28 @@ import com.langwuyue.orange.redis.operations.OrangeRedisHashOperations;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor for retrieving a single value from a Redis Hash.
+ *
+ * <p>This executor provides functionality to get a single value from a Redis Hash
+ * by its key. It supports type conversion of the returned value.
+ *
+ * <p>The executor supports the following annotations:
+ * <ul>
+ *   <li>{@link GetHashValues} - Marks this as a hash value retrieval operation</li>
+ *   <li>{@link HashKey} - Specifies the hash key</li>
+ * </ul>
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Returns a single value from the hash</li>
+ *   <li>Supports type conversion of returned values</li>
+ *   <li>Uses {@link OrangeRedisHashOperations} for Redis operations</li>
+ * </ul>
+ *
+ * <p>Type conversion:
+ * The executor will automatically convert the raw Redis value to the declared return type,
+ * including support for complex object types through JSON serialization.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */

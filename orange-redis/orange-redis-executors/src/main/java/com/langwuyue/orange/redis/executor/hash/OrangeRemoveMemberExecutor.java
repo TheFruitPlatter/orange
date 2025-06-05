@@ -31,6 +31,26 @@ import com.langwuyue.orange.redis.operations.OrangeRedisHashOperations;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor for removing a single member from a Redis Hash.
+ *
+ * <p>This executor provides functionality to remove a single key-value pair from a Redis Hash.
+ * The operation supports various return types including boolean and long.
+ *
+ * <p>The executor supports the following annotations:
+ * <ul>
+ *   <li>{@link RemoveMembers} - Marks this as a hash remove operation</li>
+ *   <li>{@link HashKey} - Specifies the hash key</li>
+ * </ul>
+ *
+ * <p>Return value handling:
+ * <ul>
+ *   <li>Boolean/boolean return type: returns true if any fields were removed</li>
+ *   <li>Numeric return type: returns the number of fields removed</li>
+ * </ul>
+ *
+ * <p>Note: This executor only removes a single field from the hash. For removing multiple fields,
+ * use {@link OrangeRemoveMembersExecutor}.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */

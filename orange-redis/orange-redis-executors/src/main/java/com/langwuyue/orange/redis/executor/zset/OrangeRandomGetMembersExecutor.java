@@ -34,6 +34,26 @@ import com.langwuyue.orange.redis.mapping.OrangeRedisExecutorIdGenerator;
 import com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 /**
+ * Executor for randomly retrieving multiple members from a Redis Sorted Set.
+ *
+ * <p>This executor provides functionality to randomly select and retrieve multiple members
+ * from a Redis Sorted Set. The number of members to retrieve is specified by the {@link Count}
+ * annotation.
+ *
+ * <p>The executor supports the following annotations:
+ * <ul>
+ *   <li>{@link GetMembers} - Indicates this is a member retrieval operation</li>
+ *   <li>{@link Count} - Specifies the number of random members to retrieve</li>
+ *   <li>{@link Random} - Indicates random selection of members</li>
+ * </ul>
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Returns a collection of randomly selected members</li>
+ *   <li>Supports type conversion of returned members</li>
+ *   <li>Uses {@link OrangeRedisZSetOperations} for Redis operations</li>
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
@@ -41,18 +61,52 @@ public class OrangeRandomGetMembersExecutor extends OrangeRedisGetAbstractExecut
 
 	private OrangeRedisZSetOperations operations;
 
+	/**
+	 * Constructs a new executor for random members retrieval.
+	 *
+	 * @param operations the Redis ZSet operations implementation, must not be null
+	 * @param idGenerator the executor ID generator for monitoring and tracking, must not be null
+	 */
 	public OrangeRandomGetMembersExecutor(OrangeRedisZSetOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
-
+	/**
+	 * Returns the list of supported annotations for this executor.
+	 *
+	 * <p>This executor supports:
+	 * <ul>
+	 *   <li>{@link GetMembers} - marks member retrieval operations</li>
+	 *   <li>{@link Count} - specifies the number of random members to retrieve</li>
+	 *   <li>{@link Random} - specifies random selection behavior</li>
+	 * </ul>
+	 *
+	 * @return immutable list of supported annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(GetMembers.class,Count.class,Random.class);
 	}
 
-
+	/**
+	 * Executes the random members retrieval operation.
+	 *
+	 * <p>Implementation details:
+	 * <ul>
+	 *   <li>Requests specified number of random members from Redis</li>
+	 *   <li>Uses Redis's ZRANDMEMBER command internally</li>
+	 *   <li>Handles type conversion for returned members</li>
+	 *   <li>Returns empty collection if the sorted set is empty</li>
+	 *   <li>Count is obtained from the {@link OrangeRedisCountContext}</li>
+	 * </ul>
+	 *
+	 * @param context the execution context containing Redis key and type information
+	 * @param valueField the field annotated with @RedisValue, or null if not present
+	 * @param returnArgumentType the expected return type from the method
+	 * @return Collection containing members, or empty collection if no members
+	 * @throws Exception if Redis operation fails or type conversion fails
+	 */
 	@Override
 	protected Collection doGet(OrangeRedisContext context, Field valueField, Type returnArgumentType) throws Exception {
 		OrangeRedisCountContext ctx = (OrangeRedisCountContext) context;
@@ -64,7 +118,14 @@ public class OrangeRandomGetMembersExecutor extends OrangeRedisGetAbstractExecut
 		);
 	}
 
-
+	/**
+	 * Returns the context class required by this executor.
+	 *
+	 * <p>This executor requires {@link OrangeRedisCountContext} to obtain the count
+	 * of random members to retrieve.
+	 *
+	 * @return the OrangeRedisCountContext class
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeRedisCountContext.class;
