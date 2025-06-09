@@ -28,17 +28,42 @@ import com.langwuyue.orange.redis.annotation.zset.PageNo;
 import com.langwuyue.orange.redis.utils.OrangeReflectionUtils;
 
 /**
+ * Context class for Redis ZSet score range queries with pagination support without total count calculation.
+ * This class extends {@link OrangeScoreRangeContext} to add efficient pagination functionality
+ * using page number and count parameters, optimized for large datasets by avoiding the expensive
+ * count operation.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeScoreRangeContext
+ * @see PageNo
+ * @see Count
  */
 public class OrangeScoreRangePagNoCountContext extends OrangeScoreRangeContext {
 	
+	/**
+	 * The page number parameter, bound by {@link PageNo} annotation.
+	 * Can be either an integer type or a string that can be parsed as an integer.
+	 */
 	@OrangeRedisOperationArg(binding = PageNo.class)
 	private Object pageNo;
 	
+	/**
+	 * The count (items per page) parameter, bound by {@link Count} annotation.
+	 * Can be either an integer type or a string that can be parsed as an integer.
+	 */
 	@OrangeRedisOperationArg(binding = Count.class)
 	private Object count;
 
+	/**
+	 * Constructs a new score range pagination context instance.
+	 *
+	 * @param operationOwner the class that owns the operation
+	 * @param operationMethod the operation method
+	 * @param args the method parameter array
+	 * @param redisKey Redis key
+	 * @param valueType Redis value type
+	 */
 	public OrangeScoreRangePagNoCountContext(
 		Class<?> operationOwner, 
 		Method operationMethod, 
@@ -49,6 +74,19 @@ public class OrangeScoreRangePagNoCountContext extends OrangeScoreRangeContext {
 		super(operationOwner, operationMethod, args, redisKey,valueType);
 	}
 
+	/**
+	 * Gets the page number for pagination.
+	 *
+	 * <p>This method validates and converts the page number parameter to a Long value.
+	 * The parameter can be either an integer type or a string that can be parsed as an integer.
+	 *
+	 * @return the page number as a Long value
+	 * @throws OrangeRedisException if:
+	 *         <ul>
+	 *           <li>The page number parameter is null
+	 *           <li>The page number parameter is neither an integer type nor a parseable string
+	 *         </ul>
+	 */
 	public Long getPageNo() {
 		if(pageNo == null) {
 			throw new OrangeRedisException(String.format("The argument annotated with @%s cannot be null", PageNo.class));
@@ -60,6 +98,19 @@ public class OrangeScoreRangePagNoCountContext extends OrangeScoreRangeContext {
 		
 	}
 	
+	/**
+	 * Gets the count (items per page) for pagination.
+	 *
+	 * <p>This method validates and converts the count parameter to a Long value.
+	 * The parameter can be either an integer type or a string that can be parsed as an integer.
+	 *
+	 * @return the count as a Long value
+	 * @throws OrangeRedisException if:
+	 *         <ul>
+	 *           <li>The count parameter is null
+	 *           <li>The count parameter is neither an integer type nor a parseable string
+	 *         </ul>
+	 */
 	public Long getCount() {
 		if(count == null) {
 			throw new OrangeRedisException(String.format("The argument annotated with @%s cannot be null", Count.class));

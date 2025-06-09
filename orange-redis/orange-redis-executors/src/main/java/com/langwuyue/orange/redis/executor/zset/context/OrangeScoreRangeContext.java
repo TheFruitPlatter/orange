@@ -31,14 +31,38 @@ import com.langwuyue.orange.redis.context.OrangeRedisContext;
 import com.langwuyue.orange.redis.utils.OrangeReflectionUtils;
 
 /**
+ * Score range query context class, used for handling score range based queries in Redis ZSet.
+ * This class supports two ways to specify the score range:
+ * <ul>
+ *   <li>Using a predefined ScoreRange object
+ *   <li>Using a custom object with {@link MaxScore} and {@link MinScore} annotations
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see ScoreRange
+ * @see MaxScore
+ * @see MinScore
+ * @see com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations.ScoreRange
  */
 public class OrangeScoreRangeContext extends OrangeRedisContext {
 	
+	/**
+	 * Score range object, bound by {@link ScoreRange} annotation.
+	 * Can be either a predefined ScoreRange type or a custom type with {@link MaxScore} and {@link MinScore} annotations.
+	 */
 	@OrangeRedisOperationArg(binding = ScoreRange.class)
 	private Object scoreRange;
 
+	/**
+	 * Constructs a new score range query context instance.
+	 *
+	 * @param operationOwner the class that owns the operation
+	 * @param operationMethod the operation method
+	 * @param args the method parameter array
+	 * @param redisKey Redis key
+	 * @param valueType Redis value type
+	 */
 	public OrangeScoreRangeContext(
 		Class<?> operationOwner, 
 		Method operationMethod, 
@@ -49,6 +73,31 @@ public class OrangeScoreRangeContext extends OrangeRedisContext {
 		super(operationOwner, operationMethod, args, redisKey,valueType);
 	}
 
+	/**
+	 * Gets the score range object.
+	 * This method supports two types of input:
+	 * <ul>
+	 *   <li>Predefined ScoreRange object
+	 *   <li>Custom object with {@link MaxScore} and {@link MinScore} annotations
+	 * </ul>
+	 *
+	 * <p>For custom objects, this method will:
+	 * <ul>
+	 *   <li>Find fields with {@link MaxScore} and {@link MinScore} annotations
+	 *   <li>Validate field value types (must be numeric or string parsable to number)
+	 *   <li>Convert field values to Double type
+	 *   <li>Create and return a new ScoreRange object
+	 * </ul>
+	 *
+	 * @return the standardized ScoreRange object
+	 * @throws OrangeRedisException if:
+	 *         <ul>
+	 *           <li>Score range object is null
+	 *           <li>Custom object is missing required annotated fields
+	 *           <li>Max or min score fields are null
+	 *           <li>Score field values have incorrect types
+	 *         </ul>
+	 */
 	public com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations.ScoreRange getScoreRange() {
 		if(scoreRange == null) {
 			throw new OrangeRedisException(String.format("The argument annotated with @%s cannot be null", ScoreRange.class));

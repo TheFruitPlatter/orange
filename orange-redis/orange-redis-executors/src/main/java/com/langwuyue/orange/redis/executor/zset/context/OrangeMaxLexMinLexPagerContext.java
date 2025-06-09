@@ -25,14 +25,55 @@ import com.langwuyue.orange.redis.annotation.OrangeRedisOperationArg;
 import com.langwuyue.orange.redis.annotation.zset.Pager;
 
 /**
+ * Context class for Redis ZSet lexicographical range queries with pagination support,
+ * using @MaxLex and @MinLex annotations for range boundaries.
+ * 
+ * <p>This class extends {@link OrangeMaxLexMinLexContext} to add pagination capabilities
+ * for lexicographical range operations on Redis Sorted Sets. It combines the functionality
+ * of lexicographical boundaries defined by @MaxLex and @MinLex annotations with pagination
+ * support through the @Pager annotation.
+ * 
+ * <p>The pagination is implemented using the {@link Pager} annotation, which allows
+ * for efficient retrieval of large result sets in smaller, manageable chunks.
+ * This approach is particularly useful when dealing with large ZSets where
+ * returning all matching elements at once would be inefficient or impractical.
+ * 
+ * <p>Key features of lexicographical range pagination with @MaxLex and @MinLex:
+ * <ul>
+ *   <li>More flexible boundary specification compared to @LexRange
+ *   <li>Support for programmatically generated boundary values
+ *   <li>Efficient memory usage by retrieving only a subset of results
+ *   <li>Maintains the lexicographical ordering of elements
+ * </ul>
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeMaxLexMinLexContext
+ * @see OrangeRedisPagerContext
+ * @see com.langwuyue.orange.redis.annotation.zset.Pager
+ * @see com.langwuyue.orange.redis.annotation.zset.MaxLex
+ * @see com.langwuyue.orange.redis.annotation.zset.MinLex
+ * @see com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations.Pager
  */
 public class OrangeMaxLexMinLexPagerContext extends OrangeMaxLexMinLexContext implements OrangeRedisPagerContext {
 	
+	/**
+	 * The pagination parameter annotated with @Pager.
+	 * This field holds the pagination information such as offset and count
+	 * for the lexicographical range query using @MaxLex and @MinLex boundaries.
+	 */
 	@OrangeRedisOperationArg(binding = Pager.class)
 	private Object pager;
 
+	/**
+	 * Constructs a new OrangeMaxLexMinLexPagerContext with the specified operation parameters.
+	 * 
+	 * @param operationOwner The class that owns the Redis operation method
+	 * @param operationMethod The method representing the Redis operation
+	 * @param args The arguments passed to the operation method
+	 * @param redisKey The Redis key to operate on
+	 * @param valueType The type of Redis value (should be ZSET for this context)
+	 */
 	public OrangeMaxLexMinLexPagerContext(
 		Class<?> operationOwner, 
 		Method operationMethod, 
@@ -43,6 +84,26 @@ public class OrangeMaxLexMinLexPagerContext extends OrangeMaxLexMinLexContext im
 		super(operationOwner, operationMethod, args, redisKey,valueType);
 	}
 
+	/**
+	 * Retrieves the pagination parameter for this lexicographical range query.
+	 * 
+	 * <p>This method delegates to the parent class's getPager method, which performs
+	 * validation on the pager object to ensure it is not null and is of the correct type.
+	 * The pager is used in conjunction with @MaxLex and @MinLex boundaries to implement
+	 * efficient pagination of lexicographical range queries.
+	 * 
+	 * <p>The pager object contains pagination parameters such as:
+	 * <ul>
+	 *   <li>offset: The starting position for the range query (zero-based)
+	 *   <li>count: The maximum number of elements to return
+	 * </ul>
+	 * 
+	 * <p>These parameters are used with the Redis ZRANGEBYLEX command's LIMIT option
+	 * to implement server-side pagination, which is more efficient than retrieving
+	 * all elements and performing pagination on the client side.
+	 * 
+	 * @return The validated pager object for the lexicographical range query
+	 */
 	public com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations.Pager getPager(){
 		return getPager(pager);
 	}

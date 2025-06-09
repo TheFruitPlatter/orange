@@ -37,17 +37,51 @@ import com.langwuyue.orange.redis.context.builder.OrangeOperationArgMultipleHand
 import com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations.ZSetEntry;
 
 /**
+ * Context class for batch adding multiple members to a Redis ZSet.
+ * 
+ * <p>This class extends {@link OrangeMemberContext} and implements {@link OrangeRedisIterableContext}
+ * to provide functionality for adding multiple members to a Redis sorted set. It handles:
+ * <ul>
+ *   <li>Multiple member validation and conversion</li>
+ *   <li>Support for various collection types (Collection, Array, Map)</li>
+ *   <li>Batch processing with optional failure handling</li>
+ * </ul>
+ * 
+ * <p>The class requires a collection of members annotated with {@link Multiple} which can be:
+ * <ul>
+ *   <li>A Collection of ZSetEntry instances or annotated objects</li>
+ *   <li>An Array of ZSetEntry instances or annotated objects</li>
+ *   <li>A Map where keys are values and values are scores</li>
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeAddMembersContext extends OrangeMemberContext implements OrangeRedisIterableContext {
 	
+    /**
+     * The collection of members to be added to the Redis ZSet.
+     * This field is bound to method parameters annotated with {@link Multiple}.
+     */
 	@OrangeRedisOperationArg(binding = Multiple.class, valueHandler = OrangeOperationArgMultipleHandler.class)
 	private Object multipleValue;
 	
+    /**
+     * Configuration for handling failures during batch processing.
+     * When true, the operation continues even if some members fail to be added.
+     */
 	@OrangeRedisOperationArg(binding = ContinueOnFailure.class, valueHandler = OrangeMethodAnnotationHandler.class)
 	private ContinueOnFailure continueOnFailure;
 	
+    /**
+     * Constructs a new OrangeAddMembersContext.
+     *
+     * @param operationOwner The class that owns the Redis operation
+     * @param operationMethod The method representing the Redis operation
+     * @param args The arguments passed to the operation method
+     * @param redisKey The Redis key for the operation
+     * @param valueType The type of values stored in the Redis ZSet
+     */
 	public OrangeAddMembersContext(
 		Class<?> operationOwner, 
 		Method operationMethod, 
@@ -58,14 +92,49 @@ public class OrangeAddMembersContext extends OrangeMemberContext implements Oran
 		super(operationOwner, operationMethod, args, redisKey,valueType);
 	}
 
+    /**
+     * Gets the raw multiple value object.
+     *
+     * @return The raw collection, array, or map of members
+     */
 	public Object getMultipleValue() {
 		return multipleValue;
 	}
 	
+    /**
+     * Gets all members as a set of ZSetEntry objects.
+     * 
+     * <p>This method converts all members from the multiple value object
+     * to ZSetEntry instances, filtering out null entries.
+     *
+     * @return A set of ZSetEntry objects ready to be added to Redis
+     * @throws OrangeRedisException if the multiple value is of an unsupported type
+     */
 	public Set<ZSetEntry> getMembers(){
 		return getMembers(null);
 	}
 	
+    /**
+     * Gets all members as a set of ZSetEntry objects with optional consumer processing.
+     * 
+     * <p>This method:
+     * <ul>
+     *   <li>Converts all members from the multiple value object to ZSetEntry instances</li>
+     *   <li>Filters out null entries</li>
+     *   <li>Optionally applies a consumer function to each entry and its original object</li>
+     * </ul>
+     *
+     * <p>The method supports three types of multiple values:
+     * <ul>
+     *   <li>Collection - each element is converted to a ZSetEntry</li>
+     *   <li>Array - each element is converted to a ZSetEntry</li>
+     *   <li>Map - keys become values and values become scores in ZSetEntries</li>
+     * </ul>
+     *
+     * @param consumer Optional BiConsumer to process each entry and its original object
+     * @return A set of ZSetEntry objects ready to be added to Redis
+     * @throws OrangeRedisException if the multiple value is of an unsupported type or contains invalid entries
+     */
 	private Set<ZSetEntry> getMembers(BiConsumer consumer){
 		Set<ZSetEntry> entries = new LinkedHashSet<>();
 		if(multipleValue instanceof Collection) {
@@ -127,16 +196,40 @@ public class OrangeAddMembersContext extends OrangeMemberContext implements Oran
 		
 	}
 
+    /**
+     * Iterates through all members, applying the given consumer to each entry.
+     * 
+     * <p>Implementation of {@link OrangeRedisIterableContext#forEach}.
+     * This method processes each member and passes the resulting ZSetEntry
+     * and original object to the consumer.
+     *
+     * @param t The consumer to apply to each entry
+     */
 	@Override
 	public void forEach(BiConsumer t) {
 		getMembers(t);
 	}
 
+    /**
+     * Converts all members to an array.
+     * 
+     * <p>Implementation of {@link OrangeRedisIterableContext#toArray}.
+     *
+     * @return An array containing all ZSetEntry objects
+     */
 	@Override
 	public Object[] toArray() {
 		return getMembers().toArray();
 	}
 	
+    /**
+     * Determines whether to continue processing on failure.
+     * 
+     * <p>Implementation of {@link OrangeRedisIterableContext#continueOnFailure}.
+     * This method returns the value from the {@link ContinueOnFailure} annotation.
+     *
+     * @return true if processing should continue on failure, false otherwise
+     */
 	@Override
 	public boolean continueOnFailure() {
 		return continueOnFailure.value(); 

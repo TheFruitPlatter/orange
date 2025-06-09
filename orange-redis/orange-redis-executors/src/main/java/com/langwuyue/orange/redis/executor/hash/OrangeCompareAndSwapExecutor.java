@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.langwuyue.orange.redis.RedisValueTypeEnum;
-import com.langwuyue.orange.redis.annotation.AddMembers;
 import com.langwuyue.orange.redis.annotation.CAS;
 import com.langwuyue.orange.redis.annotation.RedisOldValue;
 import com.langwuyue.orange.redis.annotation.RedisValue;

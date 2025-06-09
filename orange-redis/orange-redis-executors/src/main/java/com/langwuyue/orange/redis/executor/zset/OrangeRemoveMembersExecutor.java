@@ -66,7 +66,6 @@ import com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations;
  * @author Liang.Zhong
  * @since 1.0.0
  * @see OrangeRedisZSetOperations
- * @see com.langwuyue.orange.redis.mapping.RemoveMembers
  * @see com.langwuyue.orange.redis.executor.set.OrangeRemoveMembersExecutor
  */
 public class OrangeRemoveMembersExecutor extends OrangeRemoveMembersAbstractExecutor {

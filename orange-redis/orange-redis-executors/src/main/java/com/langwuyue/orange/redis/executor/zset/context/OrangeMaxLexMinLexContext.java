@@ -27,17 +27,56 @@ import com.langwuyue.orange.redis.annotation.zset.MaxLex;
 import com.langwuyue.orange.redis.annotation.zset.MinLex;
 import com.langwuyue.orange.redis.context.OrangeRedisContext;
 /**
+ * Context class for Redis ZSet lexicographical range queries using @MinLex and @MaxLex annotations.
+ * This class provides the foundation for performing lexicographical range operations on Redis Sorted Sets
+ * where elements are ordered by their string values rather than by scores.
+ * 
+ * <p>Lexicographical ordering in Redis ZSets follows these rules:
+ * <ul>
+ *   <li>Elements are compared byte-by-byte
+ *   <li>Shorter strings are considered lexicographically smaller than longer strings that share the same prefix
+ *   <li>Binary safe comparison (handles any byte values)
+ * </ul>
+ * 
+ * <p>This context supports defining a range with separate minimum and maximum boundaries,
+ * offering more flexibility than single-range approaches. This is particularly useful for:
+ * <ul>
+ *   <li>Prefix matching and filtering
+ *   <li>Alphabetical sorting and retrieval
+ *   <li>Date-based range queries (when dates are stored in lexicographically sortable format)
+ *   <li>Version comparison (when versions follow lexicographical ordering)
+ * </ul>
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see com.langwuyue.orange.redis.annotation.zset.MinLex
+ * @see com.langwuyue.orange.redis.annotation.zset.MaxLex
  */
 public class OrangeMaxLexMinLexContext extends OrangeRedisContext {
 	
+	/**
+	 * The maximum lexicographical boundary for the range query, annotated with @MaxLex.
+	 * Defines the upper bound (inclusive) of the lexicographical range.
+	 */
 	@OrangeRedisOperationArg(binding = MaxLex.class)
 	private Object maxLex;
 	
+	/**
+	 * The minimum lexicographical boundary for the range query, annotated with @MinLex.
+	 * Defines the lower bound (inclusive) of the lexicographical range.
+	 */
 	@OrangeRedisOperationArg(binding = MinLex.class)
 	private Object minLex;
 
+	/**
+	 * Constructs a new OrangeMaxLexMinLexContext with the specified operation parameters.
+	 * 
+	 * @param operationOwner The class that owns the Redis operation method
+	 * @param operationMethod The method representing the Redis operation
+	 * @param args The arguments passed to the operation method
+	 * @param redisKey The Redis key to operate on
+	 * @param valueType The type of Redis value (should be ZSET for this context)
+	 */
 	public OrangeMaxLexMinLexContext(
 		Class<?> operationOwner, 
 		Method operationMethod, 
@@ -48,6 +87,29 @@ public class OrangeMaxLexMinLexContext extends OrangeRedisContext {
 		super(operationOwner, operationMethod, args, redisKey, valueType);
 	}
 	
+	/**
+	 * Retrieves and validates the maximum lexicographical boundary.
+	 * 
+	 * <p>This method validates that:
+	 * <ul>
+	 *   <li>The maxLex value is not null
+	 *   <li>The maxLex value is a String
+	 * </ul>
+	 * 
+	 * <p>The maximum lexicographical boundary defines the upper limit of the range query.
+	 * By default, this is an inclusive boundary in Redis. To make it exclusive, the
+	 * implementation can prefix the value with "(" character.
+	 * 
+	 * <p>Special Values in Redis (not handled by this implementation):
+	 * <ul>
+	 *   <li>"+" - Positive infinity, matches all elements
+	 *   <li>"(value" - Exclusive maximum boundary (less than value)
+	 *   <li>"[value" - Inclusive maximum boundary (less than or equal to value)
+	 * </ul>
+	 * 
+	 * @return The maximum lexicographical boundary as a String
+	 * @throws OrangeRedisException if maxLex is null or not a String
+	 */
 	public String getMaxLex() {
 		if(maxLex == null) {
 			throw new OrangeRedisException(String.format("The field annotated with @%s cannot be null", MaxLex.class));
@@ -58,6 +120,36 @@ public class OrangeMaxLexMinLexContext extends OrangeRedisContext {
 		return maxLex.toString();
 	}
 	
+	/**
+	 * Retrieves and validates the minimum lexicographical boundary.
+	 * 
+	 * <p>This method validates that:
+	 * <ul>
+	 *   <li>The minLex value is not null
+	 *   <li>The minLex value is a String
+	 * </ul>
+	 * 
+	 * <p>The minimum lexicographical boundary defines the lower limit of the range query.
+	 * By default, this is an inclusive boundary in Redis. To make it exclusive, the
+	 * implementation can prefix the value with "(" character.
+	 * 
+	 * <p>Special Values in Redis (not handled by this implementation):
+	 * <ul>
+	 *   <li>"-" - Negative infinity, matches all elements
+	 *   <li>"(value" - Exclusive minimum boundary (greater than value)
+	 *   <li>"[value" - Inclusive minimum boundary (greater than or equal to value)
+	 * </ul>
+	 * 
+	 * <p>Usage Examples:
+	 * <ul>
+	 *   <li>Prefix matching: minLex="prefix", maxLex="prefix\xff"
+	 *   <li>Range query: minLex="a", maxLex="z"
+	 *   <li>Open-ended range: minLex="-", maxLex="m"
+	 * </ul>
+	 * 
+	 * @return The minimum lexicographical boundary as a String
+	 * @throws OrangeRedisException if minLex is null or not a String
+	 */
 	public String getMinLex() {
 		if(minLex == null) {
 			throw new OrangeRedisException(String.format("The field annotated with @%s cannot be null", MinLex.class));

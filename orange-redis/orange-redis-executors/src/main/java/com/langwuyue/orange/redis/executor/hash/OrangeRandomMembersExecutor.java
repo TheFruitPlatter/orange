@@ -38,7 +38,7 @@ import com.langwuyue.orange.redis.operations.OrangeRedisHashOperations;
  *
  * <p>The executor supports the following annotations:
  * <ul>
- *   <li>{@link Random} - Marks this as a random member retrieval operation</li>
+ *   <li>{@link com.langwuyue.orange.redis.annotation.Random} - Marks this as a random member retrieval operation</li>
  *   <li>{@link Count} - Specifies the number of random members to retrieve</li>
  * </ul>
  *
