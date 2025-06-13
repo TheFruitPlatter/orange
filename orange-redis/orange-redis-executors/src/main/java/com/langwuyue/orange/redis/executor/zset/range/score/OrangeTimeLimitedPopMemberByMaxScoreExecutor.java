@@ -38,18 +38,54 @@ import com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations.ZSetEntry
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor implementation for popping a member with the highest score from a Redis ZSet with a time limit.
+ * 
+ * This executor removes and returns the member with the highest score from a sorted set, waiting up to
+ * a specified timeout if no element is initially available. This is useful for implementing priority queues,
+ * scheduled tasks, or any scenario where you need to process items in order of priority (score) with a
+ * blocking behavior when no items are available.
+ * 
+ * The executor supports the following annotations:
+ * - PopMembers: Indicates this is a member removal operation
+ * - MaxScore: Specifies that the member with the maximum score should be popped
+ * - TimeoutValue: Specifies the timeout value for the blocking operation
+ * - TimeoutUnit: Specifies the unit of the timeout value
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeTimeLimitedPopMemberByMaxScoreExecutor extends OrangeGetOneWithScoresAbstractExecutor {
 	
+	/**
+	 * Redis ZSet operations instance used to perform ZSet-specific operations.
+	 */
 	private OrangeRedisZSetOperations operations;
 
+	/**
+	 * Constructs a new executor for popping a member with the highest score from a Redis ZSet with a time limit.
+	 *
+	 * @param operations the Redis ZSet operations instance to use for executing ZSet commands
+	 * @param idGenerator the ID generator for creating unique executor identifiers
+	 */
 	public OrangeTimeLimitedPopMemberByMaxScoreExecutor(OrangeRedisZSetOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Pops (removes and returns) the member with the highest score from a Redis ZSet with a time limit.
+	 * 
+	 * This method casts the context to OrangeRedisTimeoutValueTimeoutUnitContext to access the key, timeout value,
+	 * and timeout unit parameters, then calls the operations.popMaxScore method to remove and return the member
+	 * with the highest score. If no member is available, the method will block until either a member becomes
+	 * available or the specified timeout is reached.
+	 *
+	 * @param context the Redis operation context containing the key and timeout parameters
+	 * @param valueField the field representing the value type, used for type conversion
+	 * @param returnArgumentType the expected return type for the collection elements
+	 * @return a collection containing the popped ZSetEntry (member and score), or an empty collection if no member is available within the timeout
+	 * @throws Exception if an error occurs during the Redis operation
+	 */
 	@Override
 	public Collection doGet(OrangeRedisContext context, Field valueField, Type returnArgumentType) throws Exception {
 		OrangeRedisTimeoutValueTimeoutUnitContext ctx = (OrangeRedisTimeoutValueTimeoutUnitContext)context;
@@ -66,11 +102,24 @@ public class OrangeTimeLimitedPopMemberByMaxScoreExecutor extends OrangeGetOneWi
 		return OrangeCollectionUtils.asList(entry);
 	}
 
+	/**
+	 * Returns a list of annotation classes that this executor supports.
+	 * 
+	 * @return a list containing PopMembers, MaxScore, TimeoutValue, and TimeoutUnit annotation classes
+	 *         that this executor can process for popping a member with the highest score with a time limit
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(PopMembers.class,MaxScore.class,TimeoutValue.class,TimeoutUnit.class);
 	}
 
+	/**
+	 * Returns the context class used by this executor.
+	 * 
+	 * @return the OrangeRedisTimeoutValueTimeoutUnitContext class, which contains the necessary
+	 *         parameters for executing time-limited pop operations, including the key, timeout value,
+	 *         and timeout unit
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeRedisTimeoutValueTimeoutUnitContext.class;

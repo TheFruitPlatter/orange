@@ -25,8 +25,20 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Specifies the maximum score boundary for Redis sorted set (ZSet) operations.
+ * This annotation can be used to define the upper bound of a score range when querying or operating on ZSet members.
+ * 
+ * <p>The maximum score is inclusive by default, meaning the results will include members with scores less than
+ * or equal to the specified maximum score.
+ * 
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see MinScore
+ * @see ScoreRange
+ * @see WithScores
+ * @see Pager
+ * @see Reverse
  */
 @Target({ElementType.PARAMETER,ElementType.METHOD,ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)

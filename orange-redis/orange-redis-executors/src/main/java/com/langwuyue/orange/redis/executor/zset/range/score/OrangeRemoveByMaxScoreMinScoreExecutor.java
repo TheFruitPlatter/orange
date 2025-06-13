@@ -33,28 +33,66 @@ import com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations.ScoreRang
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor implementation for removing members from a Redis ZSet based on a score range.
+ * This executor removes all members whose scores fall within the specified minimum and maximum score range.
+ * 
+ * This is particularly useful for cleaning up or pruning sorted sets based on score criteria,
+ * such as removing expired items, deleting records within a specific date range, or
+ * filtering out elements that fall within certain numerical boundaries.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeRemoveByMaxScoreMinScoreExecutor extends OrangeRedisAbstractExecutor {
 	
+	/**
+	 * Redis ZSet operations instance used to perform ZSet-specific operations.
+	 */
 	private OrangeRedisZSetOperations operations;
 
+	/**
+	 * Constructs a new executor for removing members from a Redis ZSet based on a score range.
+	 *
+	 * @param operations the Redis ZSet operations instance to use for executing ZSet commands
+	 * @param idGenerator the ID generator for creating unique executor identifiers
+	 */
 	public OrangeRemoveByMaxScoreMinScoreExecutor(OrangeRedisZSetOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Returns a list of annotation classes that this executor supports.
+	 * 
+	 * @return a list containing RemoveMembers, MaxScore, and MinScore annotation classes
+	 *         that this executor can process for removing members within a score range
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(RemoveMembers.class,MaxScore.class,MinScore.class);
 	}
 
+	/**
+	 * Returns the context class used by this executor.
+	 * 
+	 * @return the OrangeRedisMaxScoreMinScoreContext class, which contains the necessary
+	 *         parameters for executing ZSet range operations (key, maxScore, and minScore parameters)
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeMaxScoreMinScoreContext.class;
 	}
 
+	/**
+	 * Executes the Redis ZSet remove operation to remove members within the specified score range.
+	 * 
+	 * This method casts the context to OrangeMaxScoreMinScoreContext to access the maxScore and minScore parameters,
+	 * then calls the operations.removeRangeByScore method to remove members whose scores fall within the specified range.
+	 *
+	 * @param context the Redis operation context containing the key, maxScore, and minScore parameters
+	 * @return the number of members removed from the sorted set
+	 * @throws Exception if an error occurs during the Redis operation
+	 */
 	@Override
 	public Object execute(OrangeRedisContext context) throws Exception {
 		OrangeMaxScoreMinScoreContext ctx = (OrangeMaxScoreMinScoreContext)context;

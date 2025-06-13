@@ -31,28 +31,67 @@ import com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor implementation for removing members from a Redis ZSet based on a score range.
+ * This executor removes all members whose scores fall within the specified score range.
+ * 
+ * The score range is defined by the ScoreRange annotation and is used to determine which
+ * members should be removed from the sorted set. This is useful for operations such as
+ * removing expired items, pruning data within specific numerical boundaries, or
+ * cleaning up elements that match certain scoring criteria.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeRemoveByScoreRangeExecutor extends OrangeRedisAbstractExecutor {
 	
+	/**
+	 * Redis ZSet operations instance used to perform ZSet-specific operations.
+	 */
 	private OrangeRedisZSetOperations operations;
 
+	/**
+	 * Constructs a new executor for removing members from a Redis ZSet based on a score range.
+	 *
+	 * @param operations the Redis ZSet operations instance to use for executing ZSet commands
+	 * @param idGenerator the ID generator for creating unique executor identifiers
+	 */
 	public OrangeRemoveByScoreRangeExecutor(OrangeRedisZSetOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Returns a list of annotation classes that this executor supports.
+	 * 
+	 * @return a list containing RemoveMembers and ScoreRange annotation classes
+	 *         that this executor can process for removing members within a score range
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(RemoveMembers.class,ScoreRange.class);
 	}
 
+	/**
+	 * Returns the context class used by this executor.
+	 * 
+	 * @return the OrangeRedisScoreRangeContext class, which contains the necessary
+	 *         parameters for executing ZSet range operations (key and score range parameters)
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeScoreRangeContext.class;
 	}
 
+	/**
+	 * Executes the Redis ZSet remove operation to remove members within the specified score range.
+	 * 
+	 * This method casts the context to OrangeRedisScoreRangeContext to access the score range parameters,
+	 * then calls the operations.removeRangeByScore method to remove members whose scores fall within the specified range.
+	 *
+	 * @param context the Redis operation context containing the key and score range parameters
+	 * @return the number of members removed from the sorted set
+	 * @throws Exception if an error occurs during the Redis operation
+	 */
 	@Override
 	public Object execute(OrangeRedisContext context) throws Exception {
 		OrangeScoreRangeContext ctx = (OrangeScoreRangeContext)context;

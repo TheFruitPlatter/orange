@@ -25,8 +25,20 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Indicates that the method should return both members and their scores from a Redis sorted set (ZSet).
+ * When this annotation is present, the method will return a collection of member-score pairs instead of
+ * just the members.
+ * 
+ * <p>This annotation can be used in combination with other ZSet operations like range queries or
+ * member retrieval methods. The return type of the annotated method should be capable of holding
+ * both member and score information.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see ScoreRange
+ * @see RankRange
+ * @see Reverse
+ * @see Pager
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

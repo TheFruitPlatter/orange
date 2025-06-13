@@ -33,28 +33,83 @@ import com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations.ScoreRang
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor implementation for counting members in a Redis Sorted Set (ZSet) within a specified score range.
+ * 
+ * <p>This executor handles Redis ZSet operations that count the number of members whose scores fall
+ * within a range specified by separate {@link MaxScore} and {@link MinScore} annotations. It returns
+ * the count as a numeric value rather than retrieving the actual members.
+ * 
+ * <p>The executor uses {@link OrangeRedisZSetOperations#countByScore} to perform the actual Redis operation.
+ * It counts all members whose scores are within the specified range without retrieving the members themselves,
+ * making it more efficient than retrieving and counting members when only the count is needed.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeRedisAbstractExecutor
+ * @see OrangeMaxScoreMinScoreContext
+ * @see OrangeRedisZSetOperations
+ * @see MaxScore
+ * @see MinScore
+ * @see GetSize
  */
 public class OrangeCountByMaxScoreMinScoreExecutor extends OrangeRedisAbstractExecutor {
 	
+	/**
+	 * Redis ZSet operations instance used to execute the actual Redis commands.
+	 */
 	private OrangeRedisZSetOperations operations;
 
+	/**
+	 * Constructs a new executor for counting ZSet members by score range.
+	 * 
+	 * @param operations The Redis ZSet operations implementation to use for executing commands
+	 * @param idGenerator The ID generator for creating unique executor identifiers
+	 */
 	public OrangeCountByMaxScoreMinScoreExecutor(OrangeRedisZSetOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Specifies which annotations this executor supports.
+	 * 
+	 * <p>This executor supports three annotations:
+	 * <ul>
+	 *   <li>{@link GetSize} - Indicates this is a count operation rather than a retrieval operation
+	 *   <li>{@link MaxScore} - Specifies the maximum score (inclusive) for range query
+	 *   <li>{@link MinScore} - Specifies the minimum score (inclusive) for range query
+	 * </ul>
+	 * 
+	 * <p>The combination of these annotations allows the framework to identify methods that should
+	 * count members within a score range rather than retrieving them.
+	 * 
+	 * @return A List containing the supported annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(GetSize.class,MaxScore.class,MinScore.class);
 	}
 
+	/**
+	 * Specifies the context class used by this executor.
+	 * 
+	 * @return The OrangeMaxScoreMinScoreContext class
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeMaxScoreMinScoreContext.class;
 	}
 
+	/**
+	 * Executes the Redis ZSet count operation to determine the number of members within the specified score range.
+	 * 
+	 * <p>The returned value is a Long representing the count of members whose scores fall within
+	 * the specified range.
+	 * 
+	 * @param context The operation context containing key and score range parameters
+	 * @return A Long value representing the count of members in the specified score range
+	 * @throws Exception if the Redis operation fails
+	 */
 	@Override
 	public Object execute(OrangeRedisContext context) throws Exception {
 		OrangeMaxScoreMinScoreContext ctx = (OrangeMaxScoreMinScoreContext)context;

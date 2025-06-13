@@ -39,18 +39,59 @@ import com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations.Pager;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor implementation for retrieving paginated members with their scores from a Redis ZSet in reverse order
+ * based on a score range, using page number for pagination without calculating the total count.
+ * 
+ * This executor retrieves members and their scores whose scores fall within the specified range (defined by ScoreRange),
+ * and returns them in reverse order (from highest to lowest score) with pagination based on page number.
+ * It does not calculate the total count of matching members, which can improve performance for large sets.
+ * 
+ * This is particularly useful for implementing detailed paginated leaderboards, time-based feeds with relevance scores,
+ * or any scenario requiring paginated access to sorted data with scores in reverse order where the total count is not needed.
+ * 
+ * The executor supports the following annotations:
+ * - GetMembers: Indicates this is a member retrieval operation
+ * - ScoreRange: Specifies the score range to filter members
+ * - WithScores: Indicates that scores should be included in the results
+ * - PageNo: Specifies the page number for pagination
+ * - Count: Specifies the number of items per page
+ * - Reverse: Indicates that results should be returned in reverse order
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeReverseByScoreRangePageNoCountWithScoresExecutor extends OrangeGetWithScoresAbstractExecutor {
 	
+	/**
+	 * Redis ZSet operations instance used to perform ZSet-specific operations.
+	 */
 	private OrangeRedisZSetOperations operations;
 
+	/**
+	 * Constructs a new executor for retrieving paginated members with their scores from a Redis ZSet in reverse order
+	 * based on a score range, using page number for pagination without calculating the total count.
+	 *
+	 * @param operations the Redis ZSet operations instance to use for executing ZSet commands
+	 * @param idGenerator the ID generator for creating unique executor identifiers
+	 */
 	public OrangeReverseByScoreRangePageNoCountWithScoresExecutor(OrangeRedisZSetOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Retrieves a paginated set of members with their scores from a Redis ZSet in reverse order within the specified score range.
+	 * 
+	 * This method casts the context to OrangeScoreRangePagNoCountContext to access the score range and pagination parameters,
+	 * then calls the operations.reverseRangeByScoreWithScores method to retrieve members and their scores whose scores fall within 
+	 * the specified range in reverse order. The results are paginated based on the page number and count parameters.
+	 *
+	 * @param context the Redis operation context containing the key, score range, and pagination parameters
+	 * @param valueField the field representing the value type, used for type conversion
+	 * @param returnArgumentType the expected return type for the collection elements
+	 * @return a paginated collection of members with their scores from the sorted set that fall within the specified score range, in reverse order
+	 * @throws Exception if an error occurs during the Redis operation
+	 */
 	@Override
 	public Collection doGet(OrangeRedisContext context, Field valueField, Type returnArgumentType) throws Exception {
 		OrangeScoreRangePagNoCountContext ctx = (OrangeScoreRangePagNoCountContext)context;
@@ -63,11 +104,25 @@ public class OrangeReverseByScoreRangePageNoCountWithScoresExecutor extends Oran
 		);
 	}
 
+	/**
+	 * Returns a list of annotation classes that this executor supports.
+	 * 
+	 * @return a list containing GetMembers, ScoreRange, PageNo, Count, and WithScores annotation classes
+	 *         that this executor can process for retrieving paginated members with their scores within a score range
+	 *         in reverse order without calculating total count
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(GetMembers.class,ScoreRange.class,WithScores.class,PageNo.class,Count.class,Reverse.class);
 	}
 
+	/**
+	 * Returns the context class used by this executor.
+	 * 
+	 * @return the OrangeScoreRangePagNoCountContext class, which contains the necessary
+	 *         parameters for executing ZSet range operations with score range and pagination
+	 *         without calculating the total count
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeScoreRangePagNoCountContext.class;

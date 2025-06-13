@@ -25,8 +25,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Marks a parameter or field as the score value for Redis sorted set (ZSet) operations.
+ * This annotation is used to specify the score when adding or updating members in a sorted set.
+ * 
+ * <p>In Redis ZSets, each member is associated with a score (a double precision floating point number),
+ * which determines the member's position in the sorted set. Members are ordered from the lowest score
+ * to the highest score.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OldScore
+ * @see WithScores
  */
 @Target({ElementType.PARAMETER,ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)

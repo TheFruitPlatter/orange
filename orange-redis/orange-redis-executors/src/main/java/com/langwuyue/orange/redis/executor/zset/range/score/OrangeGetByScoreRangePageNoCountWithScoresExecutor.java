@@ -38,18 +38,41 @@ import com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations.Pager;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor implementation for retrieving members with their scores from a Redis ZSet within a specified score range.
+ * This executor supports pagination through traditional page number and count parameters, and includes score information
+ * in the results. It's particularly useful when both the members and their scores are needed for the application logic.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeGetByScoreRangePageNoCountWithScoresExecutor extends OrangeGetWithScoresAbstractExecutor {
 	
+	/**
+	 * Redis ZSet operations instance used to perform ZSet-specific operations with score information.
+	 */
 	private OrangeRedisZSetOperations operations;
 
+	/**
+	 * Constructs a new executor for retrieving members with their scores from a Redis ZSet within a specified score range.
+	 *
+	 * @param operations the Redis ZSet operations instance to use for executing ZSet commands
+	 * @param idGenerator the ID generator for creating unique executor identifiers
+	 */
 	public OrangeGetByScoreRangePageNoCountWithScoresExecutor(OrangeRedisZSetOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Executes the Redis ZSet range query operation to retrieve members with their scores within the specified score range.
+	 * The results are paginated based on the page number and count parameters provided in the context.
+	 *
+	 * @param context the Redis operation context containing key, score range, page number and count parameters
+	 * @param valueField the field representing the value type in the target object, may be null
+	 * @param returnArgumentType the expected return type for the operation
+	 * @return a Collection of members with their scores from the ZSet that fall within the specified score range and pagination parameters
+	 * @throws Exception if an error occurs during the Redis operation
+	 */
 	@Override
 	public Collection doGet(OrangeRedisContext context, Field valueField, Type returnArgumentType) throws Exception {
 		OrangeScoreRangePagNoCountContext ctx = (OrangeScoreRangePagNoCountContext)context;
@@ -62,11 +85,23 @@ public class OrangeGetByScoreRangePageNoCountWithScoresExecutor extends OrangeGe
 		);
 	}
 
+	/**
+	 * Returns a list of annotation classes that this executor supports.
+	 * 
+	 * @return a list containing the annotation classes that this executor can process:
+	 *         GetMembersWithScores, MinScore, MaxScore, PageNo, and Count
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(GetMembers.class,ScoreRange.class,WithScores.class,PageNo.class,Count.class);
 	}
 
+	/**
+	 * Returns the context class used by this executor.
+	 * 
+	 * @return the OrangeScoreRangePageNoCountContext class, which contains the necessary
+	 *         parameters for executing ZSet range queries with score boundaries, page number and count
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeScoreRangePagNoCountContext.class;

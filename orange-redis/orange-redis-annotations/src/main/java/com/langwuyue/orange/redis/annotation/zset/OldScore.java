@@ -25,8 +25,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Marks a parameter or field as the expected old score value for conditional Redis sorted set (ZSet) operations.
+ * This annotation is used to implement optimistic locking or conditional updates when modifying member scores.
+ * 
+ * <p>When used in update operations, the modification will only succeed if the member's current score
+ * matches the expected old score, providing a way to implement atomic conditional updates.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see Score
  */
 @Target({ElementType.PARAMETER,ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)

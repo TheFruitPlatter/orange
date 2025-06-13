@@ -37,18 +37,47 @@ import com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations.ScoreRang
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor implementation for retrieving members from a Redis ZSet in reverse order based on a score range.
+ * 
+ * This executor retrieves members whose scores fall within the specified range (defined by MaxScore and MinScore),
+ * and returns them in reverse order (from highest to lowest score). This is particularly useful for operations
+ * such as retrieving the top-N highest scoring elements, accessing the most recent items in time-based sorted sets,
+ * or implementing leaderboards where higher scores are better.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeReverseByMaxScoreMinScoreExecutor extends OrangeRedisGetAbstractExecutor {
 	
+	/**
+	 * Redis ZSet operations instance used to perform ZSet-specific operations.
+	 */
 	private OrangeRedisZSetOperations operations;
 
+	/**
+	 * Constructs a new executor for retrieving members from a Redis ZSet in reverse order based on a score range.
+	 *
+	 * @param operations the Redis ZSet operations instance to use for executing ZSet commands
+	 * @param idGenerator the ID generator for creating unique executor identifiers
+	 */
 	public OrangeReverseByMaxScoreMinScoreExecutor(OrangeRedisZSetOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Retrieves members from a Redis ZSet in reverse order (highest to lowest score) within the specified score range.
+	 * 
+	 * This method casts the context to OrangeMaxScoreMinScoreContext to access the score range parameters,
+	 * then calls the operations.reverseRangeByScore method to retrieve members whose scores fall within 
+	 * the specified range in reverse order.
+	 *
+	 * @param context the Redis operation context containing the key and score range parameters
+	 * @param valueField the field representing the value type, used for type conversion
+	 * @param returnArgumentType the expected return type for the collection elements
+	 * @return a collection of members from the sorted set that fall within the specified score range, in reverse order
+	 * @throws Exception if an error occurs during the Redis operation
+	 */
 	@Override
 	public Collection doGet(OrangeRedisContext context, Field valueField, Type returnArgumentType) throws Exception {
 		OrangeMaxScoreMinScoreContext ctx = (OrangeMaxScoreMinScoreContext)context;
@@ -60,11 +89,24 @@ public class OrangeReverseByMaxScoreMinScoreExecutor extends OrangeRedisGetAbstr
 		);
 	}
 
+	/**
+	 * Returns a list of annotation classes that this executor supports.
+	 * 
+	 * @return a list containing GetMembers, MaxScore, and MinScore annotation classes
+	 *         that this executor can process for retrieving members within a score range
+	 *         in reverse order
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(GetMembers.class,MaxScore.class,MinScore.class,Reverse.class);
 	}
 
+	/**
+	 * Returns the context class used by this executor.
+	 * 
+	 * @return the OrangeMaxScoreMinScoreContext class, which contains the necessary
+	 *         parameters for executing ZSet range operations with max and min score boundaries
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeMaxScoreMinScoreContext.class;

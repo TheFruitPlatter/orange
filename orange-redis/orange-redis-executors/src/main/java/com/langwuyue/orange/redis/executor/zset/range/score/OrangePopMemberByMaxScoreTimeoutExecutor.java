@@ -36,18 +36,47 @@ import com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations.ZSetEntry
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor implementation for popping (removing and returning) the member with the highest score from a Redis ZSet
+ * with a timeout parameter. This executor removes and returns a single member with the maximum score from the sorted set,
+ * but will wait only for the specified timeout period if no suitable member is immediately available.
+ * 
+ * This is particularly useful in scenarios where you need to process items in order of priority with a time constraint,
+ * such as task queues where higher scores represent higher priorities and processing cannot wait indefinitely.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangePopMemberByMaxScoreTimeoutExecutor extends OrangeGetOneWithScoresAbstractExecutor {
 	
+	/**
+	 * Redis ZSet operations instance used to perform ZSet-specific operations with timeout support.
+	 */
 	private OrangeRedisZSetOperations operations;
 
+	/**
+	 * Constructs a new executor for popping the highest-scored member from a Redis ZSet with timeout support.
+	 *
+	 * @param operations the Redis ZSet operations instance to use for executing ZSet commands
+	 * @param idGenerator the ID generator for creating unique executor identifiers
+	 */
 	public OrangePopMemberByMaxScoreTimeoutExecutor(OrangeRedisZSetOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Executes the Redis ZSet pop operation to remove and return the member with the highest score,
+	 * waiting up to the specified timeout if no suitable member is immediately available.
+	 * 
+	 * This method casts the context to OrangeRedisTimeoutContext to access timeout parameters,
+	 * then calls the operations.popMaxScore method with appropriate timeout settings.
+	 *
+	 * @param context the Redis operation context containing the key and timeout parameters
+	 * @param valueField the field representing the value type in the target object, may be null
+	 * @param returnArgumentType the expected return type for the operation
+	 * @return a Collection containing the popped member with its score (typically a singleton collection)
+	 * @throws Exception if an error occurs during the Redis operation
+	 */
 	@Override
 	public Collection doGet(OrangeRedisContext context, Field valueField, Type returnArgumentType) throws Exception {
 		OrangeRedisTimeoutContext ctx = (OrangeRedisTimeoutContext) context;
@@ -61,11 +90,22 @@ public class OrangePopMemberByMaxScoreTimeoutExecutor extends OrangeGetOneWithSc
 		return OrangeCollectionUtils.asList(entry);
 	}
 
+	/**
+	 * Returns a list of annotation classes that this executor supports.
+	 * 
+	 * @return a list containing the PopMemberByMaxScoreTimeout annotation class that this executor can process
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(PopMembers.class,MaxScore.class,Timeout.class);
 	}
 
+	/**
+	 * Returns the context class used by this executor.
+	 * 
+	 * @return the OrangeRedisTimeoutContext class, which contains the necessary
+	 *         parameters for executing ZSet pop operations with timeout (key and timeout parameters)
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeRedisTimeoutContext.class;

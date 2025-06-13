@@ -25,8 +25,25 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Marks a parameter as a rank range specification for Redis sorted set (ZSet) operations.
+ * This annotation is used to query members based on their position (rank) in the sorted set.
+ * 
+ * <p>In Redis ZSet, ranks are 0-based indices representing the position of members when ordered by score:
+ * <ul>
+ *   <li>Rank 0 = member with the lowest score (in ascending order)</li>
+ *   <li>Rank 1 = member with the second-lowest score</li>
+ *   <li>And so on...</li>
+ * </ul>
+ * 
+ * <p>The rank range is inclusive at both ends, meaning both the start and end ranks are included in the results.
+ * 
+ * <p>When used with {@link Reverse}, the ranks are counted from the highest score instead of the lowest score.
+ * This is useful for getting top-N style results.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see Reverse
+ * @see WithScores
  */
 @Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)

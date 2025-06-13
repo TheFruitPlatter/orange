@@ -37,18 +37,41 @@ import com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations.ScoreRang
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor implementation for retrieving members with their scores from a Redis ZSet within a specified score range using a pager.
+ * This executor extends the base WithScores executor to include score information in the results and supports pagination through
+ * a pager object rather than using page number and count parameters.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeGetByMaxScoreMinScorePagerWithScoresExecutor extends OrangeGetWithScoresAbstractExecutor {
 	
+	/**
+	 * Redis ZSet operations instance used to perform ZSet-specific operations with score information.
+	 */
 	private OrangeRedisZSetOperations operations;
 
+	/**
+	 * Constructs a new executor for retrieving members with their scores from a Redis ZSet within a specified score range using a pager.
+	 *
+	 * @param operations the Redis ZSet operations instance to use for executing ZSet commands
+	 * @param idGenerator the ID generator for creating unique executor identifiers
+	 */
 	public OrangeGetByMaxScoreMinScorePagerWithScoresExecutor(OrangeRedisZSetOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Executes the Redis ZSet range query operation to retrieve members with their scores within the specified score range using a pager.
+	 * The results include both the members and their associated scores in the ZSet.
+	 *
+	 * @param context the Redis operation context containing key, score range, and pager parameters
+	 * @param valueField the field representing the value type in the target object, may be null
+	 * @param returnArgumentType the expected return type for the operation
+	 * @return a Collection of members with their scores from the ZSet that fall within the specified score range
+	 * @throws Exception if an error occurs during the Redis operation
+	 */
 	@Override
 	public Collection doGet(OrangeRedisContext context, Field valueField, Type returnArgumentType) throws Exception {
 		OrangeMaxScoreMinScorePagerContext ctx = (OrangeMaxScoreMinScorePagerContext)context;
@@ -61,11 +84,23 @@ public class OrangeGetByMaxScoreMinScorePagerWithScoresExecutor extends OrangeGe
 		);
 	}
 
+	/**
+	 * Returns a list of annotation classes that this executor supports.
+	 * 
+	 * @return a list containing the annotation classes that this executor can process:
+	 *         GetMembers, WithScores, MaxScore, MinScore, and Pager
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(GetMembers.class,MaxScore.class,MinScore.class,WithScores.class,com.langwuyue.orange.redis.annotation.zset.Pager.class);
 	}
 
+	/**
+	 * Returns the context class used by this executor.
+	 * 
+	 * @return the OrangeMaxScoreMinScorePagerContext class, which contains the necessary
+	 *         parameters for executing ZSet range queries with score boundaries and pager
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeMaxScoreMinScorePagerContext.class;

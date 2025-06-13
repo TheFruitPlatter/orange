@@ -36,18 +36,49 @@ import com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations.ScoreRang
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor implementation for retrieving members from a Redis Sorted Set (ZSet) within a specified score range.
+ * 
+ * <p>This executor handles Redis ZSet operations that retrieve members based on maximum and minimum scores.
+ * It supports the following annotations:
+ * <ul>
+ *   <li>{@link GetMembers} - Indicates this is a member retrieval operation
+ *   <li>{@link MaxScore} - Specifies the maximum score (inclusive) for range query
+ *   <li>{@link MinScore} - Specifies the minimum score (inclusive) for range query
+ * </ul>
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeRedisGetAbstractExecutor
+ * @see OrangeMaxScoreMinScoreContext
+ * @see OrangeRedisZSetOperations
  */
 public class OrangeGetByMaxScoreMinScoreExecutor extends OrangeRedisGetAbstractExecutor {
 	
+	/**
+	 * Redis ZSet operations instance used to execute the actual Redis commands.
+	 */
 	private OrangeRedisZSetOperations operations;
 
+	/**
+	 * Constructs a new executor for retrieving ZSet members by score range.
+	 * 
+	 * @param operations The Redis ZSet operations implementation to use for executing commands
+	 * @param idGenerator The ID generator for creating unique executor identifiers
+	 */
 	public OrangeGetByMaxScoreMinScoreExecutor(OrangeRedisZSetOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Executes the Redis ZSet range query operation to retrieve members within the specified score range.
+	 * 
+	 * @param context The operation context containing key and score range parameters
+	 * @param valueField The field annotated with value type information, may be null
+	 * @param returnArgumentType The expected return type for the operation
+	 * @return A Collection of members whose scores fall within the specified range, ordered by score
+	 * @throws Exception if the Redis operation fails or type conversion fails
+	 */
 	@Override
 	public Collection doGet(OrangeRedisContext context, Field valueField, Type returnArgumentType) throws Exception {
 		OrangeMaxScoreMinScoreContext ctx = (OrangeMaxScoreMinScoreContext)context;
@@ -59,11 +90,21 @@ public class OrangeGetByMaxScoreMinScoreExecutor extends OrangeRedisGetAbstractE
 		);
 	}
 
+	/**
+	 * Specifies which annotations this executor supports.
+	 * 
+	 * @return A List containing the supported annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(GetMembers.class,MaxScore.class,MinScore.class);
 	}
 
+	/**
+	 * Specifies the context class used by this executor.
+	 * 
+	 * @return The OrangeMaxScoreMinScoreContext class
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeMaxScoreMinScoreContext.class;

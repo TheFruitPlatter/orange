@@ -25,8 +25,20 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Marks a parameter as a score range for Redis sorted set (ZSet) operations.
+ * This annotation is used to specify the score range criteria when querying members from a ZSet.
+ * 
+ * <p>The annotated parameter should represent a range of scores to filter ZSet members.
+ * Score ranges are inclusive by default at both ends, meaning members with scores equal to
+ * the minimum or maximum bounds will be included in the results.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see MinScore
+ * @see MaxScore
+ * @see WithScores
+ * @see Reverse
+ * @see Pager
  */
 @Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)

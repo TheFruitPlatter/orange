@@ -31,28 +31,72 @@ import com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor implementation for removing members from a Redis ZSet based on a lexicographical range.
+ * 
+ * This executor removes all members from a sorted set whose string values fall within the specified
+ * lexicographical range. The range is defined by minimum and maximum string values and can be inclusive
+ * or exclusive at either end.
+ * 
+ * The executor supports the following annotations:
+ * - RemoveMembers: Indicates this is a member removal operation
+ * - LexRange: Specifies the lexicographical range for the removal operation
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeRemoveByLexRangeExecutor extends OrangeRedisAbstractExecutor {
 	
+	/**
+	 * Redis ZSet operations instance used to perform ZSet-specific operations.
+	 */
 	private OrangeRedisZSetOperations operations;
 
+	/**
+	 * Constructs a new executor for removing members from a Redis ZSet based on a lexicographical range.
+	 *
+	 * @param operations the Redis ZSet operations instance to use for executing ZSet commands
+	 * @param idGenerator the ID generator for creating unique executor identifiers
+	 */
 	public OrangeRemoveByLexRangeExecutor(OrangeRedisZSetOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Returns a list of annotation classes that this executor supports.
+	 * 
+	 * @return a list containing RemoveMembers and LexRange annotation classes
+	 *         that this executor can process for removing members within
+	 *         a lexicographical range
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(RemoveMembers.class,LexRange.class);
 	}
 
+	/**
+	 * Returns the context class used by this executor.
+	 * 
+	 * @return the OrangeLexRangeContext class, which contains the necessary
+	 *         parameters for executing lexicographical range operations, including
+	 *         the key and the lexicographical range boundaries
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeLexRangeContext.class;
 	}
 
+	/**
+	 * Executes the removal operation for members within the specified lexicographical range.
+	 * 
+	 * This method removes all members from a Redis ZSet whose string values fall within the 
+	 * specified lexicographical range. The method first casts the context to OrangeLexRangeContext 
+	 * to access the key and range parameters, then uses the ZSet operations to perform the removal.
+	 *
+	 * @param context the Redis operation context containing the key and lexicographical range parameters
+	 * @return Long the number of members that were removed from the sorted set
+	 * @throws Exception if an error occurs during the Redis operation
+	 */
 	@Override
 	public Object execute(OrangeRedisContext context) throws Exception {
 		OrangeLexRangeContext ctx = (OrangeLexRangeContext)context;

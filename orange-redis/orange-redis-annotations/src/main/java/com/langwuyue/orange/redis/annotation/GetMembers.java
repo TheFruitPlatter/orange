@@ -25,8 +25,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Indicates that a method retrieves members from a Redis collection data structure (Set, ZSet, etc.).
+ * This annotation marks methods that are designed to fetch members from Redis collections.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see com.langwuyue.orange.redis.annotation.zset.WithScores
+ * @see com.langwuyue.orange.redis.annotation.zset.ScoreRange
+ * @see com.langwuyue.orange.redis.annotation.zset.Pager
+ * @see com.langwuyue.orange.redis.annotation.zset.Reverse
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

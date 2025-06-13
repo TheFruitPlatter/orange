@@ -25,8 +25,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Indicates that a parameter should be treated as pagination information for Redis sorted set (ZSet) operations.
+ * This annotation enables paginated access to ZSet members, allowing retrieval of members in smaller, manageable chunks.
+ * The pagination is implemented using Redis ZRANGE command with LIMIT option, providing efficient access to large datasets.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see PageNo
+ * @see ScoreRange
+ * @see WithScores
+ * @see Reverse
+ * @see MinScore
+ * @see MaxScore
  */
 @Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)

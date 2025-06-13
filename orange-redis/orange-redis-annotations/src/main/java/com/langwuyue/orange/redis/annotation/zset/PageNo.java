@@ -25,8 +25,22 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Marks a parameter or field as the page number for paginated Redis sorted set (ZSet) operations.
+ * This annotation is used in conjunction with {@link Pager} to implement pagination functionality.
+ * 
+ * <p>The page number is 1-based by default, meaning:
+ * <ul>
+ *   <li>First page = 1</li>
+ *   <li>Second page = 2</li>
+ *   <li>And so on...</li>
+ * </ul>
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see Pager
+ * @see ScoreRange
+ * @see WithScores
+ * @see Reverse
  */
 @Target({ElementType.PARAMETER,ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)

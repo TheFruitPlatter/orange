@@ -35,18 +35,59 @@ import com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor implementation for retrieving members from a Redis Sorted Set (ZSet) 
+ * within a specified rank range in reverse order (highest to lowest score).
+ * 
+ * <p>This executor extends the functionality of {@link OrangeGetByRankRangeExecutor} by retrieving
+ * members in reverse order. It supports the following annotations:
+ * <ul>
+ *   <li>{@link GetMembers} - Indicates this is a member retrieval operation
+ *   <li>{@link RankRange} - Specifies the start and end ranks (positions) for the range query
+ *   <li>{@link Reverse} - Indicates that the results should be returned in reverse order
+ * </ul>
+ * 
+ * <p>The executor uses {@link OrangeRedisZSetOperations#reverseRange} to perform the actual Redis operation.
+ * It retrieves all members whose ranks are within the specified range [start, end] in reverse order.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeRedisGetAbstractExecutor
+ * @see OrangeRedisRankRangeContext
+ * @see OrangeRedisZSetOperations
  */
 public class OrangeReverseByRankRangeExecutor extends OrangeRedisGetAbstractExecutor {
 	
+	/**
+	 * Redis ZSet operations instance used to execute the actual Redis commands.
+	 */
 	private OrangeRedisZSetOperations operations;
 
+	/**
+	 * Constructs a new executor for retrieving ZSet members in reverse order using a rank range.
+	 * 
+	 * @param operations The Redis ZSet operations implementation to use for executing commands
+	 * @param idGenerator The ID generator for creating unique executor identifiers
+	 */
 	public OrangeReverseByRankRangeExecutor(OrangeRedisZSetOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Retrieves members from the Redis ZSet within the specified rank range in reverse order.
+	 * 
+	 * <p>The method handles type conversion and generic type resolution to ensure the returned
+	 * collection matches the expected return type of the annotated method.
+	 * 
+	 * <p>In reverse mode, the rank 0 corresponds to the element with the highest score,
+	 * making this method particularly useful for retrieving top-scoring elements.
+	 * 
+	 * @param context The operation context containing key and rank range parameters
+	 * @param valueField The field representing the value type, may be null
+	 * @param returnArgumentType The expected return type from the annotated method
+	 * @return A Collection of members within the specified rank range in reverse order
+	 * @throws Exception if the Redis operation fails or type conversion fails
+	 */
 	@Override
 	public Collection doGet(OrangeRedisContext context, Field valueField, Type returnArgumentType) throws Exception {
 		OrangeRedisRankRangeContext ctx = (OrangeRedisRankRangeContext)context;
@@ -58,11 +99,31 @@ public class OrangeReverseByRankRangeExecutor extends OrangeRedisGetAbstractExec
 		);
 	}
 
+	/**
+	 * Specifies which annotations this executor supports.
+	 * 
+	 * <p>This executor supports three annotations:
+	 * <ul>
+	 *   <li>{@link GetMembers} - Indicates this is a member retrieval operation
+	 *   <li>{@link RankRange} - Specifies the start and end ranks for range query
+	 *   <li>{@link Reverse} - Indicates that results should be returned in reverse order
+	 * </ul>
+	 * 
+	 * <p>The combination of these annotations allows the framework to identify methods that should
+	 * retrieve members in reverse order from within a specified rank range.
+	 * 
+	 * @return A List containing the supported annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(GetMembers.class,RankRange.class,Reverse.class);
 	}
 
+	/**
+	 * Specifies the context class used by this executor.
+	 * 
+	 * @return The OrangeRedisRankRangeContext class
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeRedisRankRangeContext.class;

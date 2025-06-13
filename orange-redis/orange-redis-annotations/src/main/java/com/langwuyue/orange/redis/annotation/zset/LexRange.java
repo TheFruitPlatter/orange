@@ -25,8 +25,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Indicates that a method performs a lexicographical range query on a Redis sorted set (ZSet).
+ * This annotation enables retrieving members from a sorted set based on their string values in lexicographical order,
+ * rather than by their scores.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see MinLex
+ * @see MaxLex
+ * @see Pager
  */
 @Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)

@@ -25,8 +25,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Marks a method as an operation to retrieve scores for specified members in a Redis sorted set (ZSet).
+ * This annotation enables direct score retrieval for one or more members without having to iterate through the entire set.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see Score
+ * @see WithScores
+ * @see OrangeRedisZSetClient
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

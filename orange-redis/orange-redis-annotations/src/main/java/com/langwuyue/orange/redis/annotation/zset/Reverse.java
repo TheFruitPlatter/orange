@@ -25,8 +25,27 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Indicates that the Redis sorted set (ZSet) operation should return results in reverse order.
+ * When applied to a method, the results will be returned in descending order instead of the default ascending order.
+ * 
+ * <p>This annotation is particularly useful when you need to:
+ * <ul>
+ *   <li>Get highest scoring members first (descending score order)</li>
+ *   <li>Retrieve members in reverse lexicographical order</li>
+ *   <li>Get results from bottom to top of the sorted set</li>
+ *   <li>Implement leaderboards with highest scores first</li>
+ *   <li>Display most recent items (when scores are timestamps)</li>
+ * </ul>
+ * 
+ * <p>This annotation can be combined with other ZSet operations like {@link ScoreRange},
+ * {@link WithScores}, {@link RankRange}, and {@link Pager} to modify the order of the returned results.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see WithScores
+ * @see ScoreRange
+ * @see RankRange
+ * @see Pager
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

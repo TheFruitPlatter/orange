@@ -25,8 +25,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Marks a parameter or field as the minimum lexicographical value (lower bound) for a Redis sorted set (ZSet) 
+ * lexicographical range query.
+ * 
+ * <p>This annotation is used in conjunction with {@link LexRange} to specify the starting point of a 
+ * lexicographical range query. It can be applied to method parameters or fields that represent the lower bound 
+ * of the range.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see LexRange
+ * @see MaxLex
  */
 @Target({ElementType.PARAMETER,ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
