@@ -29,13 +29,33 @@ import com.langwuyue.orange.redis.operations.OrangeRedisValueOperations;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Redis executor implementation for simple decrement operations without specifying a value.
+ * 
+ * <p>This executor handles decrement operations on Redis numeric values, specifically
+ * decreasing the value by exactly 1. Unlike the {@link OrangeDecrementExecutor}, this
+ * executor does not allow specifying the decrement amount - it always decrements by 1.</p>
+ * 
+ * <p>The executor is triggered by methods annotated with {@link Decrement} annotation
+ * and decrements the value stored at the specified Redis key by 1.</p>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeDecrementWithoutValueExecutor extends OrangeRedisAbstractExecutor {
 	
+	/**
+	 * Redis value operations instance used to perform decrement operations on Redis keys.
+	 * This provides access to Redis commands like INCRBY (used with negative values).
+	 */
 	private OrangeRedisValueOperations operations;
 	
+	/**
+	 * Constructs a new OrangeDecrementWithoutValueExecutor with the required dependencies.
+	 *
+	 * @param operations The Redis value operations instance used to perform decrement operations
+	 * @param idGenerator The ID generator used to create unique identifiers for each
+	 *                   executor instance, helping with tracking and debugging
+	 */
 	public OrangeDecrementWithoutValueExecutor(OrangeRedisValueOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
@@ -43,11 +63,32 @@ public class OrangeDecrementWithoutValueExecutor extends OrangeRedisAbstractExec
 
 
 
+	/**
+	 * Returns the list of annotation classes supported by this executor.
+	 * 
+	 * <p>This executor only supports the {@link Decrement} annotation, which marks
+	 * a method for simple decrement operations that decrease a value by 1.</p>
+	 * 
+	 * <p>Unlike {@link OrangeDecrementExecutor}, this executor does not support
+	 * the {@link RedisValue} annotation.</p>
+	 *
+	 * @return A list containing only the Decrement annotation class
+	 */
 	@Override
 	public List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(Decrement.class);
 	}
 
+	/**
+	 * Executes the decrement operation on a Redis key, decreasing its value by 1.
+	 *
+	 * <p>Unlike {@link OrangeDecrementExecutor}, this executor always decrements by 1
+	 * and does not return the new value after the operation.</p>
+	 *
+	 * @param context The OrangeRedisContext containing the operation parameters
+	 * @return null as this is a void operation
+	 * @throws Exception If an error occurs during the execution of the Redis operation
+	 */
 	@Override
 	public Object execute(OrangeRedisContext context) throws Exception {
 		return operations.increment(context.getRedisKey().getValue(), -1);
