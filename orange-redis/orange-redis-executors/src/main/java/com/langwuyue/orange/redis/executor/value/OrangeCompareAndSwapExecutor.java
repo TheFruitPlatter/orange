@@ -41,9 +41,9 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
  * 
  * <p>This executor provides an atomic way to update Redis values only if they match an expected
  * value, implementing the CAS (Compare-And-Swap) pattern. The operation is performed using
- * a Lua script to ensure atomicity at the Redis server level.</p>
+ * a Lua script to ensure atomicity at the Redis server level.
  * 
- * <p>The CAS operation works as follows:</p>
+ * <p>The CAS operation works as follows:
  * <ol>
  *   <li>Read the current value from Redis for a given key</li>
  *   <li>Compare it with an expected value</li>
@@ -57,7 +57,7 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
  *   <li>If the new value is null, the key will be deleted from Redis</li>
  * </ul>
  * 
- * <p>The executor supports the following annotations:</p>
+ * <p>The executor supports the following annotations:
  * <ul>
  *   <li>{@link RedisValue}: Marks the parameter that contains the new value to set</li>
  *   <li>{@link RedisOldValue}: Marks the parameter that contains the expected value</li>
@@ -94,10 +94,10 @@ public class OrangeCompareAndSwapExecutor extends OrangeRedisAbstractExecutor {
 	 * 
 	 * <p>This script is similar to the production script but includes additional logging
 	 * statements to help with debugging. It logs the key, expected value, current value,
-	 * and new value during execution, making it easier to trace the operation flow.</p>
+	 * and new value during execution, making it easier to trace the operation flow.
 	 * 
 	 * <p>The debug script should only be used in development or testing environments
-	 * as it produces additional Redis logs that may impact performance.</p>
+	 * as it produces additional Redis logs that may impact performance.
 	 */
 	private static final String CAS_LUA_SCRIPT_DEBUG = String.join("\n",
 		"local traceId = tostring(ARGV[3]);",
@@ -155,7 +155,7 @@ public class OrangeCompareAndSwapExecutor extends OrangeRedisAbstractExecutor {
 	/**
 	 * Executes the Compare-And-Swap operation on a Redis key.
 	 * 
-	 * <p>This method performs an atomic CAS operation by:</p>
+	 * <p>This method performs an atomic CAS operation by:
 	 * <ol>
 	 *   <li>Extracting the old (expected) value and new value from the context</li>
 	 *   <li>Preparing the arguments for the Lua script execution</li>
@@ -165,7 +165,7 @@ public class OrangeCompareAndSwapExecutor extends OrangeRedisAbstractExecutor {
 	 * 
 	 * <p>The method handles null values for both the old and new values using the special
 	 * marker '[[NIL]]'. If the new value is null, the key will be deleted from Redis
-	 * when the CAS operation succeeds.</p>
+	 * when the CAS operation succeeds.
 	 *
 	 * @param context The OrangeRedisContext containing the operation parameters,
 	 *                must be an instance of OrangeCompareAndSwapContext
@@ -212,7 +212,7 @@ public class OrangeCompareAndSwapExecutor extends OrangeRedisAbstractExecutor {
 	/**
 	 * Returns the list of annotation classes supported by this executor.
 	 * 
-	 * <p>This executor supports the following annotations:</p>
+	 * <p>This executor supports the following annotations:
 	 * <ul>
 	 *   <li>{@link CAS}: Marks a method for CAS operation</li>
 	 * </ul>
@@ -229,7 +229,7 @@ public class OrangeCompareAndSwapExecutor extends OrangeRedisAbstractExecutor {
 	 * 
 	 * <p>This executor uses the {@link OrangeCompareAndSwapContext} class to store
 	 * and manage the parameters required for the CAS operation, including the key,
-	 * expected value, and new value.</p>
+	 * expected value, and new value.
 	 *
 	 * @return The OrangeCompareAndSwapContext class
 	 */

@@ -44,7 +44,7 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
  * An executor that implements Redis distributed lock with automatic renewal functionality.
  * 
  * <p>This executor extends {@link OrangeSetIfAbsentExecutor} to provide distributed locking
- * capabilities with the following features:</p>
+ * capabilities with the following features:
  * <ul>
  *   <li>Automatic lock renewal using a timer wheel mechanism</li>
  *   <li>Configurable expiration time initialization</li>
@@ -52,7 +52,7 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
  *   <li>Integration with lock acquisition listeners</li>
  * </ul>
  * 
- * <p>The executor supports the following annotations:</p>
+ * <p>The executor supports the following annotations:
  * <ul>
  *   <li>{@link Lock} - For basic locking functionality</li>
  *   <li>{@link AutoRenew} - For configuring automatic lock renewal</li>
@@ -110,7 +110,7 @@ public class OrangeValueLockAutoRenewExpirationExecutor extends OrangeSetIfAbsen
 	 * Determines whether the lock should be deleted at the end of execution.
 	 * 
 	 * <p>This method marks the renewal task for removal if a valid result exists,
-	 * which effectively stops the automatic renewal process.</p>
+	 * which effectively stops the automatic renewal process.
 	 *
 	 * @param context The Redis context containing operation information
 	 * @param result The result object, expected to be an {@link OrangeValueLockRenewTask}
@@ -203,7 +203,7 @@ public class OrangeValueLockAutoRenewExpirationExecutor extends OrangeSetIfAbsen
 	/**
 	 * Returns the list of annotation classes supported by this executor.
 	 * 
-	 * <p>Supported annotations include:</p>
+	 * <p>Supported annotations include:
 	 * <ul>
 	 *   <li>{@link Lock} - For basic locking functionality</li>
 	 *   <li>{@link AutoRenew} - For configuring automatic lock renewal</li>

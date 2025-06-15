@@ -32,12 +32,12 @@ import java.lang.annotation.Target;
  * <p>Classes annotated with {@code @OrangeRedisIfAbsentListener} must specify
  * one or more target classes that are annotated with {@code @OrangeRedisKey}.
  * When a cache miss occurs for any of the specified keys, the listener will
- * be invoked to handle the absence.</p>
+ * be invoked to handle the absence.
  *
  * <p>The handler methods in the listener class can use {@code @OrangeRedisOriginalKey}
  * to identify which parameter represents the original key pattern (containing variables)
  * that triggered the absence event. This is useful when you need to know both the
- * original pattern and the resolved key that was missing.</p>
+ * original pattern and the resolved key that was missing.
  *
  *
  * @see OrangeRedisKey
@@ -58,7 +58,7 @@ public @interface OrangeRedisIfAbsentListener {
 	 *
 	 * <p>The specified classes serve as key definitions and should contain
 	 * the Redis key patterns or templates that this listener is interested in.
-	 * At least one class must be specified.</p>
+	 * At least one class must be specified.
 	 *
 	 * @return an array of classes that are annotated with {@code @OrangeRedisKey}
 	 */

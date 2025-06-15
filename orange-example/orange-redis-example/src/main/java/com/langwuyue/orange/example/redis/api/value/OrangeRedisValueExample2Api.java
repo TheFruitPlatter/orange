@@ -29,7 +29,7 @@ import com.langwuyue.orange.redis.template.value.LongOperationsTemplate;
  * 
  * <p>This interface extends {@link LongOperationsTemplate} to provide Redis value operations
  * for primitive {@code long} values. Compared to {@link OrangeRedisValueExample1Api} which
- * handles JSON objects, this interface works with simple numeric values.</p>
+ * handles JSON objects, this interface works with simple numeric values.
  * 
  * <p>Redis key configuration:
  * <ul>

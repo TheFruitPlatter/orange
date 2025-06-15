@@ -32,10 +32,10 @@ import com.langwuyue.orange.redis.annotation.script.ScriptArg;
  * Redis Script Client Example 1 - CAS (Compare-And-Swap) Operation.
  * 
  * <p>This interface demonstrates how to implement a Redis script client for performing
- * atomic compare-and-swap operations using Lua scripts.</p>
+ * atomic compare-and-swap operations using Lua scripts.
  *
  * <p>The script will atomically compare the current value with an expected value,
- * and only if they match, update to the new value.</p>
+ * and only if they match, update to the new value.
  *
  * @author Liang.Zhong
  * @since 1.0.0
@@ -59,14 +59,14 @@ public interface OrangeRedisScriptExample1Api {
 	 *   </ul>
 	 *   <li>Else return '0' indicating failure</li>
 	 * </ol>
-	 * </p>
+	 * 
 	 *
 	 * <p>Special values:
 	 * <ul>
 	 *   <li>'[[NIL]]' represents nil/empty value</li>
 	 *   <li>Returns '1' for success, '0' for failure</li>
 	 * </ul>
-	 * </p>
+	 * 
 	 *
 	 * @param arg1 The Redis key to operate on
 	 * @param arg2 The expected value (use '[[NIL]]' for nil) and new value combined:

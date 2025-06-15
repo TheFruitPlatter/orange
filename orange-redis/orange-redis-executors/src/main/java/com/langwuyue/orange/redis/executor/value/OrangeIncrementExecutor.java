@@ -37,11 +37,11 @@ import com.langwuyue.orange.redis.utils.OrangeReflectionUtils;
  * 
  * <p>This executor handles operations to increment numeric values stored in Redis.
  * It supports methods annotated with {@link Increment} and {@link RedisValue} annotations
- * and increments the value associated with the specified Redis key.</p>
+ * and increments the value associated with the specified Redis key.
  * 
  * <p>The executor supports incrementing both integer values (using Redis INCRBY)
  * and floating-point values (using Redis INCRBYFLOAT). The type of increment
- * operation is determined automatically based on the value type provided.</p>
+ * operation is determined automatically based on the value type provided.
  *
  * @author Liang.Zhong
  * @since 1.0.0
@@ -71,7 +71,7 @@ public class OrangeIncrementExecutor extends OrangeRedisAbstractExecutor {
 	/**
 	 * Returns the list of annotation classes supported by this executor.
 	 * 
-	 * <p>This executor supports two annotations:</p>
+	 * <p>This executor supports two annotations:
 	 * <ul>
 	 *   <li>{@link Increment} - Marks a method for incrementing values in Redis</li>
 	 *   <li>{@link RedisValue} - Used to specify the increment value</li>
@@ -88,7 +88,7 @@ public class OrangeIncrementExecutor extends OrangeRedisAbstractExecutor {
 	 * Executes the increment operation on a Redis value.
 	 * 
 	 * <p>The method supports both integer and floating-point increments, automatically
-	 * choosing the appropriate Redis command based on the value type:</p>
+	 * choosing the appropriate Redis command based on the value type:
 	 * <ul>
 	 *   <li>For floating-point values: Uses INCRBYFLOAT command</li>
 	 *   <li>For integer values: Uses INCRBY command</li>
@@ -117,7 +117,7 @@ public class OrangeIncrementExecutor extends OrangeRedisAbstractExecutor {
 	 * Returns the context class that this executor can process.
 	 * 
 	 * <p>This executor works with {@link OrangeRedisValueContext} which contains
-	 * both the Redis key and the increment value needed for the operation.</p>
+	 * both the Redis key and the increment value needed for the operation.
 	 *
 	 * @return The OrangeRedisValueContext class
 	 */

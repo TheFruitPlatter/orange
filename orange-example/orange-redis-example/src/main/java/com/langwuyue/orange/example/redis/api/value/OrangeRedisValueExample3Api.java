@@ -29,7 +29,7 @@ import com.langwuyue.orange.redis.template.value.DoubleOperationsTemplate;
  * 
  * <p>Similar to {@link OrangeRedisValueExample2Api} but for {@code double} values.
  * Uses the same Redis commands (INCRBYFLOAT, DECRBYFLOAT, GET, SET) but with
- * floating-point precision.</p>
+ * floating-point precision.
  * 
  * <p>Key configuration:
  * <ul>

@@ -110,7 +110,7 @@ public interface OrangeRedisHashExample3Api  {
 	/**
 	 * Sets expiration time for the hash key (default unit: seconds)
 	 * 
-	 * <p>Corresponding Redis command: EXPIRE</p>
+	 * <p>Corresponding Redis command: EXPIRE
 	 * 
 	 * @param keyVar The variable part of the key name
 	 * @return true if expiration was set, false if key doesn't exist
@@ -121,7 +121,7 @@ public interface OrangeRedisHashExample3Api  {
 	/**
 	 * Deletes the entire hash key and all its fields
 	 * 
-	 * <p>Corresponding Redis command: DEL</p>
+	 * <p>Corresponding Redis command: DEL
 	 * 
 	 * @param keyVar The variable part of the key name
 	 * @return true if key was deleted, false if key didn't exist
@@ -132,7 +132,7 @@ public interface OrangeRedisHashExample3Api  {
 	/**
 	 * Gets remaining expiration time in seconds
 	 * 
-	 * <p>Corresponding Redis command: TTL</p>
+	 * <p>Corresponding Redis command: TTL
 	 * 
 	 * @param keyVar The variable part of the key name
 	 * @return Remaining time in seconds, -1 if no expiration, -2 if key doesn't exist
@@ -143,7 +143,7 @@ public interface OrangeRedisHashExample3Api  {
 	/**
 	 * Gets remaining expiration time in specified time unit
 	 * 
-	 * <p>Corresponding Redis command: TTL (converted to requested unit)</p>
+	 * <p>Corresponding Redis command: TTL (converted to requested unit)
 	 * 
 	 * @param keyVar The variable part of the key name
 	 * @param unit The time unit for the return value
@@ -155,7 +155,7 @@ public interface OrangeRedisHashExample3Api  {
 	/**
 	 * Adds or updates a single field in the hash
 	 * 
-	 * <p>Corresponding Redis command: HSET</p>
+	 * <p>Corresponding Redis command: HSET
 	 * 
 	 * @param keyVar The variable part of the key name
 	 * @param key The hash field name
@@ -167,9 +167,9 @@ public interface OrangeRedisHashExample3Api  {
 	/**
 	 * Adds or updates multiple fields in the hash (batch operation)
 	 * 
-	 * <p>Corresponding Redis command: Multiple HSET commands</p>
+	 * <p>Corresponding Redis command: Multiple HSET commands
 	 * 
-	 * <p>Operation will continue on failure for individual fields due to @ContinueOnFailure(true)</p>
+	 * <p>Operation will continue on failure for individual fields due to @ContinueOnFailure(true)
 	 * 
 	 * @param keyVar The variable part of the key name
 	 * @param members Map of field names and values to add/update
@@ -181,10 +181,10 @@ public interface OrangeRedisHashExample3Api  {
 	/**
 	 * Adds a field to the hash only if it does not already exist (atomic operation)
 	 * 
-	 * <p>Corresponding Redis pattern: HSETNX (simulated with atomic check)</p>
+	 * <p>Corresponding Redis pattern: HSETNX (simulated with atomic check)
 	 * 
 	 * <p>This is an atomic operation guaranteed by the @IfAbsent annotation.
-	 * The field will only be added if the hash doesn't already contain it.</p>
+	 * The field will only be added if the hash doesn't already contain it.
 	 * 
 	 * @param keyVar The variable part of the key name
 	 * @param key The hash field name
@@ -197,10 +197,10 @@ public interface OrangeRedisHashExample3Api  {
 	/**
 	 * Adds multiple fields to the hash only if they do not already exist (batch atomic operation)
 	 * 
-	 * <p>Corresponding Redis pattern: Multiple HSETNX commands (simulated with atomic checks)</p>
+	 * <p>Corresponding Redis pattern: Multiple HSETNX commands (simulated with atomic checks)
 	 * 
 	 * <p>This batch operation applies the same atomic guarantee as the single field version,
-	 * with the addition of @ContinueOnFailure support.</p>
+	 * with the addition of @ContinueOnFailure support.
 	 * 
 	 * @param keyVar The variable part of the key name
 	 * @param members Map of field names and values to conditionally add
@@ -213,13 +213,13 @@ public interface OrangeRedisHashExample3Api  {
 	/**
 	 * Atomically compares the current field value with expected value and swaps if they match
 	 * 
-	 * <p>Corresponding Redis pattern: WATCH/MULTI/EXEC with GET and conditional HSET</p>
+	 * <p>Corresponding Redis pattern: WATCH/MULTI/EXEC with GET and conditional HSET
 	 * 
 	 * <p>This operation provides atomic compare-and-swap (CAS) semantics:
 	 * <ul>
 	 *   <li>If current value matches oldValue, sets to newValue and returns true</li>
 	 *   <li>If current value differs, leaves unchanged and returns false</li>
-	 * </ul></p>
+	 * </ul>
 	 * 
 	 * @param keyVar The variable part of the key name
 	 * @param hashKey The hash field name
@@ -233,7 +233,7 @@ public interface OrangeRedisHashExample3Api  {
 	/**
 	 * Gets the number of fields in the hash
 	 * 
-	 * <p>Corresponding Redis command: HLEN</p>
+	 * <p>Corresponding Redis command: HLEN
 	 * 
 	 * @param keyVar The variable part of the key name
 	 * @return Number of fields, 0 if key doesn't exist
@@ -244,7 +244,7 @@ public interface OrangeRedisHashExample3Api  {
 	/**
 	 * Gets the byte length of a hash field's value
 	 * 
-	 * <p>Corresponding Redis command: HSTRLEN</p>
+	 * <p>Corresponding Redis command: HSTRLEN
 	 * 
 	 * @param keyVar The variable part of the key name
 	 * @param hashKey The hash field name
@@ -256,7 +256,7 @@ public interface OrangeRedisHashExample3Api  {
 	/**
 	 * Gets all field names in the hash
 	 * 
-	 * <p>Corresponding Redis command: HKEYS</p>
+	 * <p>Corresponding Redis command: HKEYS
 	 * 
 	 * @param keyVar The variable part of the key name
 	 * @return Set of all field names, empty set if key doesn't exist
@@ -267,7 +267,7 @@ public interface OrangeRedisHashExample3Api  {
 	/**
 	 * Gets a random field name from the hash
 	 * 
-	 * <p>Corresponding Redis command: HRANDFIELD with count=1</p>
+	 * <p>Corresponding Redis command: HRANDFIELD with count=1
 	 * 
 	 * @param keyVar The variable part of the key name
 	 * @return Random field name, or null if hash is empty
@@ -279,7 +279,7 @@ public interface OrangeRedisHashExample3Api  {
 	/**
 	 * Gets multiple random field names from the hash
 	 * 
-	 * <p>Corresponding Redis command: HRANDFIELD with count</p>
+	 * <p>Corresponding Redis command: HRANDFIELD with count
 	 * 
 	 * @param keyVar The variable part of the key name
 	 * @param count Number of random fields to return
@@ -292,7 +292,7 @@ public interface OrangeRedisHashExample3Api  {
 	/**
 	 * Checks if a field exists in the hash
 	 * 
-	 * <p>Corresponding Redis command: HEXISTS</p>
+	 * <p>Corresponding Redis command: HEXISTS
 	 * 
 	 * @param keyVar The variable part of the key name
 	 * @param hashKey The hash field name
@@ -304,9 +304,9 @@ public interface OrangeRedisHashExample3Api  {
 	/**
 	 * Checks if multiple fields exist in the hash (batch operation)
 	 * 
-	 * <p>Corresponding Redis command: Multiple HEXISTS commands</p>
+	 * <p>Corresponding Redis command: Multiple HEXISTS commands
 	 * 
-	 * <p>Operation will continue on failure for individual checks due to @ContinueOnFailure(true)</p>
+	 * <p>Operation will continue on failure for individual checks due to @ContinueOnFailure(true)
 	 * 
 	 * @param keyVar The variable part of the key name
 	 * @param hashKeys Collection of field names to check
@@ -319,7 +319,7 @@ public interface OrangeRedisHashExample3Api  {
 	/**
 	 * Gets all field values in the hash
 	 * 
-	 * <p>Corresponding Redis command: HVALS</p>
+	 * <p>Corresponding Redis command: HVALS
 	 * 
 	 * @param keyVar The variable part of the key name
 	 * @return List of all field values, empty list if key doesn't exist
@@ -330,7 +330,7 @@ public interface OrangeRedisHashExample3Api  {
 	/**
 	 * Gets the value of a single hash field
 	 * 
-	 * <p>Corresponding Redis command: HGET</p>
+	 * <p>Corresponding Redis command: HGET
 	 * 
 	 * @param keyVar The variable part of the key name
 	 * @param hashKey The hash field name
@@ -342,7 +342,7 @@ public interface OrangeRedisHashExample3Api  {
 	/**
 	 * Gets values for multiple hash fields (batch operation)
 	 * 
-	 * <p>Corresponding Redis command: HMGET</p>
+	 * <p>Corresponding Redis command: HMGET
 	 * 
 	 * @param keyVar The variable part of the key name
 	 * @param hashKeys Collection of field names to get
@@ -354,7 +354,7 @@ public interface OrangeRedisHashExample3Api  {
 	/**
 	 * Gets all field-value pairs in the hash
 	 * 
-	 * <p>Corresponding Redis command: HGETALL</p>
+	 * <p>Corresponding Redis command: HGETALL
 	 * 
 	 * @param keyVar The variable part of the key name
 	 * @return Map containing all fields and values, empty map if key doesn't exist
@@ -365,7 +365,7 @@ public interface OrangeRedisHashExample3Api  {
 	/**
 	 * Removes a single field from the hash
 	 * 
-	 * <p>Corresponding Redis command: HDEL</p>
+	 * <p>Corresponding Redis command: HDEL
 	 * 
 	 * @param keyVar The variable part of the key name
 	 * @param hashKey The hash field name to remove
@@ -377,9 +377,9 @@ public interface OrangeRedisHashExample3Api  {
 	/**
 	 * Removes multiple fields from the hash (batch operation)
 	 * 
-	 * <p>Corresponding Redis command: HDEL with multiple fields</p>
+	 * <p>Corresponding Redis command: HDEL with multiple fields
 	 * 
-	 * <p>Operation will continue on failure for individual deletions due to @ContinueOnFailure(true)</p>
+	 * <p>Operation will continue on failure for individual deletions due to @ContinueOnFailure(true)
 	 * 
 	 * @param keyVar The variable part of the key name
 	 * @param hashKeys Collection of field names to remove

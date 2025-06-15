@@ -29,9 +29,9 @@ import com.langwuyue.orange.redis.template.transaction.JSONOperationsTemplate;
  * Redis Transaction API Example 1
  * 
  * <p>This interface demonstrates basic Redis transaction operations using JSON serialization.
- * It extends {@link JSONOperationsTemplate} to provide transaction-safe operations on {@link OrangeValueExampleEntity} objects.</p>
+ * It extends {@link JSONOperationsTemplate} to provide transaction-safe operations on {@link OrangeValueExampleEntity} objects.
  * 
- * <p>The Redis key is configured with a 1-hour expiration time by default.</p>
+ * <p>The Redis key is configured with a 1-hour expiration time by default.
  * 
  * @author Liang.Zhong
  * @since 1.0.0

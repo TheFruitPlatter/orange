@@ -23,7 +23,7 @@ package com.langwuyue.orange.example.redis.entity;
  * 
  * <p>This class is used to implement optimistic concurrency control by comparing
  * the current value (oldValue) with an expected value before updating to a new value.
- * If the oldValue matches the current value in Redis, the update is performed atomically.</p>
+ * If the oldValue matches the current value in Redis, the update is performed atomically.
  * 
  * <p>Typical usage involves:
  * <ol>
@@ -31,7 +31,7 @@ package com.langwuyue.orange.example.redis.entity;
  *   <li>Creating this entity with the read value as oldValue and desired changes as newValue</li>
  *   <li>Passing this entity to a CAS operation method</li>
  * </ol>
- * </p>
+ * 
  * 
  * @author Liang.Zhong
  * @since 1.0.0

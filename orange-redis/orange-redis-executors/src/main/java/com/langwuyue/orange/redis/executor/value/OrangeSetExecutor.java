@@ -36,11 +36,11 @@ import com.langwuyue.orange.redis.utils.OrangeReflectionUtils;
  * 
  * <p>This executor handles the SET operation in Redis, which stores a value
  * with the specified key. It supports both {@link RedisValue} and {@link SetValue}
- * annotations to mark methods that should perform Redis SET operations.</p>
+ * annotations to mark methods that should perform Redis SET operations.
  * 
  * <p>The executor takes a key and value from the context and stores the value
  * in Redis under the specified key. It can handle different return types from
- * the annotated methods, including boolean and integer types.</p>
+ * the annotated methods, including boolean and integer types.
  *
  * @author Liang.Zhong
  * @since 1.0.0
@@ -94,14 +94,14 @@ public class OrangeSetExecutor extends OrangeRedisAbstractExecutor {
 	/**
 	 * Returns the list of annotation classes that this executor supports.
 	 * 
-	 * <p>This executor supports two annotations:</p>
+	 * <p>This executor supports two annotations:
 	 * <ul>
 	 *   <li>{@link RedisValue} - The general Redis value operation annotation</li>
 	 *   <li>{@link SetValue} - The specific annotation for SET operations</li>
 	 * </ul>
 	 * 
 	 * <p>Methods annotated with either of these annotations can be processed
-	 * by this executor to perform Redis SET operations.</p>
+	 * by this executor to perform Redis SET operations.
 	 *
 	 * @return A list containing the RedisValue and SetValue annotation classes
 	 */
@@ -114,10 +114,10 @@ public class OrangeSetExecutor extends OrangeRedisAbstractExecutor {
 	 * Returns the context class that this executor requires for operation.
 	 * 
 	 * <p>This executor specifically requires an {@link OrangeRedisValueContext}
-	 * because it needs both a key and a value to perform the SET operation in Redis.</p>
+	 * because it needs both a key and a value to perform the SET operation in Redis.
 	 * 
 	 * <p>The OrangeRedisValueContext provides methods to access both the key
-	 * and the value that should be stored in Redis.</p>
+	 * and the value that should be stored in Redis.
 	 *
 	 * @return The OrangeRedisValueContext class
 	 */

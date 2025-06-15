@@ -37,7 +37,7 @@ import com.langwuyue.orange.redis.utils.OrangeReflectionUtils;
  * 
  * <p>This executor handles the decrement operations on Redis numeric values. It supports
  * both integer and floating-point decrements, automatically detecting the value type
- * and applying the appropriate Redis operation.</p>
+ * and applying the appropriate Redis operation.
  *
  * @author Liang.Zhong
  * @since 1.0.0
@@ -67,7 +67,7 @@ public class OrangeDecrementExecutor extends OrangeRedisAbstractExecutor {
 	/**
 	 * Returns the list of annotation classes supported by this executor.
 	 * 
-	 * <p>This executor supports the following annotations:</p>
+	 * <p>This executor supports the following annotations:
 	 * <ul>
 	 *   <li>{@link Decrement}: Specifically marks a method for decrement operations</li>
 	 *   <li>{@link RedisValue}: General annotation for Redis value operations that can be
@@ -108,7 +108,7 @@ public class OrangeDecrementExecutor extends OrangeRedisAbstractExecutor {
 	 * 
 	 * <p>This executor uses the {@link OrangeDecrementContext} class to store
 	 * and manage the parameters required for the decrement operation, including
-	 * the key and the decrement value.</p>
+	 * the key and the decrement value.
 	 *
 	 * @return The OrangeDecrementContext class
 	 */

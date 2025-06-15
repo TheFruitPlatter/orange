@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * <p>The state is managed through an atomic boolean flag that indicates
  * whether the service is out of service (down) or in service (up).
- * All state transitions are handled atomically to ensure thread safety.</p>
+ * All state transitions are handled atomically to ensure thread safety.
  *
  * @author Liang.Zhong
  * @since 1.0.0

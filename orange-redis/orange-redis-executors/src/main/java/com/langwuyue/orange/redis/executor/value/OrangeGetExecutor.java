@@ -33,10 +33,10 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
  * 
  * <p>This executor handles operations to fetch values stored in Redis using a key.
  * It supports methods annotated with {@link GetValue} annotation and retrieves
- * the value associated with the specified Redis key.</p>
+ * the value associated with the specified Redis key.
  * 
  * <p>The executor uses Redis GET operation to retrieve values and supports automatic
- * conversion of the retrieved value to the method's return type.</p>
+ * conversion of the retrieved value to the method's return type.
  *
  * @author Liang.Zhong
  * @since 1.0.0
@@ -66,7 +66,7 @@ public class OrangeGetExecutor extends OrangeRedisAbstractExecutor {
 	 * 
 	 *
 	 * <p>The method handles the conversion of the Redis string value to the appropriate
-	 * return type expected by the annotated method.</p>
+	 * return type expected by the annotated method.
 	 *
 	 * @param context The OrangeRedisContext containing the operation parameters
 	 * @return The value retrieved from Redis, or null if the key doesn't exist
@@ -81,7 +81,7 @@ public class OrangeGetExecutor extends OrangeRedisAbstractExecutor {
 	 * Returns the list of annotation classes supported by this executor.
 	 * 
 	 * <p>This executor supports the {@link GetValue} annotation, which marks
-	 * a method for retrieving values from Redis.</p>
+	 * a method for retrieving values from Redis.
 	 *
 	 * @return A list containing only the GetValue annotation class
 	 */

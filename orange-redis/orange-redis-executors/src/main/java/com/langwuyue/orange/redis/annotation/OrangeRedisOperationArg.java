@@ -34,7 +34,7 @@ import com.langwuyue.orange.redis.context.builder.OrangeOperationArgSimpleHandle
  * allowing for dynamic parameter handling and value transformation, particularly useful
  * in resolving dynamic Redis key patterns.
  *
- * <p>The annotation provides two key components:</p>
+ * <p>The annotation provides two key components:
  * <ul>
  *   <li>A binding to another annotation that marks method parameters</li>
  *   <li>A handler class that processes the parameter values</li>
@@ -58,7 +58,7 @@ public @interface OrangeRedisOperationArg {
 	 *
 	 * <p>When a Redis operation is executed, the framework will look for method
 	 * parameters annotated with this binding annotation and apply the field's
-	 * value to those parameters.</p>
+	 * value to those parameters.
 	 *
 	 * @return the annotation class that will be used to identify target method parameters
 	 */
@@ -71,7 +71,7 @@ public @interface OrangeRedisOperationArg {
 	 *
 	 * <p>The default handler ({@link OrangeOperationArgSimpleHandler}) performs
 	 * a direct value assignment without any transformation. Custom handlers can
-	 * be implemented by extending {@link OrangeOperationArgHandler}.</p>
+	 * be implemented by extending {@link OrangeOperationArgHandler}.
 	 *
 	 * @return the handler class that will process the field's value
 	 * @see OrangeOperationArgHandler

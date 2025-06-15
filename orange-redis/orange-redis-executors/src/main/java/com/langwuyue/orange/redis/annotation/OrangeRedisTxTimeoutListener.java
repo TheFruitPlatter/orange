@@ -31,9 +31,9 @@ import java.lang.annotation.Target;
  *
  * <p>Classes annotated with {@code @OrangeRedisTxTimeoutListener} must implement
  * appropriate handler methods to process timeout events. The listener will be
- * triggered when a Redis transaction exceeds its configured timeout period.</p>
+ * triggered when a Redis transaction exceeds its configured timeout period.
  *
- * <p>This annotation is particularly useful for:</p>
+ * <p>This annotation is particularly useful for:
  * <ul>
  *   <li>Implementing fallback mechanisms for timed-out transactions</li>
  *   <li>Logging and monitoring transaction timeouts</li>
@@ -56,9 +56,9 @@ public @interface OrangeRedisTxTimeoutListener {
 	 *
 	 * <p>When a Redis transaction involving keys matching the pattern defined in the
 	 * specified class times out, this listener will be notified. The key pattern
-	 * helps scope the listener to specific types of transactions.</p>
+	 * helps scope the listener to specific types of transactions.
 	 *
-	 * <p>For example, if monitoring user-related transactions:</p>
+	 * <p>For example, if monitoring user-related transactions:
 	 * <pre>
 	 * {@code @OrangeRedisKey("user:transaction:${userId}")}
 	 * public class UserTransactionCache {

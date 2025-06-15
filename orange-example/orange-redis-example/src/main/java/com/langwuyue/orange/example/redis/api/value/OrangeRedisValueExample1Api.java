@@ -57,7 +57,7 @@ public interface OrangeRedisValueExample1Api extends JSONOperationsTemplate<Oran
 	 * 
 	 * <p>This operation uses Redis {@code GET} command under the hood and deserializes
 	 * the JSON value back to the entity object. Returns {@code null} if no value exists
-	 * at the key.</p>
+	 * at the key.
 	 * 
 	 * @return The deserialized entity, or null if key doesn't exist
 	 * @see JSONOperationsTemplate#getValue() Base implementation details

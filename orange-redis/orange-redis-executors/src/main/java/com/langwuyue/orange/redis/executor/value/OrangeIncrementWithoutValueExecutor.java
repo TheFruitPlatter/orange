@@ -34,14 +34,14 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
  * <p>This executor is a specialized version of the increment executor that always
  * increments the value by 1. Unlike {@link OrangeIncrementExecutor}, it doesn't
  * require a value parameter and only needs the Redis key to perform the increment
- * operation.</p>
+ * operation.
  * 
  * <p>This executor is particularly useful for simple counter scenarios where you
  * only need to increment a value by 1, such as page view counters, hit counters,
- * or any other use case where the increment value is always 1.</p>
+ * or any other use case where the increment value is always 1.
  *
  * <p>It only supports the {@link Increment} annotation and does not require
- * the {@link RedisValue} annotation since the increment value is fixed.</p>
+ * the {@link RedisValue} annotation since the increment value is fixed.
  *
  * @author Liang.Zhong
  * @since 1.0.0
@@ -74,7 +74,7 @@ public class OrangeIncrementWithoutValueExecutor extends OrangeRedisAbstractExec
 	 * Returns the list of annotation classes supported by this executor.
 	 * 
 	 * <p>This executor only supports the {@link Increment} annotation, as it
-	 * performs a fixed increment by 1 and does not require a value parameter.</p>
+	 * performs a fixed increment by 1 and does not require a value parameter.
 	 *
 	 * @return A list containing only the Increment annotation class
 	 */
@@ -87,7 +87,7 @@ public class OrangeIncrementWithoutValueExecutor extends OrangeRedisAbstractExec
 	 * Executes the increment by 1 operation on a Redis value.
 	 * 
 	 * <p>Unlike the standard increment executor, this method always increments by 1
-	 * and does not need to extract an increment value from the context.</p>
+	 * and does not need to extract an increment value from the context.
 	 *
 	 * @param context The OrangeRedisContext containing the key for the increment operation
 	 * @return The new value after the increment operation (as a Long)

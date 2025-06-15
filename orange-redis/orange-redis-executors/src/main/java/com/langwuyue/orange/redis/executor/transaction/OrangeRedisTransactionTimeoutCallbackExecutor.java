@@ -50,42 +50,130 @@ import com.langwuyue.orange.redis.registry.OrangeRedisKeyRegistry;
 import com.langwuyue.orange.redis.utils.OrangeReflectionUtils;
 
 /**
- * Transaction timeout callback executor
- * 1. Callback when transaction timeout
- * 2. Clear dead transaction
+ * Executor responsible for handling Redis transaction timeout callbacks and cleaning up dead transactions.
  * 
+ * <p>This class implements a scheduled executor that periodically checks for transactions
+ * that have exceeded their timeout threshold. When a transaction times out, this executor
+ * invokes the appropriate callback handler to determine whether the transaction should be
+ * committed, retried, or rolled back.
+ * 
+ * <p>Key responsibilities include:
+ * <ul>
+ *   <li>Monitoring uncommitted transactions and detecting timeouts</li>
+ *   <li>Executing registered timeout callback handlers when transactions exceed their timeout threshold</li>
+ *   <li>Managing transaction state based on callback responses (SUCCESS, UNKNOWN, FAILED)</li>
+ *   <li>Committing successful transactions after callback confirmation</li>
+ *   <li>Cleaning up dead transactions that have exceeded their retention period</li>
+ *   <li>Tracking callback metrics including retry attempts and warning notifications</li>
+ * </ul>
+ * 
+ * 
+ * <p>The executor uses a Redis sorted set to track uncommitted transactions, with scores
+ * based on transaction start times. This allows efficient retrieval of transactions
+ * that have exceeded their timeout threshold.
  * 
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeRedisTransactionTimeoutCallbackExecutor implements Runnable, OrangeRedisMultipleLocksListener,OrangeRedisIterableContext {
 	
+	/**
+	 * Redis key prefix for storing uncommitted transaction keys in a sorted set.
+	 * Each service will have its own registry by appending the service name.
+	 */
 	private static final String UNCOMMITTED_TRANSACTION_KEYS_REGISTRY = "orange:transaction:uncommit:keys:registry:";
 	
+	/**
+	 * Redis key prefix for storing transaction callback metrics in a hash.
+	 * Each service will have its own metric storage by appending the service name.
+	 */
 	private static final String CALLBACK_METRIC_DATA_KEY = "orange:transaction:callback:metric:";
 	
+	/**
+	 * Redis sorted set operations for managing transaction keys.
+	 * Used for adding, removing, and querying transaction keys based on their scores.
+	 */
 	private OrangeRedisZSetOperations operations;
 	
+	/**
+	 * Redis hash operations for managing transaction callback metrics.
+	 * Used for storing and retrieving metrics associated with transaction keys.
+	 */
 	private OrangeRedisHashOperations hashOperations;
 	
+	/**
+	 * Scheduled executor service for periodic transaction timeout checking.
+	 * Uses a single thread to periodically check for timed-out transactions.
+	 */
 	private ScheduledExecutorService executorService;
 	
+	/**
+	 * Configuration properties for transaction timeout handling.
+	 * Includes timeout thresholds, callback periods, and retry limits.
+	 */
 	private OrangeRedisTransactionProperties properties;
 	
+	/**
+	 * Service-specific Redis key for the uncommitted transaction registry.
+	 * Formed by concatenating UNCOMMITTED_TRANSACTION_KEYS_REGISTRY with the service name.
+	 */
 	private String registry;
 	
+	/**
+	 * Service-specific Redis key for transaction callback metrics.
+	 * Formed by concatenating CALLBACK_METRIC_DATA_KEY with the service name.
+	 */
 	private String callbackMetric;
 	
+	/**
+	 * Transaction daemon runner for executing transaction-related operations.
+	 * Handles locking and coordination of transaction processing across multiple nodes.
+	 */
 	private OrangeRedisTransactionDaemonRunner runner;
 	
+	/**
+	 * Map of registered transaction timeout listeners indexed by Redis key.
+	 * Each listener is responsible for handling timeout callbacks for a specific transaction type.
+	 */
 	private Map<String,OrangeRedisTransactionTimeoutListener> callbacks;
 	
+	/**
+	 * Map associating each timeout listener with the type of value it expects.
+	 * Used to deserialize transaction values correctly when invoking callbacks.
+	 */
 	private Map<OrangeRedisTransactionTimeoutListener,Type> valueTypeMap;
 	
+	/**
+	 * Logger for recording transaction timeout events and errors.
+	 * Provides different log levels for debugging, information, warnings, and errors.
+	 */
 	private OrangeRedisLogger logger;
 	
+	/**
+	 * Map of transaction commit processors indexed by transaction type.
+	 * Each processor is responsible for committing a specific type of transaction.
+	 */
 	private Map<String,OrangeTransactionCommitProcessor> namedProcessorExecutorMap;
 	
+	/**
+	 * Constructs a new transaction timeout callback executor with the specified dependencies.
+	 * 
+	 * <p>This constructor initializes the executor with the required Redis operations,
+	 * transaction properties, callback handlers, commit processors, and logging components.
+	 * It sets up the service-specific Redis keys for transaction registry and metrics
+	 * based on the configured service name.
+	 * 
+	 * <p>The executor uses a single-threaded scheduled executor service to periodically
+	 * check for timed-out transactions. This ensures that timeout checks are performed
+	 * sequentially and prevents concurrent processing of the same transaction.
+	 * 
+	 * @param operations Redis sorted set operations for managing transaction keys
+	 * @param hashOperations Redis hash operations for managing transaction metrics
+	 * @param properties Configuration properties for transaction timeout handling
+	 * @param callbacks Map of registered transaction timeout listeners indexed by transaction key prefix
+	 * @param namedProcessorExecutorMap Map of transaction commit processors indexed by transaction type
+	 * @param logger Logger for recording transaction timeout events and errors
+	 */
 	public OrangeRedisTransactionTimeoutCallbackExecutor(
 		OrangeRedisZSetOperations operations,
 		OrangeRedisHashOperations hashOperations,
@@ -154,20 +242,24 @@ public class OrangeRedisTransactionTimeoutCallbackExecutor implements Runnable, 
 	}
 	
 	/**
-	 * Add a transaction key into transaction timeout callback queue
-	 * <p>
-	 * The queue will sorted by transaction begin time.
+	 * Registers a transaction key for timeout monitoring and callback processing.
+	 * 
+	 * <p>This method adds the transaction key to a Redis sorted set that serves as the
+	 * transaction timeout callback queue. The queue is sorted by transaction begin time,
+	 * allowing efficient retrieval of transactions that have exceeded their timeout threshold.
+	 * 
+	 * <p>Additionally, this method initializes callback metrics for the transaction, including:
+	 * <ul>
+	 *   <li>Total callback attempts (initialized to 0)</li>
+	 *   <li>Warning notification status (initialized to 0, indicating no warning sent)</li>
+	 * </ul>
 	 * 
 	 * 
-	 * Saves callback attempt metrics including
-	 * <p>
-	 * - Total callback attempts 
-	 * - Whether the notification was sent 
-	 *  
+	 * <p>These metrics are used to track retry attempts and ensure that warnings are
+	 * only sent once per transaction.
 	 * 
-	 * @param transactionKey
-	 * @param commitExecutor
-	 * @throws Exception
+	 * @param transactionKey The transaction key to register for timeout monitoring
+	 * @throws Exception If an error occurs during registration
 	 */
 	public void register(OrangeRedisTransactionKey transactionKey) throws Exception {
 		// Add a transaction key into sorted set, and order by score.
@@ -190,24 +282,55 @@ public class OrangeRedisTransactionTimeoutCallbackExecutor implements Runnable, 
 	}
 	
 	/**
-	 * Compute the score
+	 * Computes a score value for transaction sorting in Redis sorted sets.
 	 * 
-	 * <p>
-	 * Convert the timestamp to a double score.
-	 * The decimal part of the score represents milliseconds(Nanoseconds may be used in future implementations).
+	 * <p>This method converts a timestamp (in milliseconds) to a double score value
+	 * that can be used for sorting transactions in Redis sorted sets.
+	 * 
+	 * <p>The resulting score format:
+	 * <pre>
+	 * [seconds].[milliseconds]
+	 * Example: 1234567890.123 (representing 2009-02-13 23:31:30.123)
+	 * </pre>
 	 * 
 	 * 
-	 * @param transactionKey
-	 * @return
+	 * <p>Note: Future implementations may extend precision to nanoseconds if needed.
+	 * 
+	 * @param millis The timestamp in milliseconds to convert
+	 * @return A double value representing the timestamp as a sortable score
 	 */
 	private Double computeScore(long millis) {
 		return new BigDecimal(millis+"").divide(new BigDecimal("1000"), 3, RoundingMode.HALF_UP).doubleValue();
 	}
 	
+	/**
+	 * Thread factory for creating transaction timeout callback executor threads.
+	 * 
+	 * <p>This factory creates threads with a standardized naming pattern to make
+	 * them easily identifiable in thread dumps and monitoring tools. Each thread
+	 * is named using the format: {@code orange-redis-tx-timeout-[sequence]}
+	 * 
+	 * <p>The factory ensures that:
+	 * <ul>
+	 *   <li>Each thread has a unique sequence number</li>
+	 *   <li>Thread names are consistent and descriptive</li>
+	 *   <li>Threads can be easily identified for monitoring and debugging</li>
+	 * </ul>
+	 */
 	static class OrangeTransactionTimeoutCallbackExecutorThreadFactory implements ThreadFactory {
 		
+		/**
+		 * Atomic counter for generating unique thread sequence numbers.
+		 * Ensures thread-safe incrementation of sequence numbers.
+		 */
 		private final AtomicInteger threadNumber = new AtomicInteger(1);
 
+		/**
+		 * Creates a new thread to run the specified task.
+		 * 
+		 * @param r The runnable task to be executed by the new thread
+		 * @return A new thread with a standardized name pattern
+		 */
 		@Override
 		public Thread newThread(Runnable r) {
 			int seq = threadNumber.getAndIncrement();
@@ -215,10 +338,36 @@ public class OrangeRedisTransactionTimeoutCallbackExecutor implements Runnable, 
 		}
 	}
 	
+	/**
+	 * Metric class for tracking transaction timeout callback statistics and state.
+	 * 
+	 * <p>This class stores important metrics related to transaction timeout callbacks,
+	 * including the number of callback attempts and warning notification status.
+	 * These metrics are persisted in Redis to ensure consistent tracking across
+	 * service restarts and across multiple nodes in a distributed environment.
+	 * 
+	 * <p>The metrics are used to:
+	 * <ul>
+	 *   <li>Track the number of callback attempts for retry limiting</li>
+	 *   <li>Prevent duplicate warning notifications for the same transaction</li>
+	 *   <li>Provide visibility into transaction timeout handling</li>
+	 * </ul>
+	 * 
+	 */
 	public static class OrangeTransactionTimeoutCallbackMetric {
 		
+		/**
+		 * Flag indicating whether a warning notification has been sent for this transaction.
+		 * 0 = No warning sent, 1 = Warning sent.
+		 * Used to prevent duplicate warnings for the same transaction.
+		 */
 		private int isWarn;
 		
+		/**
+		 * Counter tracking the number of callback attempts for this transaction.
+		 * Incremented each time a callback is attempted, and used to enforce
+		 * the maximum retry limit defined in transaction properties.
+		 */
 		private int callbackedTimes;
 
 		public int getIsWarn() {
@@ -238,6 +387,29 @@ public class OrangeRedisTransactionTimeoutCallbackExecutor implements Runnable, 
 		}
 	}
 	
+	/**
+	 * Handles the completion of a multiple locks event for transaction timeout processing.
+	 * 
+	 * <p>This method is called when a multiple locks operation completes, specifically
+	 * for transaction timeout callback processing. It performs the following operations:
+	 * 
+	 * <ul>
+	 *   <li>Verifies that the event is related to transaction callback processing</li>
+	 *   <li>Processes each transaction that has successfully acquired a lock</li>
+	 *   <li>Retrieves and validates transaction metrics from Redis</li>
+	 *   <li>Checks if the transaction has exceeded maximum retry attempts</li>
+	 *   <li>Determines if the transaction is ready for callback processing based on timing</li>
+	 *   <li>Executes the appropriate transaction timeout callback</li>
+	 *   <li>Handles the transaction based on the callback response (commit, retry, or fail)</li>
+	 *   <li>Updates transaction metrics and logs warnings when necessary</li>
+	 * </ul>
+	 * 
+	 * <p>This method is a critical part of the transaction timeout handling mechanism,
+	 * ensuring that transactions that exceed their timeout threshold are properly
+	 * processed according to the registered callback handlers.
+	 * 
+	 * @param event The multiple locks event containing information about the locks operation
+	 */
 	@Override
 	public void onCompleted(OrangeMultipleLocksEvent event) {
 		try {
@@ -329,7 +501,7 @@ public class OrangeRedisTransactionTimeoutCallbackExecutor implements Runnable, 
 					remove(transactionKey);
 					continue;
 				}
-				else if(state == OrangeRedisTransactionState.UNKNOW) {
+				else if(state == OrangeRedisTransactionState.UNKNOWN) {
 					// Update callback times
 					updateMetric(transactionKey,metric);	
 					continue;
@@ -354,6 +526,23 @@ public class OrangeRedisTransactionTimeoutCallbackExecutor implements Runnable, 
 		}
 	}
 	
+	/**
+	 * Logs a warning message for a transaction and updates its warning status.
+	 * 
+	 * <p>This method ensures that warning messages for a transaction are only logged once
+	 * to prevent log flooding. It updates the transaction's metric to indicate that
+	 * a warning has been issued.
+	 * 
+	 * <p>In production environments, this method could be extended to send notifications
+	 * through various channels (e.g., WeCom, FeiShu, or other IM platforms) to alert
+	 * operations teams about problematic transactions.
+	 * 
+	 * @param transactionKey The key of the transaction that triggered the warning
+	 * @param metric The metric data associated with the transaction
+	 * @param message The warning message template with placeholders for arguments
+	 * @param args Arguments to be substituted into the message template
+	 * @throws Exception If an error occurs while updating the metric
+	 */
 	private void warning(OrangeRedisTransactionKey transactionKey,OrangeTransactionTimeoutCallbackMetric metric, String message, Object... args) throws Exception {
 		if(metric.getIsWarn() <= 0) {
 			// Print warning log.
@@ -364,6 +553,20 @@ public class OrangeRedisTransactionTimeoutCallbackExecutor implements Runnable, 
 		}
 	}
 	
+	/**
+	 * Updates the transaction timeout callback metric in Redis.
+	 * 
+	 * <p>This method persists the updated transaction metric data to Redis, ensuring that
+	 * the latest state of the transaction is available for monitoring and decision-making.
+	 * 
+	 * <p>The metric data is stored with the transaction key as the hash key in Redis,
+	 * allowing efficient retrieval and updates of individual transaction metrics
+	 * without affecting other transactions.
+	 * 
+	 * @param transactionKey The key of the transaction whose metric is being updated
+	 * @param metric The updated metric data to be stored
+	 * @throws Exception If an error occurs during the Redis operation
+	 */
 	private void updateMetric(OrangeRedisTransactionKey transactionKey,OrangeTransactionTimeoutCallbackMetric metric) throws Exception {
 		this.hashOperations.putMember(
 			this.callbackMetric, 
@@ -374,10 +577,44 @@ public class OrangeRedisTransactionTimeoutCallbackExecutor implements Runnable, 
 		);
 	}
 
+	/**
+	 * Sets the transaction daemon runner for this executor.
+	 * 
+	 * <p>The transaction daemon runner is responsible for executing transaction-related
+	 * operations in a coordinated manner across multiple nodes in a distributed environment.
+	 * It handles locking and ensures that only one node processes a specific transaction
+	 * at a time, preventing race conditions and duplicate processing.
+	 * 
+	 * <p>This method is typically called during application initialization after the
+	 * executor has been constructed, as part of a dependency injection setup.
+	 * 
+	 * @param runner The transaction daemon runner to be used by this executor
+	 */
 	void setRunner(OrangeRedisTransactionDaemonRunner runner) {
 		this.runner = runner;
 	}
 	
+	/**
+	 * Determines the appropriate Redis value type enumeration based on a Java type.
+	 * 
+	 * <p>This method maps Java types to their corresponding Redis value type enumerations,
+	 * which are used to properly serialize and deserialize values when interacting with Redis.
+	 * The mapping follows these rules:
+	 * 
+	 * <ul>
+	 *   <li>{@code String.class} → {@code RedisValueTypeEnum.STRING}</li>
+	 *   <li>Float/Double types → {@code RedisValueTypeEnum.DOUBLE}</li>
+	 *   <li>Integer/Long types → {@code RedisValueTypeEnum.LONG}</li>
+	 *   <li>All other types → {@code RedisValueTypeEnum.JSON} (serialized as JSON)</li>
+	 * </ul>
+	 * 
+	 * <p>This method is used internally when retrieving transaction values from Redis
+	 * to ensure proper deserialization based on the expected value type of the
+	 * transaction timeout listener.
+	 * 
+	 * @param valueType The Java type to map to a Redis value type
+	 * @return The corresponding Redis value type enumeration
+	 */
 	private RedisValueTypeEnum getValueTypeEnum(Type valueType) {
 		if(valueType == String.class) {
 			return RedisValueTypeEnum.STRING;
@@ -420,10 +657,20 @@ public class OrangeRedisTransactionTimeoutCallbackExecutor implements Runnable, 
 	}
 	
 	/**
-	 * Get timeout transaction keys
+	 * Retrieves transaction keys that have exceeded their timeout threshold and are eligible for callback processing.
 	 * 
-	 * @return
-	 * @throws Exception
+	 * <p>This method identifies transactions that have been active for longer than the configured
+	 * timeout threshold and should be processed by the timeout callback mechanism.
+	 * 
+	 * <p>The method queries the transaction monitoring queue using a score range from the
+	 * calculated minimum score (based on the begin time) to the maximum score (based on the
+	 * current time) to retrieve all transactions that fall within this time window.
+	 * 
+	 * <p>These transactions are then processed by the timeout callback mechanism to determine
+	 * whether they should be committed, retried, or rolled back.
+	 * 
+	 * @return A set of transaction keys that have exceeded their timeout threshold
+	 * @throws Exception If an error occurs during the retrieval process
 	 */
 	private Set<Object> getTimeoutTransactinKeys() throws Exception{
 		long now = System.currentTimeMillis();
@@ -434,9 +681,24 @@ public class OrangeRedisTransactionTimeoutCallbackExecutor implements Runnable, 
 	}
 
 	/**
-	 * Clear Dead transaction.
+	 * Cleans up dead transactions that have exceeded their retention period.
 	 * 
-	 * @throws Exception
+	 * <p>This method identifies and removes transactions that are considered "dead" based on
+	 * configurable thresholds.
+	 * 
+	 * <p>For each identified dead transaction:
+	 * <ul>
+	 *   <li>The transaction is removed from the monitoring queue</li>
+	 *   <li>Associated callback metrics are cleaned up</li>
+	 *   <li>Resources associated with the transaction are released</li>
+	 * </ul>
+	 * 
+	 * 
+	 * <p>This cleanup process helps prevent resource leaks and ensures that the
+	 * transaction monitoring system remains efficient by removing transactions
+	 * that are no longer relevant.
+	 * 
+	 * @throws Exception If an error occurs during the cleanup process
 	 */
 	protected void clearDeadTransaction() throws Exception {
 		long end = System.currentTimeMillis() - this.properties.getDeadTransactionKeepThreshold().toMillis() 
@@ -460,6 +722,23 @@ public class OrangeRedisTransactionTimeoutCallbackExecutor implements Runnable, 
 		);
 	}
 
+	/**
+	 * Retrieves a set of transaction keys that are considered "dead" and eligible for cleanup.
+	 * 
+	 * <p>This method identifies transactions that have exceeded their retention period
+	 * and should be removed from the system.
+	 * 
+	 * <p>The method queries the transaction monitoring queue using time-based criteria
+	 * to efficiently identify transactions that have been inactive for too long. It uses
+	 * a score range from 0 to the calculated maximum score (based on the begin time threshold)
+	 * to retrieve all transactions that started before the threshold.
+	 * 
+	 * <p>The returned set of transaction keys can be used by the cleanup process
+	 * to remove these dead transactions from the system and free up associated resources.
+	 * 
+	 * @return A set of transaction keys representing dead transactions
+	 * @throws Exception If an error occurs during the retrieval process
+	 */
 	public Set<Object> getDeadTransaction() throws Exception {
 		long beginTime = System.currentTimeMillis() - this.properties.getTimeoutThreshold().toMillis() 
 													- (this.properties.getTimeoutCallbackPeriod().toMillis() * this.properties.getTimeoutCallbackTimes()) 

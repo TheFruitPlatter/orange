@@ -19,11 +19,60 @@
 package com.langwuyue.orange.redis.executor.transaction;
 
 /**
+ * Represents the possible states of a Redis transaction in the Orange framework.
+ * 
+ * <p>This enum is used in transaction callbacks to determine the final state of a
+ * transaction and control its lifecycle. The state returned by the callback
+ * determines whether the transaction should be committed, retried, or rolled back.
+ * 
+ * <p>The transaction state workflow is as follows:
+ * <ul>
+ *   <li>When a callback returns SUCCESS, the transaction will be committed</li>
+ *   <li>When a callback returns UNKNOWN, the system will maintain the current state
+ *       and continue calling the callback</li>
+ *   <li>When a callback returns FAILED, the callback process will stop and the
+ *       transaction data will be marked for garbage collection</li>
+ * </ul>
+ * 
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public enum OrangeRedisTransactionState {
 	
-	SUCCESS,UNKNOW ,FAILED;
-
+	/**
+	 * Indicates that the transaction has completed successfully.
+	 * 
+	 * <p>When a callback returns this state, the transaction will be committed
+	 * and its changes will become permanent. This is the final state for a
+	 * successful transaction.
+	 */
+	SUCCESS,
+	
+	/**
+	 * Indicates that the transaction state is uncertain and needs further verification.
+	 * 
+	 * <p>When a callback returns this state, the system will:
+	 * <ul>
+	 *   <li>Maintain the current transaction state</li>
+	 *   <li>Keep the transaction data intact</li>
+	 *   <li>Continue calling the callback for further verification</li>
+	 * </ul>
+	 * This state is useful when the callback needs more time or information to
+	 * determine the final transaction state.
+	 */
+	UNKNOWN,
+	
+	/**
+	 * Indicates that the transaction has failed and should be rolled back.
+	 * 
+	 * <p>When a callback returns this state:
+	 * <ul>
+	 *   <li>The callback process will be stopped immediately</li>
+	 *   <li>The transaction data will be marked as invalid</li>
+	 *   <li>The garbage collector will eventually clean up the invalid transaction data</li>
+	 * </ul>
+	 * This is the final state for a failed transaction.
+	 */
+	FAILED;
 }

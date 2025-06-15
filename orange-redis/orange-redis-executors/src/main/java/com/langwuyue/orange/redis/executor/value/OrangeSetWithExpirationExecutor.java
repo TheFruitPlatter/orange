@@ -37,12 +37,12 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
  * 
  * <p>This executor handles Redis SET operations with expiration time, allowing values to be stored
  * in Redis with an automatic expiration. It processes {@link RedisValue}, {@link SetValue}, and
- * {@link SetExpiration} annotations to determine how to store values in Redis.</p>
+ * {@link SetExpiration} annotations to determine how to store values in Redis.
  * 
  * <p>The executor sets a value in Redis and applies an expiration time to the key, after which
  * Redis will automatically remove the key-value pair. This is useful for caching scenarios,
  * temporary data storage, or any situation where data should be automatically removed after
- * a certain period.</p>
+ * a certain period.
  *
  * @author Liang.Zhong
  * @since 1.0.0
@@ -63,7 +63,7 @@ public class OrangeSetWithExpirationExecutor extends OrangeRedisAbstractExecutor
 	 * Constructs a new OrangeSetWithExpirationExecutor.
 	 * 
 	 * <p>This constructor initializes the executor with the necessary dependencies to perform
-	 * SET operations with expiration time in Redis.</p>
+	 * SET operations with expiration time in Redis.
 	 *
 	 * @param operations The Redis value operations used to interact with Redis
 	 * @param idGenerator The generator used to create unique IDs for Redis operations
@@ -78,7 +78,7 @@ public class OrangeSetWithExpirationExecutor extends OrangeRedisAbstractExecutor
 	 * 
 	 * <p>This method sets a value in Redis with an expiration time. It extracts the key, value,
 	 * expiration time, and time unit from the context and uses the Redis operations to perform
-	 * the SET command with these parameters.</p>
+	 * the SET command with these parameters.
 	 *
 	 * @param context The context containing the key, value, and expiration settings for the operation
 	 * @return null as this operation doesn't return a value
@@ -101,7 +101,7 @@ public class OrangeSetWithExpirationExecutor extends OrangeRedisAbstractExecutor
 	/**
 	 * Returns the list of annotation classes that this executor supports.
 	 * 
-	 * <p>This executor supports three types of annotations:</p>
+	 * <p>This executor supports three types of annotations:
 	 * <ul>
 	 *   <li>{@link RedisValue} - Base annotation for Redis operations</li>
 	 *   <li>{@link SetValue} - Specific annotation for SET operations</li>
@@ -119,7 +119,7 @@ public class OrangeSetWithExpirationExecutor extends OrangeRedisAbstractExecutor
 	 * Returns the context class that this executor uses.
 	 * 
 	 * <p>This executor uses {@link OrangeRedisValueContext} to store and retrieve
-	 * the key, value, and expiration information needed for SET operations with expiration.</p>
+	 * the key, value, and expiration information needed for SET operations with expiration.
 	 *
 	 * @return The {@link OrangeRedisValueContext} class
 	 */

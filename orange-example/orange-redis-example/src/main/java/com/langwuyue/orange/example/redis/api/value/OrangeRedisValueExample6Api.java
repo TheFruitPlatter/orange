@@ -52,7 +52,7 @@ import com.langwuyue.orange.redis.template.value.LockOperationsTemplate;
  * redisTemplate.unlock();
  * }</pre>
  * 
- * <p>Note: Redis locks are advisory only - all clients must cooperate by checking the lock.</p>
+ * <p>Note: Redis locks are advisory only - all clients must cooperate by checking the lock.
  * 
  * @author Liang.Zhong
  * @since 1.0.0

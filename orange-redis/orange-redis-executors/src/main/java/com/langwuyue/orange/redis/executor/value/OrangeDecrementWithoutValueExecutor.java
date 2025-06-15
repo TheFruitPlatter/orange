@@ -33,10 +33,10 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
  * 
  * <p>This executor handles decrement operations on Redis numeric values, specifically
  * decreasing the value by exactly 1. Unlike the {@link OrangeDecrementExecutor}, this
- * executor does not allow specifying the decrement amount - it always decrements by 1.</p>
+ * executor does not allow specifying the decrement amount - it always decrements by 1.
  * 
  * <p>The executor is triggered by methods annotated with {@link Decrement} annotation
- * and decrements the value stored at the specified Redis key by 1.</p>
+ * and decrements the value stored at the specified Redis key by 1.
  *
  * @author Liang.Zhong
  * @since 1.0.0
@@ -67,10 +67,10 @@ public class OrangeDecrementWithoutValueExecutor extends OrangeRedisAbstractExec
 	 * Returns the list of annotation classes supported by this executor.
 	 * 
 	 * <p>This executor only supports the {@link Decrement} annotation, which marks
-	 * a method for simple decrement operations that decrease a value by 1.</p>
+	 * a method for simple decrement operations that decrease a value by 1.
 	 * 
 	 * <p>Unlike {@link OrangeDecrementExecutor}, this executor does not support
-	 * the {@link RedisValue} annotation.</p>
+	 * the {@link RedisValue} annotation.
 	 *
 	 * @return A list containing only the Decrement annotation class
 	 */
@@ -83,7 +83,7 @@ public class OrangeDecrementWithoutValueExecutor extends OrangeRedisAbstractExec
 	 * Executes the decrement operation on a Redis key, decreasing its value by 1.
 	 *
 	 * <p>Unlike {@link OrangeDecrementExecutor}, this executor always decrements by 1
-	 * and does not return the new value after the operation.</p>
+	 * and does not return the new value after the operation.
 	 *
 	 * @param context The OrangeRedisContext containing the operation parameters
 	 * @return null as this is a void operation

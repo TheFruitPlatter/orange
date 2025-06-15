@@ -36,17 +36,55 @@ import com.langwuyue.orange.redis.operations.OrangeRedisHashOperations;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor implementation for handling transactional value setting operations in Redis.
+ * 
+ * <p>This executor is responsible for setting values in Redis within a transaction context,
+ * providing proper isolation and consistency guarantees. It manages the versioning of values
+ * and integrates with the transaction management system to ensure atomic operations.
+ * 
+ * <p>Key features:
+ * <ul>
+ *   <li>Automatic version increment for each value update</li>
+ *   <li>Transaction-aware value storage with version tracking</li>
+ *   <li>Integration with transaction commit processing</li>
+ *   <li>Support for {@link SetValue} and {@link RedisValue} annotations</li>
+ * </ul>
+ * 
+ * <p>The executor uses hash operations to store both the value and its version information,
+ * allowing for efficient retrieval and update operations while maintaining transaction
+ * isolation.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeTransactionSetExecutor extends OrangeRedisAbstractExecutor {
 	
+	/**
+	 * Redis hash operations for manipulating hash data structures.
+	 * Used for storing versioned values and incrementing version counters.
+	 */
 	private OrangeRedisHashOperations hashOperations;
 	
+	/**
+	 * Transaction manager that maintains the state of active transactions.
+	 * Responsible for tracking transaction keys and their associated versions.
+	 */
 	private OrangeRedisDefaultTransactionManager transactionManager;
 	
+	/**
+	 * Processor responsible for handling transaction commit operations.
+	 * Executes the necessary steps to finalize transactions when they are committed.
+	 */
 	private OrangeTransactionCommitProcessor processor;
 
+	/**
+	 * Constructs a new transaction set executor with required dependencies.
+	 *
+	 * @param hashOperations Redis hash operations for manipulating hash data structures
+	 * @param idGenerator Generator for creating unique executor identifiers
+	 * @param transactionManager Manager for handling transaction state and lifecycle
+	 * @param processor Processor for handling transaction commit operations
+	 */
 	public OrangeTransactionSetExecutor(
 		OrangeRedisHashOperations hashOperations,
 		OrangeRedisExecutorIdGenerator idGenerator,
@@ -59,6 +97,18 @@ public class OrangeTransactionSetExecutor extends OrangeRedisAbstractExecutor {
 		this.processor = processor;
 	}
 
+	/**
+	 * Executes the transactional set operation for a Redis value.
+	 * 
+	 * 
+	 * <p>This implementation ensures that values are properly versioned and that
+	 * transaction isolation is maintained. Each value update creates a new version,
+	 * allowing for concurrent operations without conflicts.
+	 *
+	 * @param context The Redis operation context containing key and value information
+	 * @return The version number assigned to this transaction
+	 * @throws Exception If an error occurs during the Redis operation
+	 */
 	@Override
 	public Object execute(OrangeRedisContext context) throws Exception {
 		OrangeRedisValueContext ctx = (OrangeRedisValueContext) context;
@@ -73,11 +123,35 @@ public class OrangeTransactionSetExecutor extends OrangeRedisAbstractExecutor {
 		return version;
 	}
 
+	/**
+	 * Returns the list of annotation classes supported by this executor.
+	 * 
+	 * <p>This method defines which annotations this executor can handle. It supports
+	 * two types of annotations:
+	 * <ul>
+	 *   <li>{@link RedisValue} - The general Redis value annotation</li>
+	 *   <li>{@link SetValue} - The specific annotation for setting values</li>
+	 * </ul>
+	 * 
+	 * <p>When a method is annotated with either of these annotations, this executor
+	 * will be selected to handle the Redis operation, applying the transactional
+	 * semantics defined in this class.
+	 *
+	 * @return A list containing the supported annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(RedisValue.class,SetValue.class);
 	}
 
+	/**
+	 * Returns the context class used by this executor.
+	 * 
+	 * <p>The context class is used during the execution phase to properly cast
+	 * the generic context object to the specific type needed by this executor.
+	 *
+	 * @return The class object representing the context type used by this executor
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeRedisValueContext.class;

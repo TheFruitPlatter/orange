@@ -44,15 +44,15 @@ import com.langwuyue.orange.redis.utils.OrangeReflectionUtils;
  * 
  * <p>This executor handles the SET IF NOT EXISTS (SETNX) operation in Redis, which stores a value
  * with the specified key only if that key does not already exist in Redis. It supports {@link RedisValue},
- * {@link SetValue}, and {@link IfAbsent} annotations to mark methods that should perform Redis SETNX operations.</p>
+ * {@link SetValue}, and {@link IfAbsent} annotations to mark methods that should perform Redis SETNX operations.
  * 
  * <p>The executor takes a key and value from the context and attempts to store the value
  * in Redis under the specified key only if the key doesn't exist. It can handle different return types
- * from the annotated methods, including boolean and integer types.</p>
+ * from the annotated methods, including boolean and integer types.
  * 
  * <p>This executor also supports notification listeners that are called on success or failure
  * of the SETNX operation, and can optionally delete the key after a successful operation
- * if specified in the context.</p>
+ * if specified in the context.
  *
  * @author Liang.Zhong
  * @since 1.0.0
@@ -131,7 +131,7 @@ public class OrangeSetIfAbsentExecutor extends OrangeRedisAbstractExecutor {
 	 * Retrieves the value to be set from the context.
 	 * 
 	 * <p>This method extracts the value that should be stored in Redis from the provided context.
-	 * The value can be of any type that Redis supports for storage.</p>
+	 * The value can be of any type that Redis supports for storage.
 	 *
 	 * @param ctx The context containing the value to be stored
 	 * @return The value to be stored in Redis
@@ -143,7 +143,7 @@ public class OrangeSetIfAbsentExecutor extends OrangeRedisAbstractExecutor {
 	/**
 	 * Converts the operation result to the appropriate return type based on the method's return type.
 	 * 
-	 * <p>This method handles the following return types:</p>
+	 * <p>This method handles the following return types:
 	 * <ul>
 	 *   <li>Boolean/boolean: Returns the result directly, or false if result is null</li>
 	 *   <li>Integer/int: Returns 1 for true result, 0 for false or null result</li>
@@ -169,7 +169,7 @@ public class OrangeSetIfAbsentExecutor extends OrangeRedisAbstractExecutor {
 	 * Notifies registered listeners about the result of the SETNX operation.
 	 * 
 	 * <p>This notification system allows other components to react to the results
-	 * of SETNX operations, such as for logging, metrics, or triggering additional actions.</p>
+	 * of SETNX operations, such as for logging, metrics, or triggering additional actions.
 	 *
 	 * @param ctx The context containing operation details
 	 * @param result The result of the SETNX operation (Boolean indicating success or failure)
@@ -219,7 +219,7 @@ public class OrangeSetIfAbsentExecutor extends OrangeRedisAbstractExecutor {
 	 * Determines whether the key should be deleted after a successful SETNX operation.
 	 * 
 	 * <p>This method evaluates both the context settings and the operation result to decide
-	 * if the key should be deleted. The key will be deleted only if:</p>
+	 * if the key should be deleted. The key will be deleted only if:
 	 * <ul>
 	 *   <li>The context indicates deletion is requested (isDeleteInTheEnd is true)</li>
 	 *   <li>The operation was successful (result is true)</li>
@@ -240,10 +240,10 @@ public class OrangeSetIfAbsentExecutor extends OrangeRedisAbstractExecutor {
 	 * <p>This method performs the core SETNX operation, attempting to set a value
 	 * in Redis only if the specified key does not already exist. It uses the
 	 * {@link OrangeRedisValueOperations#setIfAbsent} method to perform
-	 * the actual Redis operation.</p>
+	 * the actual Redis operation.
 	 * 
 	 * <p>If the operation fails (returns null or false), this method throws an
-	 * {@link OrangeRedisIfAbsentException} to indicate that the key already exists.</p>
+	 * {@link OrangeRedisIfAbsentException} to indicate that the key already exists.
 	 *
 	 * @param ctx The context containing the key and value for the operation
 	 * @return A Boolean indicating whether the operation was successful (true if the key
@@ -268,7 +268,7 @@ public class OrangeSetIfAbsentExecutor extends OrangeRedisAbstractExecutor {
 	 * 
 	 * <p>This executor specifically works with {@link OrangeRedisValueIfAbsentContext}
 	 * which contains the necessary information for SETNX operations, including the key,
-	 * value, and additional settings like whether to delete the key after a successful operation.</p>
+	 * value, and additional settings like whether to delete the key after a successful operation.
 	 *
 	 * @return The class of the context that this executor supports
 	 */
@@ -280,7 +280,7 @@ public class OrangeSetIfAbsentExecutor extends OrangeRedisAbstractExecutor {
 	/**
 	 * Returns the list of annotation classes that this executor supports.
 	 * 
-	 * <p>This executor supports the following annotations:</p>
+	 * <p>This executor supports the following annotations:
 	 * <ul>
 	 *   <li>{@link RedisValue} - Marks a method parameter as a Redis value</li>
 	 *   <li>{@link SetValue} - Indicates that the method performs a Redis SET operation</li>
@@ -299,7 +299,7 @@ public class OrangeSetIfAbsentExecutor extends OrangeRedisAbstractExecutor {
 	 * 
 	 * <p>This method provides access to the underlying Redis operations object
 	 * that performs the actual Redis commands. It's primarily used for testing
-	 * and internal access to Redis functionality.</p>
+	 * and internal access to Redis functionality.
 	 *
 	 * @return The Redis value operations instance
 	 */
