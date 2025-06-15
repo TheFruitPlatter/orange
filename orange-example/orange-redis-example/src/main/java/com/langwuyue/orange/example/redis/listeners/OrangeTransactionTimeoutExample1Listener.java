@@ -40,7 +40,7 @@ public class OrangeTransactionTimeoutExample1Listener implements OrangeRedisTran
 	private static final OrangeRedisTransactionState[] STATES = new OrangeRedisTransactionState[] {
 			OrangeRedisTransactionState.SUCCESS,
 			OrangeRedisTransactionState.FAILED,
-			OrangeRedisTransactionState.UNKNOW
+			OrangeRedisTransactionState.UNKNOWN
 	};
 
 	@Override
@@ -57,14 +57,14 @@ public class OrangeTransactionTimeoutExample1Listener implements OrangeRedisTran
 		    // Expired/invalid transactions will be purged automatically.
 			OrangeRedisTransactionState state = STATES[(int)Math.round((Math.random() * 2))];
 			if(OrangeRedisTransactionState.FAILED == state) {
-				return OrangeRedisTransactionState.UNKNOW;
+				return OrangeRedisTransactionState.UNKNOWN;
 			}
 			System.out.println("tx timeout callback,key" + key + ", value:" + objectMapper.writeValueAsString(value) + ", transaction info:" + objectMapper.writeValueAsString(metric) + ",state:" + state);
 			return state;
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
-		return OrangeRedisTransactionState.UNKNOW;
+		return OrangeRedisTransactionState.UNKNOWN;
 	}
 
 }
