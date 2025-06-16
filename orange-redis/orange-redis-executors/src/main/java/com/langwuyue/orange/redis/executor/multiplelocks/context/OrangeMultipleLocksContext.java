@@ -27,14 +27,33 @@ import com.langwuyue.orange.redis.context.OrangeRedisMultipleValueContext;
 import com.langwuyue.orange.redis.context.builder.OrangeMethodAnnotationHandler;
 
 /**
+ * Context class for multiple lock operations, used for handling distributed lock acquisition and management.
+ * This class extends {@link OrangeRedisMultipleValueContext} and adds support for automatic lock renewal.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see AutoRenew
+ * @see OrangeRedisMultipleValueContext
  */
 public class OrangeMultipleLocksContext extends OrangeRedisMultipleValueContext {
 	
+	/**
+	 * Instance of auto-renewal annotation used to configure the lock renewal strategy.
+	 * Bound through {@link OrangeRedisOperationArg} annotation and processed by {@link OrangeMethodAnnotationHandler}
+	 * to extract {@link AutoRenew} annotation from the method.
+	 */
 	@OrangeRedisOperationArg(binding = AutoRenew.class, valueHandler = OrangeMethodAnnotationHandler.class)
 	private AutoRenew autoRenew;
 
+	/**
+	 * Constructs a new multiple locks context instance.
+	 *
+	 * @param operationOwner    The class that owns the operation
+	 * @param operationMethod   The method representing the operation
+	 * @param args             The arguments array passed to the method
+	 * @param redisKey         The Redis key for the operation
+	 * @param valueType        The Redis value type enum
+	 */
 	public OrangeMultipleLocksContext(
 		Class<?> operationOwner, 
 		Method operationMethod, 
@@ -45,6 +64,11 @@ public class OrangeMultipleLocksContext extends OrangeRedisMultipleValueContext 
 		super(operationOwner, operationMethod, args, redisKey, valueType);
 	}
 
+	/**
+	 * Gets the auto-renewal annotation instance.
+	 *
+	 * @return The auto-renewal annotation instance, may be null if not configured
+	 */
 	public AutoRenew getAutoRenew() {
 		return autoRenew;
 	}

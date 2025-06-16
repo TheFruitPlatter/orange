@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.langwuyue.orange.redis.RedisValueTypeEnum;
-import com.langwuyue.orange.redis.annotation.AddMembers;
 import com.langwuyue.orange.redis.annotation.CAS;
 import com.langwuyue.orange.redis.annotation.RedisOldValue;
 import com.langwuyue.orange.redis.annotation.RedisValue;
@@ -38,6 +37,22 @@ import com.langwuyue.orange.redis.operations.OrangeRedisScriptOperations;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor implementation for performing atomic Compare-And-Swap (CAS) operations on Redis Set members.
+ * 
+ * <p>This executor provides an atomic way to replace one member with another in a Redis Set,
+ * ensuring that the operation only succeeds if the old member is present in the set.
+ * 
+ * <p>The CAS operation follows these rules:
+ * <ul>
+ *   <li>If the old member is null and new member is not null: adds the new member</li>
+ *   <li>If the old member exists in the set and new member is not null: removes the old member and adds the new member</li>
+ *   <li>If the old member exists in the set and new member is null: removes the old member</li>
+ *   <li>If the old member doesn't exist in the set: the operation fails (returns false)</li>
+ * </ul>
+ * 
+ * <p>This implementation uses Lua scripts to ensure the atomicity of the operation,
+ * with separate scripts for production and debug environments.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
@@ -125,12 +140,41 @@ public class OrangeCompareAndSwapExecutor extends OrangeRedisAbstractExecutor {
 	
 	private OrangeRedisLogger logger;
 	
+	/**
+	 * Constructs a new OrangeCompareAndSwapExecutor with the specified dependencies.
+	 * 
+	 * <p>This constructor initializes the executor with the required components for
+	 * executing Redis script operations, generating executor IDs, and logging.
+	 *
+	 * @param operations the Redis script operations implementation for executing Lua scripts
+	 * @param idGenerator the generator for creating unique executor IDs
+	 * @param logger the logger for recording execution information and debug messages
+	 */
 	public OrangeCompareAndSwapExecutor(OrangeRedisScriptOperations operations,OrangeRedisExecutorIdGenerator idGenerator,OrangeRedisLogger logger) {
 		super(idGenerator);
 		this.operations = operations;
 		this.logger = logger;
 	}
 
+	/**
+	 * Executes the Compare-And-Swap operation on a Redis Set.
+	 * 
+	 * <p>This method performs an atomic operation that compares the old value with
+	 * what's in the Redis Set, and if it matches, swaps it with the new value.
+	 * The operation is implemented using a Lua script to ensure atomicity.
+	 * 
+	 * <p>The method handles various scenarios:
+	 * <ul>
+	 *   <li>If old value is null and new value exists: adds the new value</li>
+	 *   <li>If old value exists in the set and new value exists: replaces old with new</li>
+	 *   <li>If old value exists in the set and new value is null: removes the old value</li>
+	 *   <li>If old value doesn't exist in the set: operation fails (returns false)</li>
+	 * </ul>
+	 *
+	 * @param context the execution context containing the Redis key, old value, and new value
+	 * @return boolean indicating success (true) or failure (false) of the operation
+	 * @throws Exception if an error occurs during execution
+	 */
 	@Override
 	public Object execute(OrangeRedisContext context) throws Exception {
 		OrangeCompareAndSwapContext ctx = (OrangeCompareAndSwapContext)context;
@@ -171,11 +215,32 @@ public class OrangeCompareAndSwapExecutor extends OrangeRedisAbstractExecutor {
 		return "1".equals(result);
 	}
 
+	/**
+	 * Returns the list of annotation classes supported by this executor.
+	 * 
+	 * <p>This executor supports three annotations:
+	 * <ul>
+	 *   <li>{@link RedisValue} - Marks the new value to be set</li>
+	 *   <li>{@link RedisOldValue} - Marks the old value to be compared against</li>
+	 *   <li>{@link CAS} - Indicates that this is a Compare-And-Swap operation</li>
+	 * </ul>
+	 *
+	 * @return a list containing the supported annotation classes
+	 */
 	@Override
 	public List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(RedisValue.class, RedisOldValue.class, CAS.class);
 	}
 
+	/**
+	 * Returns the context class used by this executor.
+	 * 
+	 * <p>This executor uses the {@link OrangeCompareAndSwapContext} class to
+	 * store and manage the operation parameters and results for compare-and-swap operations.
+	 * The context holds both the old value for comparison and the new value for setting.
+	 *
+	 * @return the {@link OrangeCompareAndSwapContext} class
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeCompareAndSwapContext.class;

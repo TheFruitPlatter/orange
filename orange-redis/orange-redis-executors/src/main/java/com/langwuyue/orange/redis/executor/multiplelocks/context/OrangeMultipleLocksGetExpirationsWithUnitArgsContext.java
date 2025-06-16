@@ -27,14 +27,32 @@ import com.langwuyue.orange.redis.annotation.OrangeRedisOperationArg;
 import com.langwuyue.orange.redis.annotation.TimeoutUnit;
 
 /**
+ * Context class for retrieving multiple locks expirations with time unit parameters.
+ * This class extends {@link OrangeMultipleLocksGetExpirationsContext} and adds support for time unit specification.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeMultipleLocksGetExpirationsContext
+ * @see TimeUnit
  */
 public class OrangeMultipleLocksGetExpirationsWithUnitArgsContext extends OrangeMultipleLocksGetExpirationsContext {
 	
+	/**
+	 * The time unit object used to specify the unit for returned expiration times.
+	 * Bound to method parameters using {@link OrangeRedisOperationArg} annotation with {@link TimeoutUnit} binding.
+	 */
 	@OrangeRedisOperationArg(binding = TimeoutUnit.class)
 	private Object unit;
 
+	/**
+	 * Constructs a new context for retrieving multiple locks expirations with time unit support.
+	 *
+	 * @param operationOwner    The class that owns the operation
+	 * @param operationMethod   The method representing the operation
+	 * @param args              The arguments passed to the method
+	 * @param redisKey          The Redis key for the operation
+	 * @param valueType         The Redis value type enum
+	 */
 	public OrangeMultipleLocksGetExpirationsWithUnitArgsContext(
 		Class<?> operationOwner, 
 		Method operationMethod, 
@@ -45,6 +63,12 @@ public class OrangeMultipleLocksGetExpirationsWithUnitArgsContext extends Orange
 		super(operationOwner, operationMethod, args, redisKey, valueType);
 	}
 	
+	/**
+	 * Gets the time unit for this operation after validating it.
+	 * 
+	 * @return The validated {@link TimeUnit} for converting expiration times
+	 * @throws OrangeRedisException if the unit is null or not a TimeUnit instance
+	 */
 	public TimeUnit getUnit() {
 		if(unit == null) {
 			throw new OrangeRedisException(String.format("The argument annotated with @%s cannot be null", TimeoutUnit.class));

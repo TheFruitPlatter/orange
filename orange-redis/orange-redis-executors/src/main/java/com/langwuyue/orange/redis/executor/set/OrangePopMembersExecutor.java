@@ -41,16 +41,47 @@ public class OrangePopMembersExecutor extends OrangeRedisGetAbstractExecutor {
 	
 	private OrangeRedisSetOperations operations;
 
-	public OrangePopMembersExecutor(OrangeRedisSetOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
+	/**
+	 * Constructs a new OrangePopMembersExecutor with the specified Redis operations and ID generator.
+	 *
+	 * @param operations the Redis Set operations implementation to use for popping members
+	 * @param idGenerator the generator for creating unique executor identifiers
+	 */
+	public OrangePopMembersExecutor(OrangeRedisSetOperations operations, OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Returns the list of annotation classes that this executor supports.
+	 * 
+	 * <p>This executor supports the following annotations:
+	 * <ul>
+	 *   <li>{@link PopMembers} - Indicates this is a member pop operation</li>
+	 *   <li>{@link Count} - Specifies the number of members to pop</li>
+	 * </ul>
+	 *
+	 * @return a list containing the supported annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
-		return OrangeCollectionUtils.asList(PopMembers.class,Count.class);
+		return OrangeCollectionUtils.asList(PopMembers.class, Count.class);
 	}
 
+	/**
+	 * Performs the actual popping of members from the Redis Set.
+	 * 
+	 * <p>This method uses the Redis SPOP command to remove and return random members
+	 * from the set. The number of members to pop is specified in the context's
+	 * count parameter. This operation both removes the members from the set and
+	 * returns them to the caller.
+	 *
+	 * @param context the Redis operation context containing the key and count
+	 * @param valueField the field annotated with PopMembers (may be null if the annotation is on a method)
+	 * @param returnArgumentType the expected return type for the operation
+	 * @return a Collection containing the popped members
+	 * @throws Exception if an error occurs during the Redis operation
+	 */
 	@Override
 	protected Collection doGet(OrangeRedisContext context, Field valueField, Type returnArgumentType) throws Exception {
 		OrangeRedisCountContext ctx = (OrangeRedisCountContext) context;
@@ -62,6 +93,14 @@ public class OrangePopMembersExecutor extends OrangeRedisGetAbstractExecutor {
 		);
 	}
 	
+	/**
+	 * Returns the context class required by this executor.
+	 * 
+	 * <p>This executor requires an {@link OrangeRedisCountContext} which contains
+	 * both the Redis key and the count of members to pop.
+	 *
+	 * @return the OrangeRedisCountContext class
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeRedisCountContext.class;

@@ -26,13 +26,26 @@ import com.langwuyue.orange.redis.RedisValueTypeEnum;
 import com.langwuyue.orange.redis.context.OrangeRedisMultipleValueContext;
 
 /**
+ * Multiple locks expiration retrieval context class, used for handling expiration time information for multiple distributed locks.
+ * This class extends {@link OrangeMultipleLocksContext} and is specifically designed for retrieving lock expiration times.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeMultipleLocksContext
  */
 public class OrangeMultipleLocksGetExpirationsContext extends OrangeRedisMultipleValueContext {
 	
 	private List<Object> cachedKeys;
 
+	/**
+	 * Constructs a new multiple locks expiration retrieval context instance.
+	 *
+	 * @param operationOwner    The class that owns the operation
+	 * @param operationMethod   The method representing the operation
+	 * @param args              The arguments array passed to the method
+	 * @param redisKey          The Redis key for the operation
+	 * @param valueType         The Redis value type enum
+	 */
 	public OrangeMultipleLocksGetExpirationsContext(
 		Class<?> operationOwner, 
 		Method operationMethod, 
@@ -43,6 +56,11 @@ public class OrangeMultipleLocksGetExpirationsContext extends OrangeRedisMultipl
 		super(operationOwner, operationMethod, args, redisKey, valueType);
 	}
 	
+	/**
+	 * Converts multiple values to a list format and caches the keys.
+	 * 
+	 * @return A list containing all values, or an empty list if no values exist
+	 */
 	public List toList() {
 		final List newArray = new ArrayList<>();
 		if(getMultipleValue() == null) {
@@ -53,6 +71,14 @@ public class OrangeMultipleLocksGetExpirationsContext extends OrangeRedisMultipl
 		return newArray;
 	}
 
+	/**
+	 * Retrieves the cached list of keys.
+	 * 
+	 * <p>Returns the list of keys that was previously cached by the {@link #toList()} method.
+	 * This method provides quick access to the keys without needing to reconstruct the list.
+	 *
+	 * @return The cached list of keys, may be null if {@link #toList()} hasn't been called yet
+	 */
 	public List<Object> getCachedKeys() {
 		return cachedKeys;
 	}

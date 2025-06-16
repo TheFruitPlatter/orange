@@ -46,13 +46,6 @@ import com.langwuyue.orange.redis.operations.OrangeRedisSetOperations;
  *   <li>Returns 0 if none of the specified members existed in the set</li>
  * </ul>
  *
- * <p>Performance considerations:
- * <ul>
- *   <li>Time complexity is O(N) where N is the number of members to remove</li>
- *   <li>Bulk removal is more efficient than multiple single removals</li>
- *   <li>Performance is generally good as Redis Sets are optimized for membership operations</li>
- * </ul>
- *
  * <p>Underlying Redis command:
  * This executor uses the SREM command internally to perform the removal operation.
  *
@@ -63,8 +56,15 @@ public class OrangeRemoveMembersExecutor extends OrangeRemoveMembersAbstractExec
 	
 	private OrangeRedisSetOperations operations;
 
-	public OrangeRemoveMembersExecutor(OrangeRedisSetOperations operations,OrangeRedisExecutorIdGenerator idGenerator,OrangeRedisLogger logger) {
-		super(idGenerator,logger);
+	/**
+	 * Constructs a new OrangeRemoveMembersExecutor with the specified Redis operations, ID generator, and logger.
+	 *
+	 * @param operations the Redis Set operations implementation to use for member removal
+	 * @param idGenerator the generator for creating unique executor identifiers
+	 * @param logger the logger for recording execution information and errors
+	 */
+	public OrangeRemoveMembersExecutor(OrangeRedisSetOperations operations, OrangeRedisExecutorIdGenerator idGenerator, OrangeRedisLogger logger) {
+		super(idGenerator, logger);
 		this.operations = operations;
 	}
 

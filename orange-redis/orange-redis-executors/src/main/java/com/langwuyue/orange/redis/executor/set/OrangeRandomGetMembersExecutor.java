@@ -35,6 +35,31 @@ import com.langwuyue.orange.redis.operations.OrangeRedisSetOperations;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor implementation for retrieving random members from a Redis Set.
+ * 
+ * <p>This executor is designed to randomly select a specified number of members
+ * from a Redis Set. Unlike {@link OrangeDistinctRandomGetMembersExecutor}, this
+ * implementation may return duplicate members if the requested count exceeds the
+ * set size.
+ * 
+ * <p>The executor supports the following annotations:
+ * <ul>
+ *   <li>{@link GetMembers} - Indicates this is a member retrieval operation</li>
+ *   <li>{@link Random} - Specifies that members should be selected randomly</li>
+ *   <li>{@link Count} - Specifies the number of members to retrieve</li>
+ * </ul>
+ * 
+ * <p>This implementation uses {@link OrangeRedisSetOperations} to perform the actual
+ * Redis operations and requires an {@link OrangeRedisCountContext} to specify the
+ * number of members to retrieve.
+ * 
+ * <p>The Redis SRANDMEMBER command is used internally with the specified count,
+ * which has the following behavior:
+ * <ul>
+ *   <li>If count is positive, it may return the same member multiple times</li>
+ *   <li>The operation has O(count) time complexity</li>
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
@@ -42,16 +67,48 @@ public class OrangeRandomGetMembersExecutor extends OrangeRedisGetAbstractExecut
 	
 	private OrangeRedisSetOperations operations;
 
-	public OrangeRandomGetMembersExecutor(OrangeRedisSetOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
+	/**
+	 * Constructs a new OrangeRandomGetMembersExecutor with the specified Redis operations and ID generator.
+	 *
+	 * @param operations the Redis Set operations implementation to use for random member retrieval
+	 * @param idGenerator the generator for creating unique executor identifiers
+	 */
+	public OrangeRandomGetMembersExecutor(OrangeRedisSetOperations operations, OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Returns the list of annotation classes that this executor supports.
+	 * 
+	 * <p>This executor supports the following annotations:
+	 * <ul>
+	 *   <li>{@link GetMembers} - Indicates this is a member retrieval operation</li>
+	 *   <li>{@link Random} - Specifies that members should be selected randomly</li>
+	 *   <li>{@link Count} - Specifies the number of members to retrieve</li>
+	 * </ul>
+	 *
+	 * @return a list containing the supported annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
-		return OrangeCollectionUtils.asList(GetMembers.class,Random.class,Count.class);
+		return OrangeCollectionUtils.asList(GetMembers.class, Random.class, Count.class);
 	}
 
+	/**
+	 * Performs the actual retrieval of random members from the Redis Set.
+	 * 
+	 * <p>This method uses the Redis SRANDMEMBER command to randomly select members
+	 * from the set. The number of members to retrieve is specified in the context's
+	 * count parameter. Note that this operation may return duplicate members if the
+	 * requested count exceeds the set size.
+	 *
+	 * @param context the Redis operation context containing the key and count
+	 * @param valueField the field annotated with GetMembers (may be null if the annotation is on a method)
+	 * @param returnArgumentType the expected return type for the operation
+	 * @return a Collection containing the randomly selected members
+	 * @throws Exception if an error occurs during the Redis operation
+	 */
 	@Override
 	protected Collection doGet(OrangeRedisContext context, Field valueField, Type returnArgumentType) throws Exception {
 		OrangeRedisCountContext ctx = (OrangeRedisCountContext) context;
@@ -63,6 +120,14 @@ public class OrangeRandomGetMembersExecutor extends OrangeRedisGetAbstractExecut
 		);
 	}
 	
+	/**
+	 * Returns the context class required by this executor.
+	 * 
+	 * <p>This executor requires an {@link OrangeRedisCountContext} which contains
+	 * both the Redis key and the count of members to retrieve.
+	 *
+	 * @return the OrangeRedisCountContext class
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeRedisCountContext.class;

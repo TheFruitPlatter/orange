@@ -44,8 +44,35 @@ import com.langwuyue.orange.redis.operations.OrangeRedisSetOperations;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor implementation for conditionally adding a member to a Redis Set only if it doesn't already exist.
+ * 
+ * <p>This executor implements an atomic "add if absent" operation for Redis Sets using Lua scripting.
+ * It first checks if the member exists in the Set, and only adds it if it's not already present.
+ * This ensures the operation is performed atomically, avoiding race conditions that could occur
+ * with separate check-then-add operations.
+ * 
+ * <p>The executor supports event notifications through listeners:
+ * <ul>
+ *   <li>Success events when a member is successfully added</li>
+ *   <li>Failure events when the operation fails</li>
+ *   <li>Remove failure events when cleanup operations fail</li>
+ * </ul>
+ * 
+ * <p>The executor supports the following annotations:
+ * <ul>
+ *   <li>{@link AddMembers} - Marks a method as an operation to add members to a Set</li>
+ *   <li>{@link RedisValue} - Identifies the parameter that contains the value to be added</li>
+ *   <li>{@link IfAbsent} - Specifies that the operation should only proceed if the member is absent</li>
+ * </ul>
+ * 
+ * <p>This implementation uses Lua scripting to ensure atomicity and provides detailed logging
+ * when debug mode is enabled.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeRedisValueIfAbsentContext
+ * @see OrangeRedisSetIfAbsentListener
+ * @see OrangeRedisIfAbsentException
  */
 public class OrangeAddMemberIfAbsentExecutor extends OrangeRedisAbstractExecutor {
 	/**
@@ -89,6 +116,15 @@ public class OrangeAddMemberIfAbsentExecutor extends OrangeRedisAbstractExecutor
 	
 	private OrangeRedisLogger logger;
 	
+	/**
+	 * Constructs a new OrangeAddMemberIfAbsentExecutor with the specified dependencies.
+	 * 
+	 * @param scriptOperations the Redis script operations implementation for executing Lua scripts
+	 * @param operations the Redis Set operations implementation for performing Set operations
+	 * @param idGenerator the generator for creating unique executor IDs
+	 * @param listeners collection of listeners to be notified of operation events
+	 * @param logger the logger for recording debug information and trace IDs
+	 */
 	public OrangeAddMemberIfAbsentExecutor(
 		OrangeRedisScriptOperations scriptOperations,
 		OrangeRedisSetOperations operations,
@@ -103,6 +139,25 @@ public class OrangeAddMemberIfAbsentExecutor extends OrangeRedisAbstractExecutor
 		this.logger = logger;
 	}
 
+	/**
+	 * Executes the "add member if absent" operation using a Lua script for atomicity.
+	 * 
+	 * <p>This method performs the following steps:
+	 * <ol>
+	 *   <li>Casts the context to {@link OrangeRedisValueIfAbsentContext} to access operation parameters</li>
+	 *   <li>Generates a unique trace ID for logging and tracking</li>
+	 *   <li>Executes a Lua script that atomically checks if the member exists and adds it if absent</li>
+	 *   <li>Processes the result and notifies appropriate listeners</li>
+	 *   <li>Handles any exceptions and performs cleanup if necessary</li>
+	 * </ol>
+	 * 
+	 * <p>The method uses detailed debug logging when enabled, and properly notifies
+	 * listeners of success or failure events.
+	 *
+	 * @param context the operation context containing the Redis key, value, and if-absent parameters
+	 * @return Boolean indicating whether the member was successfully added (true) or already existed (false)
+	 * @throws Exception if any error occurs during execution
+	 */
 	@Override
 	public Object execute(OrangeRedisContext context) throws Exception {
 		OrangeRedisValueIfAbsentContext ctx = (OrangeRedisValueIfAbsentContext)context;
@@ -132,6 +187,23 @@ public class OrangeAddMemberIfAbsentExecutor extends OrangeRedisAbstractExecutor
 		return null;
 	}
 	
+	/**
+	 * Notifies registered listeners about the result of the add operation and handles cleanup.
+	 * 
+	 * <p>This private method manages the notification process after an "add if absent" operation:
+	 * <ol>
+	 *   <li>If the operation was not successful (member already existed), it returns immediately</li>
+	 *   <li>If successful, it notifies all registered listeners with a success event</li>
+	 *   <li>If the context specifies deletion after success (deleteInTheEnd flag), it attempts to remove the member</li>
+	 *   <li>If the removal fails, it notifies listeners with a removal failure event</li>
+	 * </ol>
+	 * 
+	 * <p>This method ensures proper cleanup and notification regardless of operation outcome,
+	 * and handles any exceptions that might occur during the notification or cleanup process.
+	 *
+	 * @param success Boolean indicating whether the member was successfully added
+	 * @param ctx the context containing operation parameters and configuration
+	 */
 	private void notifyListeners(Boolean success,OrangeRedisValueIfAbsentContext ctx) {
 		if(success == null || !success.booleanValue()) {
 			return;
@@ -173,6 +245,27 @@ public class OrangeAddMemberIfAbsentExecutor extends OrangeRedisAbstractExecutor
 		);
 	}
 
+	/**
+	 * Executes the core "if absent" logic using a Lua script for atomic operation.
+	 * 
+	 * <p>This protected method implements the actual execution of the atomic "add if absent" 
+	 * operation through a Lua script. The script checks if the member exists in the Set,
+	 * and only adds it if it's not already present, all in a single atomic operation.
+	 * 
+	 * <p>The method performs the following steps:
+	 * <ol>
+	 *   <li>Prepares the arguments and their value types for the script execution</li>
+	 *   <li>Selects the appropriate script based on whether debug logging is enabled</li>
+	 *   <li>Adds a trace ID for logging and debugging purposes</li>
+	 *   <li>Executes the Lua script via the script operations service</li>
+	 *   <li>Interprets the result: "1" means the member was added, "0" means it already existed</li>
+	 * </ol>
+	 *
+	 * @param ctx the Redis context containing operation parameters
+	 * @param member the member to be added to the Set if absent
+	 * @return Boolean true if the member was successfully added, false if it already existed
+	 * @throws Exception if an error occurs during script execution
+	 */
 	protected Boolean executeIfAbsent(OrangeRedisContext ctx,Object member) throws Exception {
 		Map<Object, RedisValueTypeEnum> argsValueTypes = new LinkedHashMap<>();
 		argsValueTypes.put(member, ctx.getValueType());
@@ -199,20 +292,56 @@ public class OrangeAddMemberIfAbsentExecutor extends OrangeRedisAbstractExecutor
 		return "1".equals(result);
 	}
 
+	/**
+	 * Returns the list of annotation classes that this executor supports.
+	 * 
+	 * <p>This executor supports three annotations:
+	 * <ul>
+	 *   <li>{@link AddMembers} - For marking methods that add members to a Set</li>
+	 *   <li>{@link RedisValue} - For identifying the value parameter to be added</li>
+	 *   <li>{@link IfAbsent} - For specifying the conditional "if absent" behavior</li>
+	 * </ul>
+	 *
+	 * @return a list containing the supported annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(AddMembers.class,RedisValue.class,IfAbsent.class);
 	}
-
+	
+	/**
+	 * Returns the context class that this executor requires.
+	 * 
+	 * <p>This executor uses {@link OrangeRedisValueIfAbsentContext} to handle
+	 * conditional "if absent" operations for adding a member to a Redis Set.
+	 *
+	 * @return the {@link OrangeRedisValueIfAbsentContext} class
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeRedisValueIfAbsentContext.class;
 	}
 
+	/**
+	 * Package-private getter for the script operations.
+	 * 
+	 * <p>This method is primarily used for testing purposes and internal access
+	 * to the script operations implementation.
+	 *
+	 * @return the Redis script operations implementation used by this executor
+	 */
 	OrangeRedisScriptOperations getScriptOperations() {
 		return scriptOperations;
 	}
 
+	/**
+	 * Package-private getter for the Set operations.
+	 * 
+	 * <p>This method is primarily used for testing purposes and internal access
+	 * to the Set operations implementation.
+	 *
+	 * @return the Redis Set operations implementation used by this executor
+	 */
 	OrangeRedisSetOperations getOperations() {
 		return operations;
 	}

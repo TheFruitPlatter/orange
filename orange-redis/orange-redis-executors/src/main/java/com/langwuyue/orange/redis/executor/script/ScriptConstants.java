@@ -18,7 +18,21 @@
  */
 package com.langwuyue.orange.redis.executor.script;
 
+/**
+ * Constants used in Lua script operations for Redis.
+ * 
+ * <p>This interface defines string constants that are used in Lua script
+ * execution contexts, particularly for special value representations.
+ */
 public interface ScriptConstants {
 
+	/**
+	 * Represents a NIL value in Lua scripts.
+	 * 
+	 * <p>This constant is used as a placeholder for null values when executing
+	 * Lua scripts, as Redis Lua scripts cannot directly handle null values.
+	 * The double bracket notation ensures this string is unlikely to conflict
+	 * with actual data values.
+	 */
 	String NIL = "[[NIL]]";
 }

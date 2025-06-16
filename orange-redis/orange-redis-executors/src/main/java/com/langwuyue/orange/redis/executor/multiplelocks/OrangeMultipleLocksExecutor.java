@@ -54,12 +54,48 @@ import com.langwuyue.orange.redis.timer.OrangeRenewTimerWheel;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Redis executor implementation for handling multiple locks operations.
+ * 
+ * <p>This executor provides functionality to acquire and release multiple Redis locks atomically.
+ * It uses Lua scripts to ensure atomic operations when interacting with Redis. The implementation
+ * supports the following features:
+ * 
+ * <ul>
+ *   <li>Atomic acquisition of multiple locks using Redis hash operations</li>
+ *   <li>Automatic lock renewal through a timer wheel mechanism</li>
+ *   <li>Configurable expiration times for locks</li>
+ *   <li>Failure handling with optional continue-on-failure behavior</li>
+ *   <li>Event notifications through listeners for lock acquisition and release events</li>
+ * </ul>
+ * 
+ * <p>The executor works with {@link OrangeMultipleLocksContext} to process lock operations
+ * and supports annotations like {@link MultipleLocks}, {@link Multiple}, {@link ContinueOnFailure},
+ * {@link AutoRenew}, and {@link SetExpiration}.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeMultipleLocksContext
+ * @see MultipleLocks
+ * @see AutoRenew
  */
 public class OrangeMultipleLocksExecutor extends OrangeRedisAbstractExecutor {
 	/**
-	 * Script for production
+	 * Lua script for handling multiple lock operations in production environment.
+	 * 
+	 * <p>This script performs the following operations:
+	 * <ol>
+	 *   <li>Checks if the hash key exists in the Redis hash</li>
+	 *   <li>If the key doesn't exist or its value is less than current time, sets the new deadline</li>
+	 *   <li>Returns '1' if lock was acquired, '0' otherwise</li>
+	 * </ol>
+	 * 
+	 * <p>Script arguments:
+	 * <ul>
+	 *   <li>KEYS[1]: The Redis key for the hash</li>
+	 *   <li>ARGV[1]: The hash field (lock identifier)</li>
+	 *   <li>ARGV[2]: The deadline timestamp</li>
+	 *   <li>ARGV[3]: The current timestamp</li>
+	 * </ul>
 	 */
 	private static final String MULTI_LOCK_LUA_SCRIPT = String.join("\n",
 	    "local deadline = ARGV[2];",
@@ -75,7 +111,32 @@ public class OrangeMultipleLocksExecutor extends OrangeRedisAbstractExecutor {
 	    "end;"
 	);
 	/**
-	 * Script for debug
+	 * Lua script for handling multiple lock operations in debug environment.
+	 * 
+	 * <p>This script is similar to the production script but includes additional
+	 * debug information in the return value. It performs the following operations:
+	 * <ol>
+	 *   <li>Checks if the hash key exists in the Redis hash</li>
+	 *   <li>If the key doesn't exist or its value is less than current time, sets the new deadline</li>
+	 *   <li>Returns a table with detailed information about the operation</li>
+	 * </ol>
+	 * 
+	 * <p>Script arguments:
+	 * <ul>
+	 *   <li>KEYS[1]: The Redis key for the hash</li>
+	 *   <li>ARGV[1]: The hash field (lock identifier)</li>
+	 *   <li>ARGV[2]: The deadline timestamp</li>
+	 *   <li>ARGV[3]: The current timestamp</li>
+	 *   <li>ARGV[4]: The trace id</li>
+	 * </ul>
+	 * 
+	 * <p>Return value is a table with the following fields:
+	 * <ul>
+	 *   <li>success: 1 if lock was acquired, 0 otherwise</li>
+	 *   <li>exists: 1 if the key already exists, 0 otherwise</li>
+	 *   <li>value: The current value of the key if it exists</li>
+	 *   <li>now: The current timestamp passed to the script</li>
+	 * </ul>
 	 */
 	private static final String MULTI_LOCK_LUA_SCRIPT_DEBUG = String.join("\n",
 		"local traceId = tostring(ARGV[4]);",
@@ -112,6 +173,17 @@ public class OrangeMultipleLocksExecutor extends OrangeRedisAbstractExecutor {
 	
 	private OrangeRedisLogger logger;
 
+	/**
+	 * Constructs a new OrangeMultipleLocksExecutor with the specified dependencies.
+	 *
+	 * @param scriptOperations the Redis script operations for executing Lua scripts
+	 * @param operations the Redis hash operations for managing hash data structures
+	 * @param idGenerator the generator for creating unique executor IDs
+	 * @param listeners collection of listeners to be notified of lock events
+	 * @param wheel timer wheel for managing lock renewal tasks
+	 * @param expirationTimeAutoInitializer initializer for automatic expiration time management
+	 * @param logger logger for recording operation details and debug information
+	 */
 	public OrangeMultipleLocksExecutor(
 		OrangeRedisScriptOperations scriptOperations,
 		OrangeRedisHashOperations operations,
@@ -131,6 +203,17 @@ public class OrangeMultipleLocksExecutor extends OrangeRedisAbstractExecutor {
 		this.logger = logger;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * <p>Executes the multiple locks operation based on the provided context.
+	 *
+	 * @param context the execution context containing lock information and parameters
+	 * @return null as this operation doesn't return a value
+	 * @throws Exception if an error occurs during lock acquisition or if the context type is invalid
+	 * @see OrangeMultipleLocksContext
+	 * @see #doLock(OrangeRedisIterableContext, Key, boolean, int, RedisValueTypeEnum, Object[])
+	 */
 	@Override
 	public Object execute(OrangeRedisContext context) throws Exception {
 		OrangeMultipleLocksContext ctx = (OrangeMultipleLocksContext) context;
@@ -145,6 +228,21 @@ public class OrangeMultipleLocksExecutor extends OrangeRedisAbstractExecutor {
 		return null;
 	}
 	
+	/**
+	 * Performs the actual lock acquisition operation for multiple locks.
+	 * 
+	 * <p>This method handles the core logic for acquiring multiple locks atomically. åå
+	 *
+	 * @param ctx the iterable context containing the lock entries
+	 * @param redisKey the Redis key for the lock operations
+	 * @param autoInitKeyExpirationTime whether to automatically initialize key expiration time
+	 * @param threshold the threshold value for lock renewal
+	 * @param valueType the type of value being stored
+	 * @param args additional arguments for the lock operation
+	 * @see OrangeRedisIterableContext
+	 * @see OrangeRenewTask
+	 * @see OrangeMultipleLocksEvent
+	 */
 	public void doLock(OrangeRedisIterableContext ctx,Key redisKey,boolean autoInitKeyExpirationTime,int threshold, RedisValueTypeEnum valueType, Object[] args) {
 		Set<Object> successEntries = new LinkedHashSet<>();
 		Set<Object> successMembers = new LinkedHashSet<>();
@@ -213,6 +311,24 @@ public class OrangeMultipleLocksExecutor extends OrangeRedisAbstractExecutor {
 		}
 	}
 	
+	/**
+	 * Releases all successfully acquired locks after the operation completes.
+	 * 
+	 * <p>This method is responsible for cleaning up locks after the main operation,
+	 * whether it succeeded or failed.
+	 * 
+	 * <p>This method is crucial for preventing resource leaks and ensuring that
+	 * locks don't remain indefinitely when they're no longer needed.
+	 *
+	 * @param successMembers the set of lock members that were successfully acquired
+	 * @param successEntries the set of entries that were successfully processed
+	 * @param failedEntries a map of entries that failed during processing and their exceptions
+	 * @param unknownEnties the set of entries with unknown status
+	 * @param redisKey the Redis key for the lock operations
+	 * @param valueType the type of value being stored
+	 * @param args additional arguments for the lock operation
+	 * @see OrangeMultipleLocksRemoveFailedEvent
+	 */
 	private void releaseLocks(
 		Set<Object> successMembers,
 		Set<Object> successEntries,
@@ -253,6 +369,14 @@ public class OrangeMultipleLocksExecutor extends OrangeRedisAbstractExecutor {
 		}
 	}
 	
+	/**
+	 * Executes the actual lock operation for a single entry using a Lua script.
+	 * 
+	 * @param task the renewal task containing lock information
+	 * @return true if the lock was successfully acquired, false otherwise
+	 * @throws Exception if an error occurs during script execution
+	 * @see OrangeRenewTask
+	 */
 	private boolean doLock(OrangeRenewTask task) throws Exception {
 		Map<Object, RedisValueTypeEnum> argsValueTypes = new LinkedHashMap<>();
 		argsValueTypes.put(task.getValue(), task.getValueType());
@@ -283,11 +407,35 @@ public class OrangeMultipleLocksExecutor extends OrangeRedisAbstractExecutor {
 		return "1".equals(result);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * <p>Returns the list of annotation classes that this executor supports.
+	 * This executor supports multiple annotations related to Redis lock operations:
+	 * <ul>
+	 *   <li>{@link MultipleLocks} - Primary annotation for multiple locks operations</li>
+	 *   <li>{@link Multiple} - Indicates multiple entries to be processed</li>
+	 *   <li>{@link ContinueOnFailure} - Controls behavior when lock acquisition fails</li>
+	 *   <li>{@link AutoRenew} - Enables automatic renewal of acquired locks</li>
+	 *   <li>{@link SetExpiration} - Configures expiration time for locks</li>
+	 * </ul>
+	 *
+	 * @return a list of supported annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(MultipleLocks.class,Multiple.class,ContinueOnFailure.class,AutoRenew.class,SetExpiration.class);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * <p>Returns the context class that this executor uses for multiple locks operations.
+	 * This executor uses {@link OrangeMultipleLocksContext} to hold lock information,
+	 * keys, and other parameters required for multiple locks operations.
+	 *
+	 * @return the {@link OrangeMultipleLocksContext} class
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeMultipleLocksContext.class;
