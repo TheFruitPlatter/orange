@@ -44,6 +44,7 @@ import com.langwuyue.orange.redis.annotation.zset.Pager;
  * @see OrangeMaxScoreMinScoreContext
  * @see OrangeRedisPagerContext
  * @see Pager
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/zset">Orange Redis ZSet Documentation</a>
  */
 public class OrangeMaxScoreMinScorePagerContext extends OrangeMaxScoreMinScoreContext implements OrangeRedisPagerContext {
 	

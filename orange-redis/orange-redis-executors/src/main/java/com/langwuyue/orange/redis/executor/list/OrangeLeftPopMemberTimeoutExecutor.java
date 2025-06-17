@@ -35,23 +35,74 @@ import com.langwuyue.orange.redis.operations.OrangeRedisListOperations;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Redis executor that handles left pop operations with timeout parameters.
+ * 
+ * <p>This executor removes and returns a single element from the left side (beginning) of a Redis list.
+ * If the list is empty, the operation will block until either an element becomes available or the
+ * specified timeout expires. The timeout is specified using the {@link Timeout} annotation.
+ * 
+ * <p>This executor supports the following annotations:
+ * <ul>
+ *   <li>{@link PopMembers} - indicates a pop operation for list elements</li>
+ *   <li>{@link Timeout} - specifies the timeout duration and unit for the blocking operation</li>
+ *   <li>{@link Left} - specifies that the operation should be performed from the left side</li>
+ * </ul>
+ *
+ * <p>The executor uses {@link OrangeRedisTimeoutContext} to handle the timeout parameters.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/list">Orange Redis List Documentation</a>
  */
 public class OrangeLeftPopMemberTimeoutExecutor extends OrangeRedisGetOneAbstractExecutor {
 	
+	/**
+	 * Redis list operations instance used to perform the left pop operation with timeout.
+	 * This field provides access to the underlying Redis commands for list manipulation.
+	 */
 	private OrangeRedisListOperations operations;
 
+	/**
+	 * Constructs a new OrangeLeftPopMemberTimeoutExecutor with the specified Redis list operations and ID generator.
+	 *
+	 * @param operations the Redis list operations instance to use for executing the left pop command
+	 * @param idGenerator the generator used to create unique identifiers for this executor
+	 */
 	public OrangeLeftPopMemberTimeoutExecutor(OrangeRedisListOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Returns the list of annotation classes that this executor supports.
+	 * 
+	 * <p>This executor supports the following annotations:
+	 * <ul>
+	 *   <li>{@link PopMembers} - indicates a pop operation for list elements</li>
+	 *   <li>{@link Timeout} - specifies the timeout duration and unit for the blocking operation</li>
+	 *   <li>{@link Left} - specifies that the operation should be performed from the left side</li>
+	 * </ul>
+	 *
+	 * @return a list of supported annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(PopMembers.class,Timeout.class,Left.class);
 	}
 	
+	/**
+	 * Executes the left pop operation with timeout on the Redis list.
+	 * 
+	 * <p>This method removes and returns a single element from the left side (beginning) of the list
+	 * stored at the specified key. If the list is empty, the operation will block until either an
+	 * element becomes available or the specified timeout expires.
+	 *
+	 * @param context the Redis context containing the key and other operation parameters
+	 * @param valueField the field that will receive the popped value, may be null
+	 * @param returnArgumentType the expected return type for the operation
+	 * @return a collection containing the popped element, or an empty collection if the timeout expires
+	 * @throws Exception if an error occurs during the operation
+	 */
 	@Override
 	protected Collection doGet(OrangeRedisContext context, Field valueField, Type returnArgumentType) throws Exception {
 		OrangeRedisTimeoutContext ctx = (OrangeRedisTimeoutContext) context;
@@ -66,6 +117,15 @@ public class OrangeLeftPopMemberTimeoutExecutor extends OrangeRedisGetOneAbstrac
 		return OrangeCollectionUtils.asList(value);
 	}
 
+	/**
+	 * Returns the context class used by this executor.
+	 * 
+	 * <p>This executor uses {@link OrangeRedisTimeoutContext} to handle timeout parameters
+	 * required for blocking operations. The timeout context extends the standard Redis context
+	 * with additional fields for timeout duration and time unit.
+	 *
+	 * @return the OrangeRedisTimeoutContext class
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeRedisTimeoutContext.class;

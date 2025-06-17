@@ -34,28 +34,95 @@ import com.langwuyue.orange.redis.operations.OrangeRedisListOperations;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor implementation for retrieving a single element from a Redis list by its index.
+ * 
+ * <p>This executor provides functionality to retrieve a specific element from a Redis list
+ * based on its index position. The index is zero-based, where 0 represents the first element
+ * of the list, 1 the second element, and so on.
+ * 
+ * <p>Negative indices can be used to count from the end of the list, where -1 represents
+ * the last element, -2 the penultimate element, and so on.
+ * 
+ * <p>The executor requires the following annotations to be present:
+ * <ul>
+ *   <li>{@link GetMembers} - Indicates a request to retrieve elements from a list</li>
+ *   <li>{@link Index} - Specifies the index of the element to retrieve</li>
+ * </ul>
+ * 
+ * <p>Unlike other list executors that return collections, this executor is designed
+ * to retrieve a single element, though it still returns the result wrapped in a collection
+ * for consistency with the abstract executor interface.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/list">Orange Redis List Documentation</a>
  */
 public class OrangeGetMemberExecutor extends OrangeRedisGetOneAbstractExecutor {
 	
+	/**
+	 * Redis list operations handler that provides the core functionality for interacting with Redis lists.
+	 * This field is used to execute the index-based retrieval operation on the Redis server.
+	 */
 	private OrangeRedisListOperations operations;
 
+	/**
+	 * Constructs a new OrangeGetMemberExecutor with the specified operations and ID generator.
+	 *
+	 * @param operations the Redis list operations handler that will execute the index-based retrieval command
+	 * @param idGenerator the generator used to create unique identifiers for this executor
+	 * @throws IllegalArgumentException if either operations or idGenerator is null
+	 */
 	public OrangeGetMemberExecutor(OrangeRedisListOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Returns the list of annotation classes that this executor supports.
+	 * 
+	 * <p>This executor supports the following annotations:
+	 * <ul>
+	 *   <li>{@link GetMembers} - Indicates a request to retrieve elements from a list</li>
+	 *   <li>{@link Index} - Specifies the index of the element to retrieve</li>
+	 * </ul>
+	 *
+	 * @return a list containing the supported annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(GetMembers.class,Index.class);
 	}
 	
+	/**
+	 * Returns the context class required for this executor.
+	 * 
+	 * <p>This executor uses the {@link OrangeGetMemberByIndexContext} class which extends
+	 * the base {@link OrangeRedisContext} to include additional information needed for
+	 * index-based operations, specifically:
+	 * <ul>
+	 *   <li>The index value for element retrieval</li>
+	 *   <li>Additional metadata for index-based access</li>
+	 * </ul>
+	 *
+	 * @return the {@link OrangeGetMemberByIndexContext} class
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeGetMemberByIndexContext.class;
 	}
 
+	/**
+	 * Performs the actual index-based retrieval operation on the Redis list.
+	 * 
+	 * <p>The index operation directly retrieves the element at the specified position in the list.
+	 * Negative indices can be used to count from the end of the list, where -1 represents the last element.
+	 *
+	 * @param context the Redis operation context containing key and index information
+	 * @param valueField the field that will store the retrieved value, may be null
+	 * @param returnArgumentType the expected return type for proper type conversion
+	 * @return a collection containing the single element at the specified index
+	 * @throws Exception if an error occurs during the operation or if the index is out of bounds
+	 */
 	@Override
 	protected Collection doGet(OrangeRedisContext context, Field valueField, Type returnArgumentType) throws Exception {
 		OrangeGetMemberByIndexContext ctx = (OrangeGetMemberByIndexContext) context;

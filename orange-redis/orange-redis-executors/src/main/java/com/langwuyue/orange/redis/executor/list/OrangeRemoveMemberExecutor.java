@@ -32,18 +32,69 @@ import com.langwuyue.orange.redis.operations.OrangeRedisListOperations;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor implementation for removing members from a Redis list.
+ * 
+ * <p>This executor provides functionality to remove a specified number of occurrences
+ * of a given value from a Redis list. It supports both single and multiple element
+ * removal operations.
+ * 
+ * <p>The removal operation is performed using the following parameters:
+ * <ul>
+ *   <li>The value to be removed</li>
+ *   <li>The count of occurrences to remove:
+ *     <ul>
+ *       <li>count > 0: Remove elements from head to tail</li>
+ *       <li>count < 0: Remove elements from tail to head</li>
+ *       <li>count = 0: Remove all elements equal to value</li>
+ *     </ul>
+ *   </li>
+ * </ul>
+ * 
+ * <p>The executor can return either:
+ * <ul>
+ *   <li>The number of elements removed (as Long)</li>
+ *   <li>A boolean indicating whether any elements were removed (for boolean return types)</li>
+ * </ul>
+ *
+ * <p>This executor works with the following annotations:
+ * <ul>
+ *   <li>{@link RemoveMembers} - Indicates a remove operation</li>
+ *   <li>{@link RedisValue} - Specifies the value to remove</li>
+ *   <li>{@link Count} - Specifies the number of occurrences to remove</li>
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/list">Orange Redis List Documentation</a>
  */
 public class OrangeRemoveMemberExecutor extends OrangeRedisAbstractExecutor {
 	
+	/**
+	 * Redis list operations handler that provides the core functionality for interacting with Redis lists.
+	 * This field is used to execute the remove operation on the Redis server.
+	 */
 	private OrangeRedisListOperations operations;
 
+	/**
+	 * Constructs a new OrangeRemoveMemberExecutor with the specified operations and ID generator.
+	 *
+	 * @param operations the Redis list operations handler that will execute the remove command
+	 * @param idGenerator the generator used to create unique identifiers for this executor
+	 * @throws IllegalArgumentException if either operations or idGenerator is null
+	 */
 	public OrangeRemoveMemberExecutor(OrangeRedisListOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Executes the remove operation on a Redis list.
+	 * 
+	 *
+	 * @param context the execution context containing the key, value, and count information
+	 * @return either a Long representing the number of elements removed, or a Boolean indicating if any elements were removed
+	 * @throws Exception if an error occurs during execution
+	 */
 	@Override
 	public Object execute(OrangeRedisContext context) throws Exception {
 		OrangeRemoveContext ctx = (OrangeRemoveContext)context;
@@ -60,11 +111,36 @@ public class OrangeRemoveMemberExecutor extends OrangeRedisAbstractExecutor {
 		return result;
 	}
 
+	/**
+	 * Returns the list of annotation classes that this executor supports.
+	 * 
+	 * <p>This executor supports the following annotations:
+	 * <ul>
+	 *   <li>{@link RemoveMembers} - Indicates that this operation removes members from a list</li>
+	 *   <li>{@link RedisValue} - Specifies the value to be removed from the list</li>
+	 *   <li>{@link Count} - Specifies the number of occurrences to remove</li>
+	 * </ul>
+	 *
+	 * @return a list containing the supported annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(RemoveMembers.class,RedisValue.class,Count.class);
 	}
 
+	/**
+	 * Returns the context class required for this executor.
+	 * 
+	 * <p>This executor uses the {@link OrangeRemoveContext} class which extends
+	 * the base {@link OrangeRedisContext} to include additional information needed for
+	 * the remove operation, such as:
+	 * <ul>
+	 *   <li>The value to be removed</li>
+	 *   <li>The count parameter specifying how many occurrences to remove</li>
+	 * </ul>
+	 *
+	 * @return the {@link OrangeRemoveContext} class
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeRemoveContext.class;

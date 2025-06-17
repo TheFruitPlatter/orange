@@ -58,6 +58,7 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
  * @see OrangeMaxScoreMinScoreContext
  * @see OrangeRedisZSetOperations
  * @see OrangeRedisZSetOperations.TypedTuple
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/zset">Orange Redis ZSet Documentation</a>
  */
 public class OrangeGetByMaxScoreMinScoreWithScoresExecutor extends OrangeGetWithScoresAbstractExecutor {
 	

@@ -53,6 +53,7 @@ import com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations.ZSetEntry
  * @see OrangeScoreContext
  * @see OrangeAddIfAbsentContext
  * @see IfAbsent
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/zset">Orange Redis ZSet Documentation</a>
  */
 public class OrangeScoreIfAbsentContext extends OrangeScoreContext implements OrangeAddIfAbsentContext{
 	

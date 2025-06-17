@@ -39,6 +39,7 @@ import com.langwuyue.orange.redis.timer.OrangeAutoRenewProperties;
  * @since 1.0.0
  * @see OrangeExpirationTimeAutoInitializer
  * @see OrangeAutoRenewProperties
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/multiple-locks">Orange Redis Multiple Locks Documentation</a>
  */
 public class OrangeDefaultExpirationTimeAutoInitializer implements OrangeExpirationTimeAutoInitializer {
 	

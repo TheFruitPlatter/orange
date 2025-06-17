@@ -51,6 +51,7 @@ import com.langwuyue.orange.redis.context.OrangeRedisContext;
  * @since 1.0.0
  * @see com.langwuyue.orange.redis.annotation.zset.MinLex
  * @see com.langwuyue.orange.redis.annotation.zset.MaxLex
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/zset">Orange Redis ZSet Documentation</a>
  */
 public class OrangeMaxLexMinLexContext extends OrangeRedisContext {
 	

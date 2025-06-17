@@ -31,6 +31,7 @@ import com.langwuyue.orange.redis.context.OrangeRedisContext.Key;
  * @since 1.0.0
  * @see Key
  * @see OrangeDefaultExpirationTimeAutoInitializer
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/multiple-locks">Orange Redis Multiple Locks Documentation</a>
  */
 public interface OrangeExpirationTimeAutoInitializer {
 	

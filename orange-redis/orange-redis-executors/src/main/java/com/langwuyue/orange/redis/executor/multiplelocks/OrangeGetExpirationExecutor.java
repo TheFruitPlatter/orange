@@ -66,6 +66,7 @@ import com.langwuyue.orange.redis.utils.OrangeReflectionUtils;
  * @see OrangeRedisGetAbstractExecutor
  * @see OrangeRedisHashOperations
  * @see OrangeMultipleLocksGetExpirationsContext
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/multiple-locks">Orange Redis Multiple Locks Documentation</a>
  */
 public class OrangeGetExpirationExecutor extends OrangeRedisGetAbstractExecutor {
 	

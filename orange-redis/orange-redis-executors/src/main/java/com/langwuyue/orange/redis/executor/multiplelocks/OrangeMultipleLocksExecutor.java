@@ -77,6 +77,7 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
  * @see OrangeMultipleLocksContext
  * @see MultipleLocks
  * @see AutoRenew
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/multiple-locks">Orange Redis Multiple Locks Documentation</a>
  */
 public class OrangeMultipleLocksExecutor extends OrangeRedisAbstractExecutor {
 	/**

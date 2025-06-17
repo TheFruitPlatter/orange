@@ -65,6 +65,7 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
  * @see OrangeMaxScoreMinScorePageNoCountContext
  * @see OrangeRedisZSetOperations#rangeByScoreWithScores(Object, ScoreRange, Pager, RedisValueTypeEnum, Type)
  * @see OrangeGetWithScoresAbstractExecutor
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/zset">Orange Redis ZSet Documentation</a>
  */
 public class OrangeGetByMaxScoreMinScorePageNoCountWithScoresExecutor extends OrangeGetWithScoresAbstractExecutor {
 	

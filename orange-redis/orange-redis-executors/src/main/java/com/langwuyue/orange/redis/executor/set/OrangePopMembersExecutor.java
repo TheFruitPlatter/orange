@@ -34,8 +34,32 @@ import com.langwuyue.orange.redis.operations.OrangeRedisSetOperations;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor implementation for popping (removing and returning) random members from a Redis Set.
+ * 
+ * <p>This executor implements the Redis SPOP command functionality, which atomically removes
+ * and returns one or more random members from a Redis Set. This operation is useful for:
+ * <ul>
+ *   <li>Implementing random selection with removal (e.g., lottery systems, random assignments)</li>
+ *   <li>Processing set elements in a non-deterministic order</li>
+ *   <li>Consuming items from a pool without replacement</li>
+ *   <li>Implementing work queues where any task can be processed next</li>
+ * </ul>
+ * 
+ * <p>The SPOP operation modifies the set by removing the selected members and returns
+ * these members to the caller. If the set is empty, the operation returns an empty collection.
+ * 
+ * <p>This executor supports specifying the number of members to pop via the {@link Count}
+ * annotation. If the requested count exceeds the number of members in the set, all remaining
+ * members will be popped.
+ * 
+ * <p>Time complexity: O(1) for a single member pop, O(N) for popping multiple members where
+ * N is the number of members to be popped.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see com.langwuyue.orange.redis.annotation.PopMembers
+ * @see com.langwuyue.orange.redis.annotation.Count
+ * @see <a href="https://redis.io/commands/spop">Redis SPOP Command Reference</a>
  */
 public class OrangePopMembersExecutor extends OrangeRedisGetAbstractExecutor {
 	

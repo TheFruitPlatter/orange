@@ -59,6 +59,7 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
  * @see OrangeScoreRangePagerContext
  * @see OrangeRedisZSetOperations
  * @see OrangeRedisZSetOperations.TypedTuple
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/zset">Orange Redis ZSet Documentation</a>
  */
 public class OrangeGetByScoreRangePagerWithScoresExecutor extends OrangeGetWithScoresAbstractExecutor {
 	

@@ -49,6 +49,7 @@ import com.langwuyue.orange.redis.mapping.OrangeRedisExecutorIdGenerator;
  * @author Liang.Zhong
  * @since 1.0.0
  * @see OrangeGetWithScoresAbstractExecutor
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/zset">Orange Redis ZSet Documentation</a>
  */
 public abstract class OrangeGetOneWithScoresAbstractExecutor extends OrangeGetWithScoresAbstractExecutor {
 	

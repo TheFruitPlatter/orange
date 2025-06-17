@@ -47,6 +47,7 @@ import com.langwuyue.orange.redis.context.OrangeRedisContext;
  * @since 1.0.0
  * @see MaxScore
  * @see MinScore
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/zset">Orange Redis ZSet Documentation</a>
  */
 public class OrangeMaxScoreMinScoreContext extends OrangeRedisContext {
 	

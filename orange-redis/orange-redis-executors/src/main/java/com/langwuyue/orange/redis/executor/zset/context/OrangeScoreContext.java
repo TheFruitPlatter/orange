@@ -49,6 +49,7 @@ import com.langwuyue.orange.redis.context.OrangeRedisValueContext;
  * @since 1.0.0
  * @see Score
  * @see OrangeRedisValueContext
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/zset">Orange Redis ZSet Documentation</a>
  */
 public class OrangeScoreContext extends OrangeRedisValueContext {
 	

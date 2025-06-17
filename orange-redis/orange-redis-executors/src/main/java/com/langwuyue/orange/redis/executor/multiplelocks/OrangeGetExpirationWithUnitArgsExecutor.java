@@ -53,6 +53,7 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
  * @see OrangeGetExpirationExecutor
  * @see TimeoutUnit
  * @see OrangeMultipleLocksGetExpirationsWithUnitArgsContext
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/multiple-locks">Orange Redis Multiple Locks Documentation</a>
  */
 public class OrangeGetExpirationWithUnitArgsExecutor extends OrangeGetExpirationExecutor {
 	

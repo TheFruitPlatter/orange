@@ -51,6 +51,7 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
  * @see MaxScore
  * @see MinScore
  * @see GetSize
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/zset">Orange Redis ZSet Documentation</a>
  */
 public class OrangeCountByMaxScoreMinScoreExecutor extends OrangeRedisAbstractExecutor {
 	
