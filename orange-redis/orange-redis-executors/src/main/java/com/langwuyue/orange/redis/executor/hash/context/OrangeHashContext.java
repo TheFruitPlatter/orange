@@ -25,13 +25,30 @@ import com.langwuyue.orange.redis.RedisValueTypeEnum;
 import com.langwuyue.orange.redis.context.OrangeRedisContext;
 
 /**
+ * Base context class for Redis hash operations, providing common context information needed for hash operations.
+ * 
+ * <p>Contains hash key type information used by Redis hash operation executors to handle different types of data.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeHashContext extends OrangeRedisContext {
 	
+	/**
+	 * Data type of the Redis hash key
+	 */
 	private RedisValueTypeEnum keyType;
 	
+	/**
+	 * Constructs a new Redis hash operation context instance
+	 *
+	 * @param operationOwner the class owning the operation
+	 * @param operationMethod the operation method
+	 * @param args method parameters
+	 * @param redisKey Redis key
+	 * @param valueType value type
+	 * @param keyType key type
+	 */
 	public OrangeHashContext(
 		Class<?> operationOwner, 
 		Method operationMethod, 
@@ -44,6 +61,19 @@ public class OrangeHashContext extends OrangeRedisContext {
 		this.keyType = keyType;
 	}
 	
+	/**
+	 * Creates a new Redis hash operation context instance
+	 *
+	 * @param contextClass the context class type
+	 * @param operationOwner the class owning the operation
+	 * @param operationMethod the operation method
+	 * @param args method parameters
+	 * @param redisKey Redis key
+	 * @param valueType value type
+	 * @param keyType key type
+	 * @return newly created context instance
+	 * @throws Exception if reflection creation fails
+	 */
 	public static OrangeHashContext newInstance(
 		Class<? extends OrangeRedisContext> contextClass,
 		Class<?> operationOwner, 
@@ -52,7 +82,7 @@ public class OrangeHashContext extends OrangeRedisContext {
 		Key redisKey,
 		RedisValueTypeEnum valueType,
 		RedisValueTypeEnum keyType
-	) throws Exception{
+	) throws Exception {
 		Constructor<? extends OrangeRedisContext> constructor = contextClass.getConstructor(
 				Class.class,
 				Method.class,
@@ -64,6 +94,11 @@ public class OrangeHashContext extends OrangeRedisContext {
 		return (OrangeHashContext) constructor.newInstance(operationOwner,operationMethod,args,redisKey,valueType,keyType);
 	}
 
+	/**
+	 * Gets the data type of the Redis hash key
+	 * 
+	 * @return the key's data type enum
+	 */
 	public RedisValueTypeEnum getKeyType() {
 		return keyType;
 	}

@@ -26,14 +26,36 @@ import com.langwuyue.orange.redis.annotation.OrangeRedisOperationArg;
 import com.langwuyue.orange.redis.context.builder.OrangeMethodAnnotationHandler;
 
 /**
+ * Context class for conditionally adding multiple members to a Redis hash only if the keys are absent.
+ * 
+ * <p>This class extends OrangeAddMembersContext to provide functionality for conditional batch operations
+ * that add multiple members to a Redis hash only if their keys don't already exist.
+ * 
+ * <p>It processes the IfAbsent annotation to determine whether the keys should be deleted
+ * after the operation is completed.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeAddMembersIfAbsentContext extends OrangeAddMembersContext {
 
-	@OrangeRedisOperationArg(binding = IfAbsent.class,valueHandler = OrangeMethodAnnotationHandler.class)
+	/**
+	 * The IfAbsent annotation instance that controls the conditional behavior.
+	 * This field is bound to the IfAbsent annotation and processed by OrangeMethodAnnotationHandler.
+	 */
+	@OrangeRedisOperationArg(binding = IfAbsent.class, valueHandler = OrangeMethodAnnotationHandler.class)
 	private IfAbsent ifAbsent;
 	
+	/**
+	 * Constructs a new OrangeAddMembersIfAbsentContext with the specified parameters.
+	 *
+	 * @param operationOwner    the class that owns the Redis operation
+	 * @param operationMethod   the method representing the Redis operation
+	 * @param args             the arguments passed to the operation method
+	 * @param redisKey         the Redis key for the operation
+	 * @param valueType        the type of value stored in Redis
+	 * @param keyType         the type of the Redis key
+	 */
 	public OrangeAddMembersIfAbsentContext(
 		Class<?> operationOwner, 
 		Method operationMethod, 
@@ -42,9 +64,15 @@ public class OrangeAddMembersIfAbsentContext extends OrangeAddMembersContext {
 		RedisValueTypeEnum valueType,
 		RedisValueTypeEnum keyType
 	) {
-		super(operationOwner, operationMethod, args, redisKey, valueType,keyType);
+		super(operationOwner, operationMethod, args, redisKey, valueType, keyType);
 	}
 	
+	/**
+	 * Determines whether the key should be deleted after the operation is completed.
+	 * This value is obtained from the IfAbsent annotation's deleteInTheEnd setting.
+	 *
+	 * @return true if the key should be deleted after the operation, false otherwise
+	 */
 	public boolean isDeleteInTheEnd() {
 		return ifAbsent.deleteInTheEnd();
 	}

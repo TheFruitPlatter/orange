@@ -41,7 +41,7 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
  * or any other use case where the increment value is always 1.
  *
  * <p>It only supports the {@link Increment} annotation and does not require
- * the {@link RedisValue} annotation since the increment value is fixed.
+ * the {@link com.langwuyue.orange.redis.annotation.RedisValue} annotation since the increment value is fixed.
  *
  * @author Liang.Zhong
  * @since 1.0.0

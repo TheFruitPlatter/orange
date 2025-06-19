@@ -45,7 +45,7 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
  * annotations to indicate that an element should be popped from the right side of the list 
  * with the specified timeout parameters.
  * 
- * <p>Unlike {@link OrangeRightPopMemberTimeoutExecutor} which uses a combined {@link Timeout} annotation,
+ * <p>Unlike {@link OrangeRightPopMemberTimeoutExecutor} which uses a combined {@link com.langwuyue.orange.redis.annotation.Timeout} annotation,
  * this executor uses separate annotations for timeout value and unit, allowing for more flexible
  * timeout specification, particularly when the timeout parameters need to be determined dynamically.
  *

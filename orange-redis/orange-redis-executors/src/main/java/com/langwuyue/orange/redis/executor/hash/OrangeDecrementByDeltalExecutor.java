@@ -33,18 +33,58 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 import com.langwuyue.orange.redis.utils.OrangeReflectionUtils;
 
 /**
+ * Executor for decrementing hash field values by a specified delta.
+ *
+ * <p>This executor handles both integer and floating-point decrement operations on hash fields.
+ * If the field does not exist, it will be created with the negated delta as its initial value.
+ * If the field exists but contains a non-numeric value, an error will occur.
+ *
+ * <p>This executor supports the following annotations:
+ * <ul>
+ *   <li>{@link Decrement} - Marks a method as a decrement operation</li>
+ *   <li>{@link HashKey} - Specifies the hash field key</li>
+ *   <li>{@link RedisValue} - Specifies the decrement delta value</li>
+ * </ul>
+ *
+ * <p>This executor handles both integer and floating-point decrements:
+ * <ul>
+ *   <li>For integer values, it performs a long decrement operation</li>
+ *   <li>For floating-point values, it performs a double decrement operation</li>
+ * </ul>
+ *
+ * <p>The executor returns a numeric value (Long or Double) representing the new value after the decrement operation.
+ * The return type depends on the type of the delta value:
+ * <ul>
+ *   <li>Long - if the delta is an integer type</li>
+ *   <li>Double - if the delta is a floating-point type</li>
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeDecrementByDeltalExecutor extends OrangeRedisAbstractExecutor {
 	
+	/** Redis hash operations used by this executor */
 	private OrangeRedisHashOperations operations;
 
+	/**
+	 * Constructs a new decrement executor with the required dependencies.
+	 *
+	 * @param operations the Redis hash operations component for performing decrement operations
+	 * @param idGenerator the executor ID generator for creating unique identifiers
+	 */
 	public OrangeDecrementByDeltalExecutor(OrangeRedisHashOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Executes the hash field decrement operation using the provided context.
+	 *
+	 * @param context the Redis context containing the hash key, field and delta value
+	 * @return Long or Double the new value after decrementing
+	 * @throws Exception if any error occurs during the operation
+	 */
 	@Override
 	public Object execute(OrangeRedisContext context) throws Exception {
 		OrangeHashKeyValueContext ctx = (OrangeHashKeyValueContext) context;
@@ -56,11 +96,29 @@ public class OrangeDecrementByDeltalExecutor extends OrangeRedisAbstractExecutor
 		}
 	}
 
+	/**
+	 * Returns the list of annotation classes supported by this executor.
+	 *
+	 * @return a list containing {@link Decrement}, {@link HashKey}, and {@link RedisValue} annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(Decrement.class,HashKey.class,RedisValue.class);
 	}
 
+	/**
+	 * Returns the context class used by this executor for handling decrement operations.
+	 *
+	 * <p>This executor uses {@link OrangeHashKeyValueContext} to store and manage:
+	 * <ul>
+	 *   <li>Redis key information</li>
+	 *   <li>Hash field key</li>
+	 *   <li>Delta value to decrement by</li>
+	 *   <li>Key type information</li>
+	 * </ul>
+	 *
+	 * @return the class object for {@link OrangeHashKeyValueContext}
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeHashKeyValueContext.class;

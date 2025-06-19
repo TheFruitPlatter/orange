@@ -58,7 +58,6 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
  * @see OrangeGetWithScoresAbstractExecutor
  * @see OrangeScoreRangeContext
  * @see OrangeRedisZSetOperations
- * @see OrangeRedisZSetOperations.TypedTuple
  * @see <a href="https://orange.langwuyue.com/redis/advanced/zset">Orange Redis ZSet Documentation</a>
  */
 public class OrangeReverseByScoreRangeWithScoresExecutor extends OrangeGetWithScoresAbstractExecutor {
@@ -85,7 +84,7 @@ public class OrangeReverseByScoreRangeWithScoresExecutor extends OrangeGetWithSc
 	 * 
 	 * <p>The method handles type conversion and generic type resolution to ensure the returned
 	 * collection matches the expected return type of the annotated method. The return type should be
-	 * a collection of {@link OrangeRedisZSetOperations.TypedTuple} objects or a compatible type that
+	 * a collection of {@link OrangeRedisZSetOperations.ZSetEntry} objects or a compatible type that
 	 * can hold both the member value and its score.
 	 * 
 	 * <p>The score range defines the minimum and maximum scores (inclusive or exclusive) for member selection.

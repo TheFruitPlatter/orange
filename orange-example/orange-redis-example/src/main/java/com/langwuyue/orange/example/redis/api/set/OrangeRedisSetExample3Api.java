@@ -68,15 +68,6 @@ import com.langwuyue.orange.redis.annotation.zset.PageNo;
  * </ul>
  * 
  * 
- * <p>Example usage:
- * <pre>{@code
- * // Add single member
- * api.add("member1");
- * 
- * // Check membership
- * boolean exists = api.isMember("member1");
- * }</pre>
- * 
  * 
  * @author Liang.Zhong
  * @since 1.0.0
@@ -262,7 +253,6 @@ public interface OrangeRedisSetExample3Api {
 	 *
 	 * @param var the variable part of the key name
 	 * @return Set containing all members, empty set if key doesn't exist
-	 * @throws RedisException if Redis operation fails
 	 */
 	@GetMembers
 	Set<String> getMembers(@KeyVariable(name = "var") String var);
@@ -274,7 +264,6 @@ public interface OrangeRedisSetExample3Api {
 	 * @param var the variable part of the key name
 	 * @param member the value to check
 	 * @return true if value is a member, false otherwise
-	 * @throws RedisException if Redis operation fails
 	 */
 	@IsMembers
 	Boolean isMember(@KeyVariable(name = "var") String var,@RedisValue String member);
@@ -286,7 +275,6 @@ public interface OrangeRedisSetExample3Api {
 	 * @param var the variable part of the key name
 	 * @param members set of values to check
 	 * @return map where key is the member and value indicates membership status (true=is member)
-	 * @throws RedisException if Redis operation fails
 	 */
 	@IsMembers
 	Map<String, Boolean> isMembers(@KeyVariable(name = "var") String var,@Multiple Set<String> members);
@@ -297,7 +285,6 @@ public interface OrangeRedisSetExample3Api {
 	 *
 	 * @param var the variable part of the key name
 	 * @return the removed member, or null if Set is empty
-	 * @throws RedisException if Redis operation fails
 	 */
 	@PopMembers
 	String pop(@KeyVariable(name = "var") String var);
@@ -309,8 +296,6 @@ public interface OrangeRedisSetExample3Api {
 	 * @param var the variable part of the key name
 	 * @param count the maximum number of members to remove and return
 	 * @return set of removed members (size may be less than count if Set is smaller), empty set if Set is empty
-	 * @throws RedisException if Redis operation fails
-	 * @throws IllegalArgumentException if count is negative
 	 */
 	@PopMembers
 	Set<String> pop(@KeyVariable(name = "var") String var,@Count Long count);
@@ -321,7 +306,6 @@ public interface OrangeRedisSetExample3Api {
 	 *
 	 * @param var the variable part of the key name
 	 * @return the cardinality (number of elements) of the Set, 0 if key does not exist
-	 * @throws RedisException if Redis operation fails
 	 */
 	@GetSize
 	Long getSize(@KeyVariable(name = "var") String var);
@@ -333,7 +317,6 @@ public interface OrangeRedisSetExample3Api {
 	 * @param var the variable part of the key name
 	 * @param value the member to remove
 	 * @return true if the member was removed, false if the member was not present
-	 * @throws RedisException if Redis operation fails
 	 */
 	@RemoveMembers
 	Boolean remove(@KeyVariable(name = "var") String var,@RedisValue String value);
@@ -349,7 +332,6 @@ public interface OrangeRedisSetExample3Api {
 	 * @param values set of members to remove
 	 * @return map where key is the member and value indicates removal status
 	 *         (true=member was removed, false=member was not present)
-	 * @throws RedisException if Redis operation fails
 	 */
 	@RemoveMembers
 	@ContinueOnFailure(true)
@@ -368,8 +350,6 @@ public interface OrangeRedisSetExample3Api {
 	 * @param count the approximate number of members to return per call
 	 * @param preCursor the cursor from previous scan (0 for initial scan)
 	 * @return the next cursor to use for subsequent scans (0 when scan is complete)
-	 * @throws RedisException if Redis operation fails
-	 * @throws IllegalArgumentException if count is negative
 	 */
 	@GetMembers
 	String scan(@KeyVariable(name = "var") String var, @ScanPattern String pattern,@Count Long count,@PageNo Long preCursor);

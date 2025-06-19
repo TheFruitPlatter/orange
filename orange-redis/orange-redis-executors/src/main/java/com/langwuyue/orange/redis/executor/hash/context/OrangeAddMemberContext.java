@@ -27,14 +27,34 @@ import com.langwuyue.orange.redis.annotation.Member;
 import com.langwuyue.orange.redis.annotation.OrangeRedisOperationArg;
 
 /**
+ * Context class for adding a single member to a Redis hash.
+ * 
+ * <p>This class extends OrangeMemberContext and provides functionality
+ * for handling operations that add a single member to a Redis hash.
+ * It processes the member object annotated with {@link Member} and converts it to a map.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeAddMemberContext extends OrangeMemberContext {
 	
+	/**
+	 * The member object to be added to the Redis hash.
+	 * This field is bound to arguments annotated with {@link Member}.
+	 */
 	@OrangeRedisOperationArg(binding = Member.class)
 	private Object member;
 
+	/**
+	 * Constructs a new OrangeAddMemberContext with the specified parameters.
+	 *
+	 * @param operationOwner    the class that owns the Redis operation
+	 * @param operationMethod   the method representing the Redis operation
+	 * @param args             the arguments passed to the operation method
+	 * @param redisKey         the Redis key for the operation
+	 * @param valueType        the type of value stored in Redis
+	 * @param keyType         the type of the Redis key
+	 */
 	public OrangeAddMemberContext(
 		Class<?> operationOwner, 
 		Method operationMethod, 
@@ -43,11 +63,17 @@ public class OrangeAddMemberContext extends OrangeMemberContext {
 		RedisValueTypeEnum valueType,
 		RedisValueTypeEnum keyType
 	) {
-		super(operationOwner, operationMethod, args, redisKey,valueType,keyType);
+		super(operationOwner, operationMethod, args, redisKey, valueType, keyType);
 	}
 
+	/**
+	 * Converts and retrieves the member object as a Map.
+	 *
+	 * @return a Map representation of the member object
+	 * @throws OrangeRedisException if the member object is null after conversion
+	 */
 	public Map getMember() {
-		Map map = toMap(member,Member.class);
+		Map map = toMap(member, Member.class);
 		if(map == null) {
 			throw new OrangeRedisException(String.format("The argument annotated with @%s cannot be null", Member.class));
 		}

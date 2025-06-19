@@ -71,10 +71,22 @@ import com.langwuyue.orange.redis.operations.OrangeRedisHashOperations;
  */
 public class OrangeRandomMembersExecutor extends OrangeRandomMemberExecutor {
 	
+	/**
+	 * Constructs a new OrangeRandomMembersExecutor instance.
+	 * 
+	 * @param operations the Redis hash operations instance
+	 * @param idGenerator the executor ID generator
+	 */
 	public OrangeRandomMembersExecutor(OrangeRedisHashOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(operations,idGenerator);
 	}
 
+	/**
+	 * Gets the list of supported annotation classes for this executor.
+	 * Adds {@link Count} annotation to the parent class's supported annotations.
+	 *
+	 * @return list of supported annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		List classes = super.getSupportedAnnotationClasses();
@@ -82,11 +94,32 @@ public class OrangeRandomMembersExecutor extends OrangeRandomMemberExecutor {
 		return classes;
 	}
 
+	/**
+	 * Gets the context class used by this executor.
+	 * This executor uses {@link OrangeCountHashContext} as its context class.
+	 *
+	 * @return the context class
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeCountHashContext.class;
 	}
 	
+	/**
+	 * Executes the random members retrieval operation.
+	 * Randomly selects multiple members from the hash based on the count parameter.
+	 *
+	 * <p>Operation details:
+	 * <ul>
+	 *   <li>Makes multiple calls to parent class's execute() method (one per requested member)</li>
+	 *   <li>Handles both collection/array and single value return types</li>
+	 *   <li>Returns all results combined in a single list</li>
+	 * </ul>
+	 *
+	 * @param context the Redis operation context containing count parameter
+	 * @return list containing all randomly selected members
+	 * @throws Exception if there's an error during Redis operation or type conversion
+	 */
 	@Override
 	public Object execute(OrangeRedisContext context) throws Exception {
 		OrangeCountHashContext ctx = (OrangeCountHashContext) context;

@@ -26,14 +26,31 @@ import com.langwuyue.orange.redis.annotation.OrangeRedisOperationArg;
 import com.langwuyue.orange.redis.annotation.hash.HashKey;
 
 /**
+ * Redis hash key operation context, used to handle operations with @HashKey annotation.
+ * 
+ * <p>Extends {@link OrangeHashContext}, adding binding and processing for hash key values.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeHashKeyContext extends OrangeHashContext {
 	
+	/**
+	 * Hash key value bound with @HashKey annotation
+	 */
 	@OrangeRedisOperationArg(binding = HashKey.class)
 	private Object hashKey;
 	
+	/**
+	 * Constructs a new Redis hash key operation context instance
+	 *
+	 * @param operationOwner the class that owns the operation
+	 * @param operationMethod the operation method
+	 * @param args the method arguments
+	 * @param redisKey the Redis key
+	 * @param valueType the value type
+	 * @param keyType the key type
+	 */
 	public OrangeHashKeyContext(
 		Class<?> operationOwner, 
 		Method operationMethod, 
@@ -45,6 +62,11 @@ public class OrangeHashKeyContext extends OrangeHashContext {
 		super(operationOwner, operationMethod, args, redisKey, valueType,keyType);
 	}
 	
+	/**
+	 * Gets the bound hash key value
+	 * 
+	 * @return the bound hash key value object
+	 */
 	public Object getHashKey() {
 		if(hashKey == null) {
 			throw new OrangeRedisException(String.format("The argument annotated with @%s cannot be null", HashKey.class));

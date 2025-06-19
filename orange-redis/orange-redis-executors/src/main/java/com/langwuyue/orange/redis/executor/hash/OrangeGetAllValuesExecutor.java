@@ -32,25 +32,64 @@ import com.langwuyue.orange.redis.operations.OrangeRedisHashOperations;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor for retrieving all values from a Redis hash.
+ * 
+ * <p>This executor extends {@link OrangeGetValuesExecutor} and provides functionality
+ * to retrieve all values from a Redis hash without specifying field names.
+ * 
+ * <p>The executor supports the {@link GetHashValues} annotation and returns all values
+ * from the specified hash key. The return type can be either a Collection of values
+ * or a Map of field names to values.
+ * 
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeGetAllValuesExecutor extends OrangeGetValuesExecutor {
 	
+	/**
+	 * Constructs a new OrangeGetAllValuesExecutor with the specified Redis hash operations and ID generator.
+	 *
+	 * @param operations the Redis hash operations implementation to use for executing commands
+	 * @param idGenerator the generator for creating executor IDs
+	 */
 	public OrangeGetAllValuesExecutor(OrangeRedisHashOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(operations,idGenerator);
 	}
 
+	/**
+	 * Returns the list of annotation classes supported by this executor.
+	 * 
+	 * @return a list containing the {@link GetHashValues} annotation class
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(GetHashValues.class);
 	}
 
+	/**
+	 * Returns the context class used by this executor.
+	 * 
+	 * @return the {@link OrangeHashContext} class
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeHashContext.class;
 	}
 
+	/**
+	 * Executes the get operation to retrieve all values from the Redis hash.
+	 * 
+	 * <p>This method retrieves all values from the Redis hash specified in the context.
+	 * Unlike {@link OrangeGetValuesExecutor}, this method doesn't require specific field names
+	 * and returns all values in the hash.
+	 *
+	 * @param context the context containing the hash key and other execution parameters
+	 * @param valueField the field representing the method being executed
+	 * @param returnArgumentType the generic type of the return value
+	 * @return a collection of all values from the hash
+	 * @throws Exception if an error occurs during the operation
+	 */
 	@Override
 	protected Collection doGet(OrangeRedisContext context, Field valueField, Type returnArgumentType) throws Exception {
 		OrangeHashContext ctx = (OrangeHashContext) context;

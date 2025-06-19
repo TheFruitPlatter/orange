@@ -35,28 +35,61 @@ import com.langwuyue.orange.redis.operations.OrangeRedisHashOperations;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor implementation for retrieving a random key from a Redis hash.
+ * This executor supports the {@link GetHashKeys} and {@link Random} annotations
+ * to randomly select a single key from a Redis hash structure.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeRandomKeyExecutor extends OrangeRedisGetOneAbstractExecutor {
 	
+	/**
+	 * Redis hash operations instance used for executing hash-related commands.
+	 */
 	private OrangeRedisHashOperations operations;
 
+	/**
+	 * Constructs a new OrangeRandomKeyExecutor with the specified operations and ID generator.
+	 *
+	 * @param operations the Redis hash operations to use for executing commands
+	 * @param idGenerator the generator used for creating executor IDs
+	 */
 	public OrangeRandomKeyExecutor(OrangeRedisHashOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Returns the list of annotation classes supported by this executor.
+	 * This executor supports {@link GetHashKeys} and {@link Random} annotations
+	 * in addition to the annotations supported by the parent class.
+	 *
+	 * @return a list of supported annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(GetHashKeys.class,Random.class);
 	}
 
+	/**
+	 * Returns the context class used by this executor.
+	 * This executor uses {@link OrangeHashContext} to handle Redis hash operations.
+	 *
+	 * @return the class of {@link OrangeHashContext}
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeHashContext.class;
 	}
 	
+	/**
+	 * Returns the field annotated with {@link HashKey} from the given type.
+	 * This method is used to identify the field that will store the retrieved random key.
+	 *
+	 * @param type the type to search for the value field
+	 * @return the field annotated with {@link HashKey}, or null if not found
+	 */
 	@Override
 	protected Field getValueField(Type type) {
 		Class<?> returnType = getRawType(type);
@@ -69,6 +102,16 @@ public class OrangeRandomKeyExecutor extends OrangeRedisGetOneAbstractExecutor {
 		return null;
 	}
 
+	/**
+	 * Executes the random key retrieval operation on the Redis hash.
+	 * This method retrieves a single random key from the hash specified in the context.
+	 *
+	 * @param context the Redis operation context containing the key information
+	 * @param valueField the field to store the retrieved key, if annotated with {@link HashKey}
+	 * @param returnArgumentType the expected return type
+	 * @return a Collection containing the randomly selected key
+	 * @throws Exception if an error occurs during the Redis operation
+	 */
 	@Override
 	protected Collection doGet(OrangeRedisContext context, Field valueField, Type returnArgumentType) throws Exception {
 		OrangeHashContext ctx = (OrangeHashContext) context;

@@ -31,11 +31,27 @@ import com.langwuyue.orange.redis.annotation.hash.HashKey;
 import com.langwuyue.orange.redis.utils.OrangeReflectionUtils;
 
 /**
+ * Context class for Redis hash member operations.
+ * 
+ * <p>This class extends OrangeHashContext to provide functionality for operations
+ * that involve hash members (key-value pairs within a Redis hash).
+ * It includes utilities for converting objects to maps based on annotations.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeMemberContext extends OrangeHashContext {
 	
+	/**
+	 * Constructs a new context for Redis hash member operations.
+	 *
+	 * @param operationOwner the class that owns the operation
+	 * @param operationMethod the method being executed
+	 * @param args the arguments passed to the method
+	 * @param redisKey the Redis key associated with this operation
+	 * @param valueType the type of the hash values
+	 * @param keyType the type of the hash keys
+	 */
 	public OrangeMemberContext(
 		Class<?> operationOwner, 
 		Method operationMethod, 
@@ -47,7 +63,23 @@ public class OrangeMemberContext extends OrangeHashContext {
 		super(operationOwner, operationMethod, args, redisKey,valueType,keyType);
 	}
 
-	protected Map toMap(Object member,Class<? extends Annotation> annotationClass) {
+	/**
+	 * Converts a member object to a Map based on HashKey and RedisValue annotations.
+	 * 
+	 * <p>This method handles the following cases:
+	 * <ul>
+	 *   <li>If the member is null, returns an empty map</li>
+	 *   <li>If the member is already a Map, returns it directly</li>
+	 *   <li>Otherwise, creates a map using fields annotated with {@code @HashKey} and {@code @RedisValue}</li>
+	 * </ul>
+	 *
+	 * @param member the object to convert to a map
+	 * @param annotationClass the annotation class used for error messages
+	 * @return a Map containing the key-value pair from the member object
+	 * @throws OrangeRedisException if the member object doesn't have properly annotated fields
+	 *         or if the {@code @RedisValue} annotated field is null
+	 */
+	protected Map toMap(Object member, Class<? extends Annotation> annotationClass) {
 		Map map = new LinkedHashMap<>();
 		if(member == null) {
 			return map;

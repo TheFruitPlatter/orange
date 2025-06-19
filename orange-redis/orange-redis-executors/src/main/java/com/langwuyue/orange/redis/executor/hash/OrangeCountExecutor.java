@@ -60,11 +60,27 @@ public class OrangeCountExecutor extends OrangeRedisAbstractExecutor {
 	
 	private OrangeRedisHashOperations operations;
 
+	/**
+	 * Constructs a new OrangeCountExecutor with the required dependencies.
+	 *
+	 * @param operations the Redis hash operations component for performing size operations
+	 * @param idGenerator the executor ID generator for creating unique identifiers
+	 */
 	public OrangeCountExecutor(OrangeRedisHashOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Executes the hash size operation using the provided Redis context.
+	 *
+	 * <p>This method retrieves the number of fields in the specified Redis hash.
+	 * The operation is performed using Redis's HLEN command.
+	 *
+	 * @param context the Redis context containing the hash key information
+	 * @return Long the number of fields in the hash
+	 * @throws Exception if any error occurs during the operation
+	 */
 	@Override
 	public Object execute(OrangeRedisContext context) throws Exception {
 		return this.operations.size(context.getRedisKey().getValue());
@@ -75,6 +91,17 @@ public class OrangeCountExecutor extends OrangeRedisAbstractExecutor {
 		return OrangeCollectionUtils.asList(GetSize.class);
 	}
 	
+	/**
+	 * Returns the context class used by this executor for handling hash size operations.
+	 *
+	 * <p>This executor uses {@link OrangeHashContext} to store and manage:
+	 * <ul>
+	 *   <li>Redis key information</li>
+	 *   <li>Key type information</li>
+	 * </ul>
+	 *
+	 * @return the class object for {@link OrangeHashContext}
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeHashContext.class;

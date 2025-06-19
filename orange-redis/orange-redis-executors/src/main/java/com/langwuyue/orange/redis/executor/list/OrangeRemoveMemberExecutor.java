@@ -43,8 +43,8 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
  *   <li>The value to be removed</li>
  *   <li>The count of occurrences to remove:
  *     <ul>
- *       <li>count > 0: Remove elements from head to tail</li>
- *       <li>count < 0: Remove elements from tail to head</li>
+ *       <li>count &gt; 0: Remove elements from head to tail</li>
+ *       <li>count &lt; 0: Remove elements from tail to head</li>
  *       <li>count = 0: Remove all elements equal to value</li>
  *     </ul>
  *   </li>

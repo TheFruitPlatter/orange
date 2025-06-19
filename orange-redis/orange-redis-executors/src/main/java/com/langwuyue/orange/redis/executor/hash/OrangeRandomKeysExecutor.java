@@ -33,18 +33,36 @@ import com.langwuyue.orange.redis.mapping.OrangeRedisExecutorIdGenerator;
 import com.langwuyue.orange.redis.operations.OrangeRedisHashOperations;
 
 /**
+ * Executor for randomly retrieving keys from Redis hash.
+ * Supports {@link Random} and {@link Count} annotations to control the random selection behavior.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeRandomKeysExecutor extends OrangeGetKeysExecutor {
 	
+	/**
+	 * Redis hash operations instance for executing hash commands
+	 */
 	private OrangeRedisHashOperations operations;
 
+	/**
+	 * Constructs a new OrangeRandomKeysExecutor instance.
+	 * 
+	 * @param operations the Redis hash operations instance
+	 * @param idGenerator the executor ID generator
+	 */
 	public OrangeRandomKeysExecutor(OrangeRedisHashOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(operations,idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Gets the list of supported annotation classes for this executor.
+	 * Adds {@link Random} and {@link Count} annotations to the parent class's supported annotations.
+	 *
+	 * @return list of supported annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		List classes = super.getSupportedAnnotationClasses();
@@ -53,11 +71,27 @@ public class OrangeRandomKeysExecutor extends OrangeGetKeysExecutor {
 		return classes;
 	}
 
+	/**
+	 * Gets the context class used by this executor.
+	 * This executor uses {@link OrangeCountHashContext} as its context class.
+	 *
+	 * @return the context class
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeCountHashContext.class;
 	}
 	
+	/**
+	 * Executes the random keys retrieval operation.
+	 * Randomly selects keys from the hash based on the context parameters.
+	 *
+	 * @param context the Redis operation context containing parameters
+	 * @param valueField the field being processed (may be null)
+	 * @param returnArgumentType the expected return type
+	 * @return collection of randomly selected keys
+	 * @throws Exception if there's an error during Redis operation or reflection
+	 */
 	@Override
 	protected Collection doGet(OrangeRedisContext context, Field valueField, Type returnArgumentType) throws Exception {
 		OrangeCountHashContext ctx = (OrangeCountHashContext) context;

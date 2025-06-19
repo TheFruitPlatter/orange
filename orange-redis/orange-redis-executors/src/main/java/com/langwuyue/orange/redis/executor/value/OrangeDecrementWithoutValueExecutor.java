@@ -70,9 +70,6 @@ public class OrangeDecrementWithoutValueExecutor extends OrangeRedisAbstractExec
 	 * <p>This executor only supports the {@link Decrement} annotation, which marks
 	 * a method for simple decrement operations that decrease a value by 1.
 	 * 
-	 * <p>Unlike {@link OrangeDecrementExecutor}, this executor does not support
-	 * the {@link RedisValue} annotation.
-	 *
 	 * @return A list containing only the Decrement annotation class
 	 */
 	@Override

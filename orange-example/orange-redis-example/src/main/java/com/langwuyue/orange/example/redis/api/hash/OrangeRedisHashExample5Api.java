@@ -52,23 +52,6 @@ import com.langwuyue.orange.redis.template.hash.DoubleOperationsTemplate;
  *   <li>Default expiration: 1 hour</li>
  * </ul>
  * 
- * <p>Example usage:
- * <pre>{@code
- * // Initialize metrics
- * api.put("temperature", 23.5);
- * api.put("humidity", 65.2);
- * 
- * // Atomic increments
- * api.increment("temperature", 0.5); // Increase by 0.5
- * api.increment("humidity", -2.1);    // Decrease by 2.1
- * 
- * // Bulk operations
- * Map<String, Double> metrics = api.getAllMembers();
- * }</pre>
- * 
- * <p>Note: When precision is critical, consider using {@link BigDecimal} via
- * {@link OrangeRedisHashExample1Api} JSON operations instead of native doubles.
- * 
  * @author Liang.Zhong
  * @since 1.0.0
  * @see DoubleOperationsTemplate Base template providing floating-point hash operations

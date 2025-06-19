@@ -72,13 +72,29 @@ import com.langwuyue.orange.redis.utils.OrangeReflectionUtils;
  */
 public class OrangeRandomMemberExecutor extends OrangeGetMembersExecutor {
 	
+	/**
+	 * The Redis hash operations instance used to execute hash commands.
+	 */
 	private OrangeRedisHashOperations operations;
 
+	/**
+	 * Constructs a new OrangeRandomMemberExecutor with the specified operations and ID generator.
+	 *
+	 * @param operations the Redis hash operations to use for executing commands
+	 * @param idGenerator the generator used for creating executor IDs
+	 */
 	public OrangeRandomMemberExecutor(OrangeRedisHashOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(operations,idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Returns the list of annotation classes supported by this executor.
+	 * This executor supports the {@link Random} annotation in addition to
+	 * the annotations supported by the parent class.
+	 *
+	 * @return a list of supported annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		List classes = super.getSupportedAnnotationClasses();
@@ -86,17 +102,45 @@ public class OrangeRandomMemberExecutor extends OrangeGetMembersExecutor {
 		return classes;
 	}
 
+	/**
+	 * Returns the context class used by this executor.
+	 * This executor uses {@link OrangeHashContext} to handle Redis hash operations.
+	 *
+	 * @return the class of {@link OrangeHashContext}
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeHashContext.class;
 	}
 
+	/**
+	 * Executes the random member retrieval operation on the Redis hash.
+	 * This method retrieves a single random field-value pair from the hash specified in the context.
+	 *
+	 * @param context the Redis operation context containing the key information
+	 * @param keyType the expected type of the hash key
+	 * @param valueType the expected type of the hash value
+	 * @return a Map containing a single randomly selected field-value pair
+	 * @throws Exception if an error occurs during the Redis operation
+	 */
 	@Override
 	protected Map doGet(OrangeRedisContext context, Type keyType, Type valueType) throws Exception {
 		OrangeHashContext ctx = (OrangeHashContext) context;
 		return this.operations.randomEntries(ctx.getRedisKey().getValue(), 1L, ctx.getKeyType(), ctx.getValueType(), keyType, valueType);
 	}
 
+	/**
+	 * Converts the raw Redis result into the appropriate return value for the method.
+	 * Handles both collection/array return types and single object return types.
+	 *
+	 * @param resultMap the raw result map from Redis
+	 * @param keyField the field annotated with {@link Key} in the return type
+	 * @param valueField the field annotated with {@link Value} in the return type
+	 * @param returnArgumentType the generic return type of the method
+	 * @param returnClass the actual return class of the method
+	 * @return the converted return value
+	 * @throws Exception if conversion fails
+	 */
 	@Override
 	protected Object toReturnValue(
 		Map resultMap, 
@@ -118,6 +162,14 @@ public class OrangeRandomMemberExecutor extends OrangeGetMembersExecutor {
 		return null;
 	}
 
+	/**
+	 * Determines the appropriate return argument type based on the context.
+	 * For non-collection/array return types, returns the method's generic return type directly.
+	 * For collection/array return types, delegates to parent class implementation.
+	 *
+	 * @param context the Redis operation context
+	 * @return the appropriate return argument type
+	 */
 	@Override
 	protected Type getReturnArgumentType(OrangeRedisContext context) {
 		Class returnClass = context.getOperationMethod().getReturnType();
@@ -127,6 +179,15 @@ public class OrangeRandomMemberExecutor extends OrangeGetMembersExecutor {
 		return context.getOperationMethod().getGenericReturnType();
 	}
 
+	/**
+	 * Creates an appropriate collection or array instance for the return value.
+	 * For non-collection/array return types, creates a single-element ArrayList as a temporary container.
+	 * For collection/array return types, delegates to parent class implementation.
+	 *
+	 * @param returnType the method's return type
+	 * @param size the expected size of the collection/array
+	 * @return a new collection or array instance
+	 */
 	@Override
 	protected Object getArrayOrCollectionInstance(Class<?> returnType, int size) {
 		if(Collection.class.isAssignableFrom(returnType) || returnType.isArray()) {

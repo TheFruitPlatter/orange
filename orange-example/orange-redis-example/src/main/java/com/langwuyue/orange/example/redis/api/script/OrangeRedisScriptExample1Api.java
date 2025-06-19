@@ -46,20 +46,6 @@ public interface OrangeRedisScriptExample1Api {
 	
 	/**
 	 * Performs an atomic Compare-And-Swap (CAS) operation with simplified parameters.
-	 * 
-	 * <p>The operation will:
-	 * <ol>
-	 *   <li>Get current value for the key (arg1)</li>
-	 *   <li>Compare with expected value (arg2)</li>
-	 *   <li>If matches (or both are nil):</li>
-	 *   <ul>
-	 *     <li>Delete key if new value is '[[NIL]]'</li>
-	 *     <li>Set new value otherwise</li>
-	 *     <li>Return '1' indicating success</li>
-	 *   </ul>
-	 *   <li>Else return '0' indicating failure</li>
-	 * </ol>
-	 * 
 	 *
 	 * <p>Special values:
 	 * <ul>

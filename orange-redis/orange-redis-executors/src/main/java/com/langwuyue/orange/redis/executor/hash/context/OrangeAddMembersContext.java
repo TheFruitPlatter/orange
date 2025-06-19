@@ -36,17 +36,48 @@ import com.langwuyue.orange.redis.context.builder.OrangeMethodAnnotationHandler;
 import com.langwuyue.orange.redis.context.builder.OrangeOperationArgMultipleHandler;
 
 /**
+ * Context class for adding multiple members to a Redis hash.
+ * 
+ * <p>This class extends OrangeMemberContext and implements OrangeRedisIterableContext
+ * to provide functionality for batch operations that add multiple members to a Redis hash.
+ * It supports different input types including Collections, Arrays, and Maps.
+ * 
+ * <p>The class processes multiple values annotated with {@link Multiple} and provides
+ * iteration capabilities over these values. It also supports continuous operation on
+ * failure through the {@link ContinueOnFailure} annotation.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeAddMembersContext extends OrangeMemberContext implements OrangeRedisIterableContext {
 	
+	/**
+	 * The multiple values to be added to the Redis hash.
+	 * This field can hold a Collection, Array, or Map of values and is processed by OrangeOperationArgMultipleHandler.
+	 * It is bound to arguments annotated with {@link Multiple}.
+	 */
 	@OrangeRedisOperationArg(binding = Multiple.class, valueHandler = OrangeOperationArgMultipleHandler.class)
 	private Object multipleValue;
 	
+	/**
+	 * Configuration for handling failures during batch operations.
+	 * When true, the operation continues even if some members fail to be added.
+	 * When false, the operation stops at the first failure.
+	 * This field is bound to the {@link ContinueOnFailure} annotation.
+	 */
 	@OrangeRedisOperationArg(binding = ContinueOnFailure.class, valueHandler = OrangeMethodAnnotationHandler.class)
 	private ContinueOnFailure continueOnFailure;
 	
+	/**
+	 * Constructs a new OrangeAddMembersContext with the specified parameters.
+	 *
+	 * @param operationOwner    the class that owns the Redis operation
+	 * @param operationMethod   the method representing the Redis operation
+	 * @param args             the arguments passed to the operation method
+	 * @param redisKey         the Redis key for the operation
+	 * @param valueType        the type of value stored in Redis
+	 * @param keyType         the type of the Redis key
+	 */
 	public OrangeAddMembersContext(
 		Class<?> operationOwner, 
 		Method operationMethod, 
@@ -55,9 +86,17 @@ public class OrangeAddMembersContext extends OrangeMemberContext implements Oran
 		RedisValueTypeEnum valueType,
 		RedisValueTypeEnum keyType
 	) {
-		super(operationOwner, operationMethod, args, redisKey, valueType,keyType);
+		super(operationOwner, operationMethod, args, redisKey, valueType, keyType);
 	}
 	
+	/**
+	 * Internal method to process and convert multiple values into a Map.
+	 * Supports Collection, Array, and Map input types.
+	 *
+	 * @param consumer optional BiConsumer to process each member as it's converted
+	 * @return Map containing all processed members
+	 * @throws OrangeRedisException if the input type is not supported or if there are null keys in a Map
+	 */
 	private Map getMembers(BiConsumer consumer){
 		Map members = new LinkedHashMap();
 		if(multipleValue instanceof Collection) {
@@ -114,20 +153,43 @@ public class OrangeAddMembersContext extends OrangeMemberContext implements Oran
 		
 	}
 	
+	/**
+	 * Gets all members to be added as a Map.
+	 * This is a convenience method that calls getMembers(null).
+	 *
+	 * @return a Map containing all members to be added
+	 */
 	public Map getMembers(){
 		return getMembers(null);
 	}
 
+	/**
+	 * Applies the given BiConsumer to each member in the multiple values.
+	 * This method processes each member and passes it to the consumer along with its original value.
+	 *
+	 * @param t the BiConsumer to apply to each member
+	 */
 	@Override
 	public void forEach(BiConsumer t) {
 		getMembers(t);
 	}
 
+	/**
+	 * Converts all members to an array of Map.Entry objects.
+	 *
+	 * @return an array containing all member entries
+	 */
 	@Override
 	public Object[] toArray() {
 		return getMembers().entrySet().toArray();
 	}
 
+	/**
+	 * Determines whether the operation should continue when a failure occurs.
+	 * This method returns the value from the ContinueOnFailure annotation.
+	 *
+	 * @return true if the operation should continue on failure, false if it should stop
+	 */
 	@Override
 	public boolean continueOnFailure() {
 		return continueOnFailure.value();

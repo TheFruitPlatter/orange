@@ -37,8 +37,8 @@ import com.langwuyue.orange.redis.utils.OrangeReflectionUtils;
  * 
  * <p>The count parameter determines how many occurrences of the value should be removed:
  * <ul>
- *   <li>count > 0: Remove elements equal to value moving from head to tail, up to count occurrences</li>
- *   <li>count < 0: Remove elements equal to value moving from tail to head, up to abs(count) occurrences</li>
+ *   <li>count &gt; 0: Remove elements equal to value moving from head to tail, up to count occurrences</li>
+ *   <li>count &lt; 0: Remove elements equal to value moving from tail to head, up to abs(count) occurrences</li>
  *   <li>count = 0: Remove all elements equal to value</li>
  * </ul>
  * 
@@ -104,8 +104,8 @@ public class OrangeRemoveContext extends OrangeRedisContext {
 	 * <p>The count value determines both the number of elements to remove and
 	 * the direction of removal:
 	 * <ul>
-	 *   <li>count > 0: Remove up to count occurrences from head to tail</li>
-	 *   <li>count < 0: Remove up to |count| occurrences from tail to head</li>
+	 *   <li>count &gt; 0: Remove up to count occurrences from head to tail</li>
+	 *   <li>count &lt; 0: Remove up to |count| occurrences from tail to head</li>
 	 *   <li>count = 0: Remove all occurrences</li>
 	 * </ul>
 	 *

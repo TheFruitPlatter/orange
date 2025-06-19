@@ -35,7 +35,8 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
  * 
  * <p>This executor handles Redis ZSet operations that count members based on a score range specified
  * through a single {@link ScoreRange} annotation. It provides a more concise alternative to using 
- * separate {@link MaxScore} and {@link MinScore} annotations when counting members within a score range.
+ * separate {@link com.langwuyue.orange.redis.annotation.zset.MaxScore} and {@link com.langwuyue.orange.redis.annotation.zset.MinScore} 
+ * annotations when counting members within a score range.
  * 
  * <p>The executor uses {@link OrangeRedisZSetOperations#countByScore} to perform the actual Redis operation.
  * It counts all members whose scores are within the specified range without retrieving the members themselves,

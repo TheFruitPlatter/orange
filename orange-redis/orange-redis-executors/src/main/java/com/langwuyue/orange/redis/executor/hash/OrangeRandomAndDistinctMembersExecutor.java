@@ -76,13 +76,29 @@ import com.langwuyue.orange.redis.operations.OrangeRedisHashOperations;
  */
 public class OrangeRandomAndDistinctMembersExecutor extends OrangeGetMembersExecutor {
 	
+	/**
+	 * Redis hash operations instance used for executing hash-related commands.
+	 */
 	private OrangeRedisHashOperations operations;
 
+	/**
+	 * Constructs a new OrangeRandomAndDistinctMembersExecutor with the specified operations and ID generator.
+	 *
+	 * @param operations the Redis hash operations to use for executing commands
+	 * @param idGenerator the generator used for creating executor IDs
+	 */
 	public OrangeRandomAndDistinctMembersExecutor(OrangeRedisHashOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(operations,idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Returns the list of annotation classes supported by this executor.
+	 * Adds {@link Random}, {@link Count}, and {@link Distinct} annotations to the list of
+	 * annotations supported by the parent class.
+	 *
+	 * @return a list of supported annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		List classes = super.getSupportedAnnotationClasses();
@@ -92,11 +108,29 @@ public class OrangeRandomAndDistinctMembersExecutor extends OrangeGetMembersExec
 		return classes;
 	}
 
+	/**
+	 * Returns the context class used by this executor.
+	 * This executor uses {@link OrangeCountHashContext} to handle Redis hash operations
+	 * with count-based random member retrieval.
+	 *
+	 * @return the class of {@link OrangeCountHashContext}
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeCountHashContext.class;
 	}
 
+	/**
+	 * Executes the random distinct members retrieval operation on the Redis hash.
+	 * This method retrieves a specified number of random key-value pairs from the hash,
+	 * ensuring all returned entries are distinct.
+	 *
+	 * @param context the Redis operation context containing the key and count information
+	 * @param keyType the type of keys in the hash
+	 * @param valueType the type of values in the hash
+	 * @return a Map containing the randomly selected distinct key-value pairs
+	 * @throws Exception if an error occurs during the Redis operation
+	 */
 	@Override
 	protected Map doGet(OrangeRedisContext context, Type keyType, Type valueType) throws Exception {
 		OrangeCountHashContext ctx = (OrangeCountHashContext) context;

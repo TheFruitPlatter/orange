@@ -56,23 +56,54 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
  */
 public class OrangeRemoveMemberExecutor extends OrangeRedisAbstractExecutor {
 	
+	/** Redis hash operations used by this executor */
 	private OrangeRedisHashOperations operations;
 
+	/**
+	 * Constructs a new hash member removal executor with the required dependencies.
+	 *
+	 * @param operations the Redis hash operations component for performing removal operations
+	 * @param idGenerator the executor ID generator for creating unique identifiers
+	 */
 	public OrangeRemoveMemberExecutor(OrangeRedisHashOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Returns the list of annotation classes supported by this executor.
+	 *
+	 * @return a list containing {@link RemoveMembers} and {@link HashKey} annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(RemoveMembers.class,HashKey.class);
 	}
 
+	/**
+	 * Returns the context class used by this executor.
+	 *
+	 * @return the {@link OrangeHashKeyContext} class
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeHashKeyContext.class;
 	}
 
+	/**
+	 * Executes the hash member removal operation.
+	 *
+	 * <p>This method removes a single field from a Redis hash and handles the return value
+	 * based on the method's return type:
+	 * <ul>
+	 *   <li>For boolean return types: returns true if the field was removed</li>
+	 *   <li>For numeric return types: returns the number of fields removed (0 or 1)</li>
+	 * </ul>
+	 *
+	 * @param context the Redis operation context containing operation parameters
+	 * @return a boolean or numeric result based on the method's return type
+	 * @throws Exception if an error occurs during execution
+	 */
 	@Override
 	public Object execute(OrangeRedisContext context) throws Exception {
 		OrangeHashKeyContext ctx = (OrangeHashKeyContext) context;

@@ -61,23 +61,60 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
  */
 public class OrangeGetValueExecutor extends OrangeRedisGetOneAbstractExecutor {
 	
+	/** Redis hash operations used by this executor */
 	private OrangeRedisHashOperations operations;
 
+	/**
+	 * Constructs a new hash value retrieval executor with the required dependencies.
+	 *
+	 * @param operations the Redis hash operations component for performing value retrieval
+	 * @param idGenerator the executor ID generator for creating unique identifiers
+	 */
 	public OrangeGetValueExecutor(OrangeRedisHashOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Returns the list of annotation classes supported by this executor.
+	 *
+	 * @return a list containing {@link GetHashValues} and {@link HashKey} annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(GetHashValues.class,HashKey.class);
 	}
 
+	/**
+	 * Returns the context class used by this executor for handling hash value operations.
+	 *
+	 * <p>This executor uses {@link OrangeHashKeyContext} to store and manage:
+	 * <ul>
+	 *   <li>Redis key information</li>
+	 *   <li>Hash field key</li>
+	 *   <li>Key and value type information</li>
+	 * </ul>
+	 *
+	 * @return the class object for {@link OrangeHashKeyContext}
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeHashKeyContext.class;
 	}
 
+	/**
+	 * Performs the actual retrieval of a hash value from Redis.
+	 *
+	 * <p>This method retrieves a single value from the specified Redis hash field
+	 * and converts it to the appropriate return type. The value is then wrapped
+	 * in a single-element collection for the parent class to process.
+	 *
+	 * @param context the Redis context containing the hash key and field information
+	 * @param valueField the field to map the hash value to (if using custom objects), or null
+	 * @param returnArgumentType the expected return type for proper type conversion
+	 * @return Collection a single-element collection containing the retrieved hash value
+	 * @throws Exception if any error occurs during the operation
+	 */
 	@Override
 	protected Collection doGet(OrangeRedisContext context, Field valueField, Type returnArgumentType) throws Exception {
 		OrangeHashKeyContext ctx = (OrangeHashKeyContext) context;

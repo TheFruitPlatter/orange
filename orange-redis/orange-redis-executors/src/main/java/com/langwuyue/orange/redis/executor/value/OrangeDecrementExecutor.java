@@ -107,7 +107,7 @@ public class OrangeDecrementExecutor extends OrangeRedisAbstractExecutor {
 	/**
 	 * Returns the context class used by this executor.
 	 * 
-	 * <p>This executor uses the {@link OrangeDecrementContext} class to store
+	 * <p>This executor uses the {@link OrangeRedisValueContext} class to store
 	 * and manage the parameters required for the decrement operation, including
 	 * the key and the decrement value.
 	 *

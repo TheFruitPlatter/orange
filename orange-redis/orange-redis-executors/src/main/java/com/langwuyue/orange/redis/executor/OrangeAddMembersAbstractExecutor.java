@@ -97,13 +97,13 @@ public abstract class OrangeAddMembersAbstractExecutor extends OrangeRedisAbstra
 	 *
 	 * <p>Error handling:
 	 * <ul>
-	 *   <li>With {@link ContinueOnFailure(false)}: throws exception on first failure</li>
-	 *   <li>With {@link ContinueOnFailure(true)}: logs errors and continues processing</li>
+	 *   <li>With {@link ContinueOnFailure} false: throws exception on first failure</li>
+	 *   <li>With {@link ContinueOnFailure} true: logs errors and continues processing</li>
 	 *   <li>Network errors and timeouts are logged with detailed context</li>
 	 * </ul>
 	 *
 	 * @param context the Redis operation context
-	 * @return Long for single operations, Map<Object, Boolean> for bulk operations
+	 * @return Long for single operations, Map&lt;Object, Boolean&gt; for bulk operations
 	 * @throws OrangeRedisException if operation fails and continueOnFailure is false
 	 * @throws Exception if any unhandled error occurs
 	 */

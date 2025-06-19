@@ -47,7 +47,7 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
  * retrieving the members, which can improve performance for large sets when the total count is not needed.
  * 
  * <p>The key difference between this executor and {@link OrangeGetByMaxScoreMinScorePageNoCountExecutor} is that
- * this executor returns both the members and their scores as {@link OrangeRedisZSetOperations.TypedTuple} objects,
+ * this executor returns both the members and their scores as {@link OrangeRedisZSetOperations.ZSetEntry} objects,
  * while the other executor returns only the members.
  * 
  * <p>This executor processes the following annotations:
@@ -63,7 +63,6 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
  * @author Liang.Zhong
  * @since 1.0.0
  * @see OrangeMaxScoreMinScorePageNoCountContext
- * @see OrangeRedisZSetOperations#rangeByScoreWithScores(Object, ScoreRange, Pager, RedisValueTypeEnum, Type)
  * @see OrangeGetWithScoresAbstractExecutor
  * @see <a href="https://orange.langwuyue.com/redis/advanced/zset">Orange Redis ZSet Documentation</a>
  */

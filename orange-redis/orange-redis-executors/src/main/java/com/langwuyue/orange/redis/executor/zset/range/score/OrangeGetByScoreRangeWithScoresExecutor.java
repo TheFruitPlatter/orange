@@ -39,8 +39,8 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
  * using a single ScoreRange annotation.
  * 
  * <p>This executor provides functionality similar to {@link OrangeGetByMaxScoreMinScoreWithScoresExecutor} 
- * but uses a single {@link ScoreRange} annotation instead of separate {@link MaxScore} and {@link MinScore} 
- * annotations. It supports the following annotations:
+ * but uses a single {@link ScoreRange} annotation instead of separate {@link com.langwuyue.orange.redis.annotation.zset.MaxScore} 
+ * and {@link com.langwuyue.orange.redis.annotation.zset.MinScore} annotations. It supports the following annotations:
  * <ul>
  *   <li>{@link GetMembers} - Indicates this is a member retrieval operation
  *   <li>{@link ScoreRange} - Specifies both minimum and maximum scores for the range query in a single annotation
@@ -55,7 +55,6 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
  * @see OrangeGetWithScoresAbstractExecutor
  * @see OrangeScoreRangeContext
  * @see OrangeRedisZSetOperations
- * @see OrangeRedisZSetOperations.TypedTuple
  * @see <a href="https://orange.langwuyue.com/redis/advanced/zset">Orange Redis ZSet Documentation</a>
  */
 public class OrangeGetByScoreRangeWithScoresExecutor extends OrangeGetWithScoresAbstractExecutor {

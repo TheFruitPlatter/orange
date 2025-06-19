@@ -23,14 +23,34 @@ import java.util.Map;
 import com.langwuyue.orange.redis.RedisValueTypeEnum;
 
 /**
+ * Context interface for Redis hash conditional add operations, used for scenarios where hash members are added only when the key doesn't exist.
+ * 
+ * <p>This interface defines the context information needed for conditional add operations, including whether to delete the key after the operation,
+ * the member information to be added, and the key's data type.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public interface OrangeAddIfAbsentContext {
 	
+	/**
+	 * Determines whether the key should be deleted after the operation is completed.
+	 * 
+	 * @return true if the key should be deleted after the operation, false otherwise
+	 */
 	boolean isDeleteInTheEnd();
 	
+	/**
+	 * Gets the hash member to be added.
+	 * 
+	 * @return Map containing field-value pairs
+	 */
 	Map getMember();
 	
+	/**
+	 * Gets the data type of the key.
+	 * 
+	 * @return Redis value type enum
+	 */
 	RedisValueTypeEnum getKeyType();
 }

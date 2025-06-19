@@ -27,14 +27,37 @@ import com.langwuyue.orange.redis.annotation.OrangeRedisOperationArg;
 import com.langwuyue.orange.redis.utils.OrangeReflectionUtils;
 
 /**
+ * Context class for Redis hash operations that involve a count parameter.
+ * 
+ * <p>This context extends the basic hash context by adding support for a count parameter,
+ * which is typically used in operations that need to limit or specify the number of
+ * elements to process, such as pagination or batch operations.
+ * 
+ * <p>The count parameter is bound to method parameters annotated with {@link Count}
+ * and is validated to ensure it's either an integer or a string that can be parsed as an integer.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeCountHashContext extends OrangeHashContext {
 	
+	/**
+	 * The count parameter bound from the method argument annotated with {@link Count}.
+	 * This can be either an Integer or a String that can be parsed to an Integer.
+	 */
 	@OrangeRedisOperationArg(binding = Count.class)
 	private Object count;
 	
+	/**
+	 * Constructs a new OrangeCountHashContext with the specified parameters.
+	 *
+	 * @param operationOwner  the class that owns the Redis operation
+	 * @param operationMethod the method representing the Redis operation
+	 * @param args            the arguments passed to the operation method
+	 * @param redisKey        the Redis key for the operation
+	 * @param valueType       the type of value stored in Redis
+	 * @param keyType         the type of the Redis key
+	 */
 	public OrangeCountHashContext(
 		Class<?> operationOwner, 
 		Method operationMethod, 
@@ -43,9 +66,15 @@ public class OrangeCountHashContext extends OrangeHashContext {
 		RedisValueTypeEnum valueType,
 		RedisValueTypeEnum keyType
 	) {
-		super(operationOwner,operationMethod,args,redisKey,valueType,keyType);
+		super(operationOwner, operationMethod, args, redisKey, valueType, keyType);
 	}
 	
+	/**
+	 * Gets the count value as an Integer.
+	 *
+	 * @return the count value as an Integer
+	 * @throws OrangeRedisException if the count parameter is null or not a valid integer
+	 */
 	public Integer getCount() {
 		if(count == null) {
 			throw new OrangeRedisException(String.format("The argument annotated with @%s cannot be null", Count.class));
