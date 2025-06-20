@@ -63,6 +63,7 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
  * @see RedisValue
  * @see RedisOldValue
  * @see HashKey
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/hash">Orange Redis Hash Documentation</a>
  */
 public class OrangeCompareAndSwapExecutor extends OrangeRedisAbstractExecutor {
 	/**

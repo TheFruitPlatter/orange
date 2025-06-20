@@ -49,6 +49,7 @@ import com.langwuyue.orange.redis.operations.OrangeRedisHashOperations;
  * @see OrangeAddMembersIfAbsentExecutor
  * @see SetExpiration
  * @see OrangeRedisMultipleSetIfAbsentListener
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/hash">Orange Redis Hash Documentation</a>
  */
 public class OrangeAddMembersIfAbsentWithExpirationExecutor extends OrangeAddMembersIfAbsentExecutor {
 	

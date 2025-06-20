@@ -28,17 +28,44 @@ import com.langwuyue.orange.redis.annotation.geo.Longitude;
 import com.langwuyue.orange.redis.operations.OrangeRedisGeoOperations.GeoEntry;
 
 /**
+ * Context class for handling geographical point references with longitude and latitude.
+ * 
+ * <p>This context extends {@link OrangeBoxContext} to provide specific functionality
+ * for working with geographical coordinates. It manages longitude and latitude values
+ * that are annotated with {@link Longitude} and {@link Latitude} respectively.
+ * 
+ * <p>The class validates that longitude and latitude values are either numbers or
+ * strings that can be converted to double values, and provides a method to create
+ * a {@link GeoEntry} from these coordinates.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeBoxPointReferenceContext extends OrangeBoxContext {
 
+	/**
+	 * The longitude coordinate of the geographical point.
+	 * Must be a number or a string that can be converted to a double value.
+	 */
 	@OrangeRedisOperationArg(binding = Longitude.class)
 	private Object longitude;
 	
+	/**
+	 * The latitude coordinate of the geographical point.
+	 * Must be a number or a string that can be converted to a double value.
+	 */
 	@OrangeRedisOperationArg(binding = Latitude.class)
 	private Object latitude;
 	
+	/**
+	 * Constructs a new box point reference context with the specified parameters.
+	 * 
+	 * @param operationOwner the class that owns the Redis operation
+	 * @param operationMethod the method representing the Redis operation
+	 * @param args the arguments passed to the operation
+	 * @param redisKey the Redis key for the operation
+	 * @param valueType the type of Redis value being operated on
+	 */
 	public OrangeBoxPointReferenceContext(
 		Class<?> operationOwner, 
 		Method operationMethod, 
@@ -49,6 +76,18 @@ public class OrangeBoxPointReferenceContext extends OrangeBoxContext {
 		super(operationOwner, operationMethod, args, redisKey,valueType);
 	}
 
+	/**
+	 * Creates a GeoEntry from the longitude and latitude values stored in this context.
+	 * 
+	 * <p>This method performs validation on the longitude and latitude values:
+	 * <ul>
+	 *   <li>Neither value can be null</li>
+	 *   <li>Both values must be either numbers or strings that can be converted to double values</li>
+	 * </ul>
+	 * 
+	 * @return a new GeoEntry instance with the specified coordinates
+	 * @throws OrangeRedisException if either coordinate is null or of invalid type
+	 */
 	public GeoEntry getMember() {
 		if(latitude == null) {
 			throw new OrangeRedisException(String.format("The field annotated with @%s cannot be null", Latitude.class));

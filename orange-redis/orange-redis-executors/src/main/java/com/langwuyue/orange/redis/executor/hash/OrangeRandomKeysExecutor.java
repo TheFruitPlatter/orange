@@ -38,6 +38,7 @@ import com.langwuyue.orange.redis.operations.OrangeRedisHashOperations;
  * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/hash">Orange Redis Hash Documentation</a>
  */
 public class OrangeRandomKeysExecutor extends OrangeGetKeysExecutor {
 	

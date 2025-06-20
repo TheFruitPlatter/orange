@@ -43,18 +43,49 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 import com.langwuyue.orange.redis.utils.OrangeReflectionUtils;
 
 /**
+ * Executor for retrieving geo members within a specified radius.
+ * <p>
+ * This executor handles operations annotated with {@link GetMembers} and processes
+ * geo radius search operations. It supports returning results as:
+ * <ul>
+ *   <li>Map - with geo location objects as keys and distances as values</li>
+ *   <li>Collection - of objects containing value, distance, latitude and longitude</li>
+ *   <li>Array - of objects containing value, distance, latitude and longitude</li>
+ * </ul>
+ * <p>
+ * The return type objects must have fields annotated with appropriate annotations:
+ * {@link RedisValue}, {@link Distance}, {@link Latitude}, and {@link Longitude}.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/geo">Orange Redis Geo Documentation</a>
  */
 public class OrangeGetMembersInRadiusExecutor extends OrangeRedisAbstractExecutor {
 
 	private OrangeRedisGeoOperations operations;
 
+	/**
+	 * Constructs a new OrangeGetMembersInRadiusExecutor.
+	 *
+	 * @param operations the Redis geo operations instance to perform radius searches
+	 * @param idGenerator the executor ID generator for generating unique identifiers
+	 */
 	public OrangeGetMembersInRadiusExecutor(OrangeRedisGeoOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Executes the geo radius search operation.
+	 * <p>
+	 * Retrieves geo members within a specified radius from a given point.
+	 * The results are converted to the appropriate return type as specified
+	 * in the method's return type.
+	 *
+	 * @param context the execution context containing method parameters and return type information
+	 * @return the result of the geo radius search operation, converted to the appropriate return type
+	 * @throws Exception if an error occurs during execution or result conversion
+	 */
 	@Override
 	public Object execute(OrangeRedisContext context) throws Exception {
 		Class returnClass = context.getOperationMethod().getReturnType();
@@ -120,16 +151,34 @@ public class OrangeGetMembersInRadiusExecutor extends OrangeRedisAbstractExecuto
 		}
 	}
 
+	/**
+	 * Returns the list of annotation classes supported by this executor.
+	 * 
+	 * @return a list of annotation classes that this executor can process
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(GetMembers.class,Distance.class,RedisValue.class,SearchArgs.class);
 	}
 
+	/**
+	 * Returns the context class used by this executor.
+	 * 
+	 * @return the class of the context used for radius search operations
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeRadiusContext.class;
 	}
 	
+	/**
+	 * Performs the actual geo radius search operation.
+	 * 
+	 * @param context the execution context containing the search parameters
+	 * @param valueField the field annotated with {@link RedisValue} to store the member value
+	 * @return a list of geo entries within the specified radius
+	 * @throws Exception if an error occurs during the Redis operation
+	 */
 	protected List<GeoEntryInRadius> doGet(OrangeRedisContext context,Field valueField) throws Exception{
 		OrangeRadiusContext ctx = (OrangeRadiusContext) context;
 		return this.operations.radius(
@@ -143,6 +192,21 @@ public class OrangeGetMembersInRadiusExecutor extends OrangeRedisAbstractExecuto
 		);
 	}
 	
+	/**
+	 * Converts a list of geo entries to a map representation.
+	 * <p>
+	 * Creates a map where each key is an object containing the geo location information
+	 * (value, latitude, longitude) and each value is the distance from the search point.
+	 *
+	 * @param entries the list of geo entries to convert
+	 * @param valueField the field to store the member value
+	 * @param latitudeField the field to store the latitude
+	 * @param longitudeField the field to store the longitude
+	 * @param argumentClass the class of the map key objects
+	 * @param returnClass the class of the map to create
+	 * @return a map containing geo location objects as keys and distances as values
+	 * @throws Exception if an error occurs during map creation or population
+	 */
 	protected Object toMap(
 		List<GeoEntryInRadius> entries, 
 		Field valueField, 
@@ -162,6 +226,22 @@ public class OrangeGetMembersInRadiusExecutor extends OrangeRedisAbstractExecuto
 		return map;
 	}
 	
+	/**
+	 * Converts a list of geo entries to either a collection or array.
+	 * <p>
+	 * Creates and populates either a collection or array (based on returnClass) where each element
+	 * is an object containing the complete geo location information (value, distance, latitude, longitude).
+	 *
+	 * @param entries the list of geo entries to convert
+	 * @param valueField the field to store the member value
+	 * @param distanceField the field to store the distance
+	 * @param latitudeField the field to store the latitude
+	 * @param longitudeField the field to store the longitude
+	 * @param argumentClass the class of the elements in the collection/array
+	 * @param returnClass the class of the collection/array to create
+	 * @return a collection or array containing objects with geo location information
+	 * @throws Exception if an error occurs during instance creation or population
+	 */
 	protected Object toReturnValue(
 		List<GeoEntryInRadius> entries, 
 		Field valueField, 
@@ -198,14 +278,41 @@ public class OrangeGetMembersInRadiusExecutor extends OrangeRedisAbstractExecuto
 		}
 	}
 	
+	/**
+	 * Creates an empty array or collection instance based on the return type.
+	 * <p>
+	 * This method determines whether to create an array or a collection based on the return type,
+	 * and initializes it with the specified size.
+	 *
+	 * @param returnType the class of the return type (array or collection)
+	 * @param size the size of the array or initial capacity of the collection
+	 * @return an empty array or collection instance
+	 */
 	protected Object getArrayOrCollectionInstance(Class<?> returnType,int size) {
 		return OrangeReflectionUtils.getArrayOrCollectionInstance(returnType, size);
 	}
 	
+	/**
+	 * Gets the raw class type from a generic Type object.
+	 * <p>
+	 * This method extracts the underlying Class from a Type object,
+	 * which is useful when working with generic types.
+	 *
+	 * @param type the Type object to extract the raw class from
+	 * @return the raw Class object
+	 */
 	protected Class<?> getRawType(Type type){
 		return OrangeReflectionUtils.getRawType(type);
 	}
 
+	/**
+	 * Returns the Redis geo operations instance.
+	 * <p>
+	 * This method provides access to the Redis operations specific to geo data,
+	 * which are used to execute the radius search.
+	 *
+	 * @return the OrangeRedisGeoOperations instance
+	 */
 	protected OrangeRedisGeoOperations getOperations() {
 		return operations;
 	}

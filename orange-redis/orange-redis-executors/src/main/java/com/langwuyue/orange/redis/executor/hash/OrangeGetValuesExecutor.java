@@ -47,6 +47,7 @@ import com.langwuyue.orange.redis.utils.OrangeReflectionUtils;
  * @see GetHashValues
  * @see Multiple
  * @see OrangeRedisHashOperations#multiGet
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/hash">Orange Redis Hash Documentation</a>
  */
 public class OrangeGetValuesExecutor extends OrangeRedisGetAbstractExecutor {
 	

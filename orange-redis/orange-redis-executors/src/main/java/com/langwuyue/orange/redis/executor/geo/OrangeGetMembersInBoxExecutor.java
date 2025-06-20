@@ -37,20 +37,60 @@ import com.langwuyue.orange.redis.operations.OrangeRedisGeoOperations.GeoEntryIn
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor for retrieving Redis GEO members within a specified bounding box.
+ * 
+ * <p>This executor handles GEO queries that find members within a rectangular area
+ * defined by width and height from a reference point. It supports the following
+ * annotations:
+ * <ul>
+ *   <li>{@link GetMembers} - Marks the method as a GEO query</li>
+ *   <li>{@link Width} - Specifies the box width</li>
+ *   <li>{@link Height} - Specifies the box height</li>
+ *   <li>{@link Longitude} - Specifies the reference point longitude</li>
+ *   <li>{@link Latitude} - Specifies the reference point latitude</li>
+ *   <li>{@link SearchArgs} - Optional search arguments</li>
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/geo">Orange Redis Geo Documentation</a>
  */
 public class OrangeGetMembersInBoxExecutor extends OrangeGetMembersInRadiusExecutor {
 
+	/**
+	 * Constructs a new executor for GEO box queries.
+	 * 
+	 * @param operations the Redis GEO operations implementation
+	 * @param idGenerator the executor ID generator
+	 */
 	public OrangeGetMembersInBoxExecutor(OrangeRedisGeoOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(operations,idGenerator);
 	}
 
+	/**
+	 * Gets the list of annotation classes supported by this executor.
+	 * 
+	 * @return list of supported annotation classes including:
+	 *         - GetMembers: marks the method as a geo query
+	 *         - Width: specifies the box width
+	 *         - Height: specifies the box height  
+	 *         - Longitude: specifies reference point longitude
+	 *         - Latitude: specifies reference point latitude
+	 *         - SearchArgs: optional search arguments
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(GetMembers.class,Width.class,Height.class,Longitude.class,Latitude.class,SearchArgs.class);
 	}
 
+	/**
+	 * Executes the GEO query to retrieve members within the specified bounding box.
+	 * 
+	 * @param ctx the execution context containing box parameters
+	 * @param valueField the field annotated with RedisValue
+	 * @return list of GeoEntryInRadius objects containing the members found
+	 * @throws Exception if the query fails or parameters are invalid
+	 */
 	@Override
 	protected List<GeoEntryInRadius> doGet(OrangeRedisContext ctx, Field valueField) throws Exception {
 		OrangeBoxPointReferenceContext context = (OrangeBoxPointReferenceContext) ctx;
@@ -69,6 +109,11 @@ public class OrangeGetMembersInBoxExecutor extends OrangeGetMembersInRadiusExecu
 		);
 	}
 
+	/**
+	 * Gets the context class used by this executor.
+	 * 
+	 * @return the OrangeBoxContext class that contains box parameters
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeBoxPointReferenceContext.class;

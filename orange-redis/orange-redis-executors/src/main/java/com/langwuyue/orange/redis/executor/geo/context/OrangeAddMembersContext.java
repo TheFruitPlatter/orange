@@ -33,7 +33,6 @@ import com.langwuyue.orange.redis.RedisValueTypeEnum;
 import com.langwuyue.orange.redis.annotation.ContinueOnFailure;
 import com.langwuyue.orange.redis.annotation.Multiple;
 import com.langwuyue.orange.redis.annotation.OrangeRedisOperationArg;
-import com.langwuyue.orange.redis.annotation.RedisValue;
 import com.langwuyue.orange.redis.annotation.geo.Latitude;
 import com.langwuyue.orange.redis.annotation.geo.Longitude;
 import com.langwuyue.orange.redis.context.OrangeRedisIterableContext;
@@ -43,17 +42,47 @@ import com.langwuyue.orange.redis.operations.OrangeRedisGeoOperations.GeoEntry;
 import com.langwuyue.orange.redis.utils.OrangeReflectionUtils;
 
 /**
+ * Context class for adding multiple geo members to a Redis geo set.
+ * This context handles collections, arrays or maps of geo members annotated with {@link com.langwuyue.orange.redis.annotation.Multiple}.
+ * 
+ * <p>Supports the following input types:
+ * <ul>
+ *   <li>Collections of geo member objects</li>
+ *   <li>Arrays of geo member objects</li>
+ *   <li>Maps where keys are locations and values are member objects</li>
+ * </ul>
+ * 
+ * <p>This context is used by {@link com.langwuyue.orange.redis.executor.geo.OrangeAddMembersExecutor}
+ * to perform batch geo add operations.</p>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeAddMembersContext extends OrangeMemberContext implements OrangeRedisIterableContext {
 	
+	/**
+	 * The collection/array/map of geo members to be added.
+	 * This field is bound to a method parameter annotated with {@link com.langwuyue.orange.redis.annotation.Multiple}.
+	 */
 	@OrangeRedisOperationArg(binding = Multiple.class, valueHandler = OrangeOperationArgMultipleHandler.class)
 	private Object multipleValue;
 	
+	/**
+	 * Configuration for whether to continue on individual member failures.
+	 * This field is bound to the method annotation {@link com.langwuyue.orange.redis.annotation.ContinueOnFailure}.
+	 */
 	@OrangeRedisOperationArg(binding = ContinueOnFailure.class, valueHandler = OrangeMethodAnnotationHandler.class)
 	private ContinueOnFailure continueOnFailure;
 	
+	/**
+	 * Constructs a new context for adding multiple geo members.
+	 * 
+	 * @param operationOwner the class that declares the Redis operation method
+	 * @param operationMethod the method annotated with Redis geo operation
+	 * @param args the arguments passed to the operation method
+	 * @param redisKey the Redis key associated with this operation
+	 * @param valueType the Redis value type for this operation
+	 */
 	public OrangeAddMembersContext(
 		Class<?> operationOwner, 
 		Method operationMethod, 

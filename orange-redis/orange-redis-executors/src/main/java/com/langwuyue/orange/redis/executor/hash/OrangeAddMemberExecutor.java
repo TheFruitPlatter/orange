@@ -54,6 +54,7 @@ import com.langwuyue.orange.redis.utils.OrangeReflectionUtils;
  *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/hash">Orange Redis Hash Documentation</a>
  */
 public class OrangeAddMemberExecutor extends OrangeRedisAbstractExecutor {
 	
@@ -92,7 +93,6 @@ public class OrangeAddMemberExecutor extends OrangeRedisAbstractExecutor {
 	 * @param context the operation context containing the Redis key, hash key, and value information
 	 * @return an object representing the result of the operation, based on the method's return type
 	 * @throws Exception if an error occurs during the execution
-	 * @throws ClassCastException if the provided context is not an instance of OrangeHashKeyValueContext
 	 */
 	@Override
 	public Object execute(OrangeRedisContext context) throws Exception {

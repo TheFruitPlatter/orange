@@ -26,15 +26,39 @@ import com.langwuyue.orange.redis.mapping.OrangeRedisExecutorIdGenerator;
 import com.langwuyue.orange.redis.operations.OrangeRedisGeoOperations;
 
 /**
+ * Extended executor for retrieving Redis GEO members within a radius with result count limitation.
+ * 
+ * <p>This executor extends {@link OrangeGetMembersInRadiusExecutor} to support
+ * limiting the number of returned results using the {@link Count} annotation.
+ * 
+ * <p>Supported annotations include all from the parent class plus:
+ * <ul>
+ *   <li>{@link Count} - Limits the maximum number of results returned</li>
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/geo">Orange Redis Geo Documentation</a>
  */
 public class OrangeLimitedGetMembersInRadiusExecutor extends OrangeGetMembersInRadiusExecutor {
 
+	/**
+	 * Constructs a new executor for limited GEO radius queries.
+	 * 
+	 * @param operations the Redis GEO operations implementation
+	 * @param idGenerator the executor ID generator
+	 */
 	public OrangeLimitedGetMembersInRadiusExecutor(OrangeRedisGeoOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(operations,idGenerator);
 	}
 
+	/**
+	 * Gets the list of annotation classes supported by this executor.
+	 * 
+	 * @return list of supported annotation classes including:
+	 *         - All annotations from parent class
+	 *         - Count: limits the maximum number of results returned
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		List<Class<? extends Annotation>> supportedAnnotationClasses = super.getSupportedAnnotationClasses();

@@ -31,18 +31,36 @@ import com.langwuyue.orange.redis.operations.OrangeRedisGeoOperations;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor for adding a geo member to a Redis geo set using the AddMembers and Member annotations.
+ * This executor handles the addition of a single geo member with its coordinates to a Redis geo set.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/geo">Orange Redis Geo Documentation</a>
  */
 public class OrangeAddByMemberAnnotationExecutor extends OrangeRedisAbstractExecutor {
 	
 	private OrangeRedisGeoOperations operations;
 
+	/**
+	 * Constructs a new OrangeAddByMemberAnnotationExecutor.
+	 *
+	 * @param operations the Redis geo operations instance to perform geo-related operations
+	 * @param idGenerator the executor ID generator for generating unique executor identifiers
+	 */
 	public OrangeAddByMemberAnnotationExecutor(OrangeRedisGeoOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Executes the geo add operation for a member with its coordinates.
+	 * Adds a geo point to the specified Redis geo set.
+	 *
+	 * @param context the Redis operation context containing the key, member, and coordinates
+	 * @return Long value indicating the number of elements added to the geo set (0 or 1)
+	 * @throws Exception if an error occurs during the operation
+	 */
 	@Override
 	public Object execute(OrangeRedisContext context) throws Exception {
 		OrangeAddMemberContext ctx = (OrangeAddMemberContext) context;
@@ -54,11 +72,21 @@ public class OrangeAddByMemberAnnotationExecutor extends OrangeRedisAbstractExec
 		return result;
 	}
 
+	/**
+	 * Returns the list of annotation classes that this executor supports.
+	 *
+	 * @return a list containing the AddMembers and Member annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(AddMembers.class,Member.class);
 	}
 
+	/**
+	 * Returns the context class used by this executor for handling geo member addition operations.
+	 *
+	 * @return the OrangeAddMemberContext class for handling geo member addition operations
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeAddMemberContext.class;

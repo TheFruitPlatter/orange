@@ -32,11 +32,33 @@ import com.langwuyue.orange.redis.operations.OrangeRedisGeoOperations.GeoEntry;
 import com.langwuyue.orange.redis.utils.OrangeReflectionUtils;
 
 /**
+ * Context class for handling Redis GEO operation members with location and coordinate information.
+ * 
+ * <p>This class extends {@link OrangeRedisContext} to provide specialized functionality
+ * for working with geographical entries in Redis. It handles the conversion of annotated
+ * objects into {@link GeoEntry} instances, which are used in Redis GEO operations.
+ * 
+ * <p>The class supports objects that have fields annotated with:
+ * <ul>
+ *   <li>{@link RedisValue} - for the location identifier</li>
+ *   <li>{@link Latitude} - for the latitude coordinate</li>
+ *   <li>{@link Longitude} - for the longitude coordinate</li>
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeMemberContext extends OrangeRedisContext {
 
+	/**
+	 * Constructs a new member context with the specified parameters for Redis GEO operations.
+	 * 
+	 * @param operationOwner the class that owns the Redis operation
+	 * @param operationMethod the method representing the Redis operation
+	 * @param args the arguments passed to the operation
+	 * @param redisKey the Redis key for the operation
+	 * @param valueType the type of Redis value being operated on
+	 */
 	public OrangeMemberContext(
 		Class<?> operationOwner, 
 		Method operationMethod, 
@@ -47,7 +69,30 @@ public class OrangeMemberContext extends OrangeRedisContext {
 		super(operationOwner, operationMethod, args, redisKey, valueType);
 	}
 
-	protected GeoEntry toGeoEntry(Object member,Class<? extends Annotation> annotationClass) {
+	/**
+	 * Converts an object to a GeoEntry for use in Redis GEO operations.
+	 * 
+	 * <p>This method analyzes the provided object and extracts:
+	 * <ul>
+	 *   <li>A member name (from fields annotated with {@link RedisValue})</li>
+	 *   <li>Longitude and latitude coordinates (from fields annotated with {@link Longitude} and {@link Latitude})</li>
+	 * </ul>
+	 * 
+	 * <p>The method performs extensive validation to ensure:
+	 * <ul>
+	 *   <li>The member object is not null</li>
+	 *   <li>Required annotations are present</li>
+	 *   <li>Coordinate values are valid numbers or convertible to numbers</li>
+	 * </ul>
+	 * 
+	 * <p>If the member is already a GeoEntry instance, it is returned directly.
+	 * 
+	 * @param member the object to convert to a GeoEntry
+	 * @param annotationClass the annotation class that marks the member in the calling context
+	 * @return a new GeoEntry instance with the extracted member name and coordinates, or null if member is null
+	 * @throws OrangeRedisException if required annotations are missing or coordinate values are invalid
+	 */
+	protected GeoEntry toGeoEntry(Object member, Class<? extends Annotation> annotationClass) {
 		if(member == null) {
 			return null;
 		}

@@ -28,17 +28,56 @@ import com.langwuyue.orange.redis.annotation.geo.Longitude;
 import com.langwuyue.orange.redis.operations.OrangeRedisGeoOperations.GeoEntry;
 
 /**
+ * Context class for Redis GEO radius search operations that use longitude and latitude coordinates
+ * as the center point reference.
+ * 
+ * <p>This class extends {@link OrangeRadiusContext} to support GEO radius searches where the center
+ * point is specified by explicit longitude and latitude coordinates, rather than by a member name.
+ * It handles parameters annotated with {@link Longitude} and {@link Latitude} to define the
+ * center point of the radius search.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeRadiusContext
+ * @see Longitude
+ * @see Latitude
  */
 public class OrangeRadiusPointReferenceContext extends OrangeRadiusContext {
 
+	/**
+	 * The longitude coordinate of the center point for the GEO radius search.
+	 * 
+	 * <p>This field is bound to a parameter annotated with {@link Longitude} and
+	 * represents the east-west position on the Earth's surface.
+	 * 
+	 * <p>The value can be a number or a string that can be parsed to a double.
+	 */
 	@OrangeRedisOperationArg(binding = Longitude.class)
 	private Object longitude;
 	
+	/**
+	 * The latitude coordinate of the center point for the GEO radius search.
+	 * 
+	 * <p>This field is bound to a parameter annotated with {@link Latitude} and
+	 * represents the north-south position on the Earth's surface.
+	 * 
+	 * <p>The value can be a number or a string that can be parsed to a double.
+	 */
 	@OrangeRedisOperationArg(binding = Latitude.class)
 	private Object latitude;
 	
+	/**
+	 * Constructs a new OrangeRadiusPointReferenceContext with the specified parameters.
+	 * 
+	 * <p>This constructor initializes a context for GEO radius search operations where the
+	 * center point is specified by longitude and latitude coordinates.
+	 *
+	 * @param operationOwner the class that owns the operation method
+	 * @param operationMethod the method representing the Redis operation
+	 * @param args the arguments passed to the operation method
+	 * @param redisKey the Redis key to operate on
+	 * @param valueType the type of Redis value being operated on
+	 */
 	public OrangeRadiusPointReferenceContext(
 		Class<?> operationOwner, 
 		Method operationMethod, 
@@ -49,6 +88,22 @@ public class OrangeRadiusPointReferenceContext extends OrangeRadiusContext {
 		super(operationOwner, operationMethod, args, redisKey,valueType);
 	}
 
+	/**
+	 * Creates and returns a GeoEntry representing the center point for the radius search.
+	 * 
+	 * <p>This method validates the longitude and latitude values and creates a GeoEntry
+	 * with these coordinates. The GeoEntry is used as the reference point for the
+	 * GEO radius search operation.
+	 * 
+	 * <p>The method performs the following validations:
+	 * <ul>
+	 *   <li>Checks that both latitude and longitude are not null</li>
+	 *   <li>Verifies that both values are either Number or String instances</li>
+	 * </ul>
+	 *
+	 * @return a GeoEntry with the specified longitude and latitude coordinates
+	 * @throws OrangeRedisException if latitude or longitude is null or not a number/string
+	 */
 	public GeoEntry getMember() {
 		if(latitude == null) {
 			throw new OrangeRedisException(String.format("The field annotated with @%s cannot be null", Latitude.class));

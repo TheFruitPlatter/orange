@@ -58,6 +58,7 @@ import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
  * @see AddMembers
  * @see Member
  * @see IfAbsent
+ * @see <a href="https://orange.langwuyue.com/redis/advanced/hash">Orange Redis Hash Documentation</a>
  */
 public class OrangeAdIfAbsentByMemberAnnotationExecutor extends OrangeAddMemberIfAbsentExecutor {
 	

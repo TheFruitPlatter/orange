@@ -29,17 +29,65 @@ import com.langwuyue.orange.redis.context.OrangeRedisValueContext;
 import com.langwuyue.orange.redis.operations.OrangeRedisGeoOperations.GeoEntry;
 
 /**
+ * Context class for handling geographical point information in Redis GEO operations.
+ * 
+ * <p>This class extends {@link OrangeRedisValueContext} to provide specific functionality
+ * for managing geographical coordinates (longitude and latitude) associated with a value
+ * in Redis GEO operations. It handles the binding of longitude and latitude values
+ * through {@link Longitude} and {@link Latitude} annotations respectively.
+ * 
+ * <p>The context is used to create {@link GeoEntry} objects that represent geographical
+ * points with their associated values in Redis GEO operations. It includes validation
+ * of coordinate values to ensure they are properly formatted and within valid ranges.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see Longitude
+ * @see Latitude
+ * @see GeoEntry
+ * @see OrangeRedisValueContext
  */
 public class OrangeValuePointContext extends OrangeRedisValueContext {
 
+	/**
+	 * The longitude coordinate for the geographical point.
+	 * 
+	 * <p>This field holds the longitude value that was bound from a parameter
+	 * annotated with {@link Longitude} in the operation method. It represents
+	 * the east-west position of a point on the Earth's surface.
+	 * 
+	 * <p>The value must be a number or a string that can be converted to a double.
+	 * Valid longitude values range from -180 to 180 degrees.
+	 */
 	@OrangeRedisOperationArg(binding = Longitude.class)
 	private Object longitude;
 	
+	/**
+	 * The latitude coordinate for the geographical point.
+	 * 
+	 * <p>This field holds the latitude value that was bound from a parameter
+	 * annotated with {@link Latitude} in the operation method. It represents
+	 * the north-south position of a point on the Earth's surface.
+	 * 
+	 * <p>The value must be a number or a string that can be converted to a double.
+	 * Valid latitude values range from -90 to 90 degrees.
+	 */
 	@OrangeRedisOperationArg(binding = Latitude.class)
 	private Object latitude;
 
+	/**
+	 * Constructs a new OrangeValuePointContext with the specified parameters.
+	 * 
+	 * <p>This constructor initializes a context for handling geographical point information
+	 * in Redis GEO operations. It sets up the necessary context for creating GeoEntry objects
+	 * that represent points with their associated values.
+	 *
+	 * @param operationOwner the class that owns the operation method
+	 * @param operationMethod the method representing the Redis operation
+	 * @param args the arguments passed to the operation method
+	 * @param redisKey the Redis key to operate on
+	 * @param valueType the type of Redis value being operated on
+	 */
 	public OrangeValuePointContext(
 		Class<?> operationOwner, 
 		Method operationMethod, 
@@ -50,6 +98,18 @@ public class OrangeValuePointContext extends OrangeRedisValueContext {
 		super(operationOwner, operationMethod, args, redisKey,valueType);
 	}
 
+	/**
+	 * Creates and returns a GeoEntry object representing a geographical point with its associated value.
+	 * 
+	 * <p>This method validates the longitude and latitude values to ensure they are not null
+	 * and are either numbers or strings that can be converted to double values. It then creates
+	 * a GeoEntry object that combines the value with its geographical coordinates.
+	 *
+	 * @return a GeoEntry object containing the value and its geographical coordinates
+	 * @throws OrangeRedisException if the latitude or longitude is null, or if they are not
+	 *         numbers or strings that can be converted to double values
+	 * @see GeoEntry
+	 */
 	public GeoEntry getMember() {
 		Object value = getValue();
 		if(latitude == null) {
