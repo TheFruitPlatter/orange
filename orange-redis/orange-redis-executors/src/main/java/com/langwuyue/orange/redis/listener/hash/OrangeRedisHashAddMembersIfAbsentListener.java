@@ -21,6 +21,16 @@ package com.langwuyue.orange.redis.listener.hash;
 import com.langwuyue.orange.redis.listener.OrangeRedisMultipleSetIfAbsentListener;
 
 /**
+ * Listener interface for Redis HASH field batch addition operations.
+ *
+ * <p>This interface extends {@link OrangeRedisMultipleSetIfAbsentListener} to specifically
+ * handle events related to batch addition of fields to Redis hash structures. It listens for
+ * both successful additions and failures during the process of adding multiple fields to a hash
+ * if they don't already exist.
+ *
+ * @see OrangeAddMembersIfAbsentEvent for successful batch addition events
+ * @see OrangRemoveMembersFailedEvent for failed batch addition events
+ * @see OrangeRedisMultipleSetIfAbsentListener for the base listener functionality
  * @author Liang.Zhong
  * @since 1.0.0
  */

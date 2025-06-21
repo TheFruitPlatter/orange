@@ -19,22 +19,32 @@
 package com.langwuyue.orange.redis.executor.transaction;
 
 /**
+ * Interface defining the contract for managing Redis transactions.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public interface OrangeRedisTransactionManager {
 	
 	/**
-	 * Commit Redis Transaction 
+	 * Commits the current Redis transaction.
 	 * 
-	 * @throws Exception
+	 * @throws Exception if the commit operation fails, which could be due to:
+	 *         <ul>
+	 *           <li>Connection issues with Redis server</li>
+	 *           <li>Command execution errors</li>
+	 *         </ul>
 	 */
 	void commit() throws Exception;
 
 	/**
-	 * Rollback Redis Transaction 
+	 * Rolls back the current Redis transaction.
 	 * 
-	 * @throws Exception
+	 * @throws Exception if the rollback operation fails, which could be due to:
+	 *         <ul>
+	 *           <li>Connection issues with Redis server</li>
+	 *           <li>Transaction state inconsistencies</li>
+	 *         </ul>
 	 */
 	void rollback() throws Exception;
 	

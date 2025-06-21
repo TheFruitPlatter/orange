@@ -21,10 +21,28 @@ package com.langwuyue.orange.redis.listener.set;
 import com.langwuyue.orange.redis.listener.OrangeRedisMultipleSetIfAbsentListener;
 
 /**
+ * Listener interface for Redis batch SET "add members if absent" operations.
+ *
+ * <p>This interface specializes {@link OrangeRedisMultipleSetIfAbsentListener} to handle
+ * batch operations where multiple members are added to a Redis set in a single operation.
+ * It provides events that contain collections of members rather than individual members.
+ *
+ * <p>The interface handles two event types:
+ * <ul>
+ *   <li>{@link OrangeAddMembersIfAbsentEvent} - Contains results for batch member additions,
+ *       including collections of:
+ *       <ul>
+ *         <li>Successfully added members</li>
+ *         <li>Members that failed to add (with exceptions)</li>
+ *         <li>Members with unknown status</li>
+ *       </ul>
+ *   </li>
+ *   <li>{@link OrangRemoveMembersFailedEvent} - Contains failures from batch member removals</li>
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public interface OrangeRedisSetAddMembersIfAbsentListener extends OrangeRedisMultipleSetIfAbsentListener<OrangeAddMembersIfAbsentEvent,OrangRemoveMembersFailedEvent> {
-
 
 }

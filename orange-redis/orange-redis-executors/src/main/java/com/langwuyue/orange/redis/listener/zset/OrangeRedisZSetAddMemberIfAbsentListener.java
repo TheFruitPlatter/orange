@@ -21,6 +21,24 @@ package com.langwuyue.orange.redis.listener.zset;
 import com.langwuyue.orange.redis.listener.OrangeRedisSetIfAbsentListener;
 
 /**
+ * Listener interface for Redis sorted set (ZSET) operations with "add if absent" semantics.
+ * <p>
+ * This interface extends {@link OrangeRedisSetIfAbsentListener} to provide callbacks for:
+ * <ul>
+ *   <li>Successful addition of members to a sorted set</li>
+ *   <li>Failed attempts to add members</li>
+ *   <li>Failed removal operations</li>
+ * </ul>
+ * <p>
+ * The generic type parameters specify the event types for different operation outcomes:
+ * <ol>
+ *   <li>{@link OrangeAddMemberIfAbsentSuccessEvent} - Triggered when a member is successfully added</li>
+ *   <li>{@link OrangeAddMemberIfAbsentFailedEvent} - Triggered when adding a member fails</li>
+ *   <li>{@link OrangeRemoveMemberFailedEvent} - Triggered when removing a member fails</li>
+ * </ol>
+ * <p>
+ * Implement this interface to receive notifications about sorted set operations.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */

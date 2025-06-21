@@ -21,6 +21,16 @@ package com.langwuyue.orange.redis.listener.set;
 import com.langwuyue.orange.redis.listener.OrangeRedisSetIfAbsentListener;
 
 /**
+ * Listener interface for Redis SET "add member if absent" operations.
+ *
+ * <p>This interface specializes {@link OrangeRedisSetIfAbsentListener} to handle
+ * specific event types for member addition operations:
+ * <ul>
+ *   <li>{@link OrangeAddMemberIfAbsentSuccessEvent} - Successful member additions</li>
+ *   <li>{@link OrangeAddMemberIfAbsentFailedEvent} - Failed member additions</li>
+ *   <li>{@link OrangeRemoveMemberFailedEvent} - Failed member removals (if applicable)</li>
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */

@@ -21,6 +21,18 @@ package com.langwuyue.orange.redis.listener.hash;
 import com.langwuyue.orange.redis.listener.OrangeRedisSetIfAbsentListener;
 
 /**
+ * Listener interface for Redis HASH single field addition operations.
+ *
+ * <p>This interface extends {@link OrangeRedisSetIfAbsentListener} to specifically
+ * handle events related to adding a single field to Redis hash structures. It listens for
+ * both successful additions and failures during the process of adding a field to a hash
+ * if it doesn't already exist.
+ *
+ * @see OrangeAddMemberIfAbsentSuccessEvent for successful single field addition events
+ * @see OrangeAddMemberIfAbsentFailedEvent for failed single field addition events
+ * @see OrangeRemoveMemberFailedEvent for failed single field removal events
+ * @see OrangeRedisSetIfAbsentListener for the base listener functionality
+ * @see OrangeRedisHashAddMembersIfAbsentListener for batch field addition operations
  * @author Liang.Zhong
  * @since 1.0.0
  */

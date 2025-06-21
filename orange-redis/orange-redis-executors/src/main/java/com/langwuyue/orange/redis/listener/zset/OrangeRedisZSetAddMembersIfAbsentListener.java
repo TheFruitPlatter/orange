@@ -21,6 +21,24 @@ package com.langwuyue.orange.redis.listener.zset;
 import com.langwuyue.orange.redis.listener.OrangeRedisMultipleSetIfAbsentListener;
 
 /**
+ * Listener interface for batch Redis sorted set (ZSET) operations with "add if absent" semantics.
+ * <p>
+ * This interface extends {@link OrangeRedisMultipleSetIfAbsentListener} to provide callbacks for:
+ * <ul>
+ *   <li>Batch addition of multiple members to a sorted set</li>
+ *   <li>Batch removal failures</li>
+ * </ul>
+ * <p>
+ * The generic type parameters specify the event types for different operation outcomes:
+ * <ol>
+ *   <li>{@link OrangeAddMembersIfAbsentEvent} - Triggered when a batch of members is processed,
+ *       containing results for each member (successful, failed, or unknown status)</li>
+ *   <li>{@link OrangRemoveMembersFailedEvent} - Triggered when batch removal operations fail</li>
+ * </ol>
+ * <p>
+ * Implement this interface to receive notifications about batch sorted set operations.
+ * This is the batch counterpart to {@link OrangeRedisZSetAddMemberIfAbsentListener}.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */

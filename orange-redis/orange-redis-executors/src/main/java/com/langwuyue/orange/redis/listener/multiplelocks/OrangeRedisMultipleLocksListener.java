@@ -21,6 +21,26 @@ package com.langwuyue.orange.redis.listener.multiplelocks;
 import com.langwuyue.orange.redis.listener.OrangeRedisMultipleSetIfAbsentListener;
 
 /**
+ * Listener interface for multiple Redis lock operations.
+ *
+ * <p>This interface extends {@link OrangeRedisMultipleSetIfAbsentListener} to provide
+ * callbacks for different stages of distributed lock operations, including:
+ * <ul>
+ *   <li>Successful lock acquisition</li>
+ *   <li>Failed lock removal</li>
+ *   <li>Operation exceptions</li>
+ * </ul>
+ *
+ * <p>Generic type parameters:
+ * <ul>
+ *   <li>{@code T} - The success event type ({@link OrangeMultipleLocksEvent})</li>
+ *   <li>{@code E} - The remove failed event type ({@link OrangeMultipleLocksRemoveFailedEvent})</li>
+ * </ul>
+ *
+ * <p>Implementations should be thread-safe as callbacks may be invoked from
+ * different threads. Heavy processing should be avoided in callbacks to prevent
+ * blocking the Redis operation threads.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */

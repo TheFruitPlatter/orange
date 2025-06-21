@@ -37,36 +37,55 @@ package com.langwuyue.orange.redis.listener.value;
  * <p>This class is used as a parameter type in {@link OrangeRedisValueSetIfAbsentListener#onFailure(Object)}
  * to provide information about the failed operation to event handlers.
  * 
- * <p>Example usage:
- * <pre>{@code
- * @Override
- * public void onFailure(OrangeSetIfAbsentFailedEvent event) {
- *     Object value = event.getValue();
- *     String reason = event.getReason();
- *     Exception exception = event.getException();
- *     
- *     logger.warn("Failed to set value: {}, reason: {}", value, reason);
- *     if (exception != null) {
- *         logger.error("Exception details:", exception);
- *     }
- * }
- * }</pre>
- *
  * @author Liang.Zhong
  * @since 1.0.0
  * @see OrangeRedisValueSetIfAbsentListener
  */
 public class OrangeSetIfAbsentFailedEvent {
 	
+	/**
+	 * The value that failed to be set in Redis.
+	 * <p>
+	 * This is the value that was attempted to be stored when the set-if-absent operation failed.
+	 * Can be null if attempting to set a null value.
+	 */
 	private Object value;
 	
+	/**
+	 * Additional arguments that were provided during the failed operation.
+	 * <p>
+	 * May include metadata or configuration parameters that influenced the operation.
+	 * Can be empty but never null.
+	 */
 	private Object[] args;
 	
+	/**
+	 * The exception that caused the operation to fail.
+	 * <p>
+	 * May be null if the failure wasn't caused by an exception (e.g., key already exists).
+	 */
 	private Exception exception;
 	
+	/**
+	 * Human-readable description of the failure reason.
+	 * <p>
+	 * Typically contains the exception message when failure was caused by an exception,
+	 * or a custom description for other failure scenarios.
+	 * Never null.
+	 */
 	private String reason;
 
-	public OrangeSetIfAbsentFailedEvent(Object[] args, Object value,Exception exception) {
+	/**
+	 * Creates a new failure event with an exception cause.
+	 *
+	 * @param args Additional arguments used in the operation (cannot be null)
+	 * @param value The value that failed to be set (can be null)
+	 * @param exception The exception that caused the failure (can be null)
+	 * <p>
+	 * The reason field will be initialized with the exception's message if available,
+	 * or an empty string if the exception is null.
+	 */
+	public OrangeSetIfAbsentFailedEvent(Object[] args, Object value, Exception exception) {
 		this.args = args;
 		this.value = value;
 		this.exception = exception;
@@ -79,18 +98,50 @@ public class OrangeSetIfAbsentFailedEvent {
 		this.reason = reason;
 	}
 
+	/**
+	 * Gets the value that failed to be set in Redis.
+	 * <p>
+	 * This is the value that was attempted to be stored when the operation failed.
+	 * May return null if attempting to set a null value.
+	 *
+	 * @return The attempted value or null
+	 */
 	public Object getValue() {
 		return value;
 	}
 
+	/**
+	 * Gets the exception that caused the operation to fail.
+	 * <p>
+	 * Returns null if the failure wasn't caused by an exception
+	 * (e.g., when key already exists).
+	 *
+	 * @return The exception or null
+	 */
 	public Exception getException() {
 		return exception;
 	}
 
+	/**
+	 * Gets the human-readable description of the failure reason.
+	 * <p>
+	 * The returned string is never null. When failure was caused by an exception,
+	 * this typically contains the exception message.
+	 *
+	 * @return Non-null description of the failure reason
+	 */
 	public String getReason() {
 		return reason;
 	}
 
+	/**
+	 * Gets the additional arguments used in the operation.
+	 * <p>
+	 * The returned array is never null, though it may be empty.
+	 * The contents depend on the specific operation context.
+	 *
+	 * @return Array of operation arguments (never null)
+	 */
 	public Object[] getArgs() {
 		return args;
 	}

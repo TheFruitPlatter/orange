@@ -28,40 +28,58 @@ package com.langwuyue.orange.redis.listener.value;
  * <p>This class is used as a parameter type in {@link OrangeRedisValueSetIfAbsentListener#onSuccess(Object)}
  * to provide information about the successful operation to event handlers.
  * 
- * <p>Example usage:
- * <pre>{@code
- * @Override
- * public void onSuccess(OrangeSetIfAbsentSuccessEvent event) {
- *     Object value = event.getValue();
- *     Object[] args = event.getArgs();
- *     
- *     logger.info("Successfully set value: {}", value);
- *     // Process additional arguments if needed
- *     if (args.length > 0) {
- *         logger.info("Operation arguments: {}", Arrays.toString(args));
- *     }
- * }
- * }</pre>
- *
  * @author Liang.Zhong
  * @since 1.0.0
  * @see OrangeRedisValueSetIfAbsentListener
  */
 public class OrangeSetIfAbsentSuccessEvent {
 	
+	/**
+	 * The value that was successfully set in Redis.
+	 * <p>
+	 * This is the value that was stored when the set-if-absent operation succeeded
+	 * because the key did not previously exist.
+	 */
 	private Object value;
 	
+	/**
+	 * Additional arguments that were provided during the set-if-absent operation.
+	 * <p>
+	 * May include metadata or configuration parameters that influenced the operation.
+	 * Can be empty but never null.
+	 */
 	private Object[] args;
 	
-	public OrangeSetIfAbsentSuccessEvent(Object[] args,Object value) {
+	/**
+	 * Creates a new success event for a set-if-absent operation.
+	 *
+	 * @param args Additional arguments used in the operation (cannot be null)
+	 * @param value The value that was successfully set in Redis (can be null)
+	 */
+	public OrangeSetIfAbsentSuccessEvent(Object[] args, Object value) {
 		this.value = value;
 		this.args = args;
 	}
 
+	/**
+	 * Gets the value that was successfully set in Redis.
+	 * <p>
+	 * May return null if a null value was explicitly set.
+	 *
+	 * @return The value that was set, or null
+	 */
 	public Object getValue() {
 		return value;
 	}
 
+	/**
+	 * Gets the additional arguments used in the set-if-absent operation.
+	 * <p>
+	 * The returned array is guaranteed not to be null, though it may be empty.
+	 * The contents depend on the specific operation context.
+	 *
+	 * @return Array of operation arguments (never null)
+	 */
 	public Object[] getArgs() {
 		return args;
 	}

@@ -30,35 +30,48 @@ package com.langwuyue.orange.redis.listener.value;
  *   <li>Other operational exceptions</li>
  * </ul>
  * 
+ * <p>This class extends {@link OrangeSetIfAbsentFailedEvent} to reuse its failure
+ * reporting structure while specifically representing remove operation failures.
+ * It doesn't add new fields but provides more specific semantic meaning for
+ * remove operations.
+ *
  * <p>This class is used as a parameter type in {@link OrangeRedisValueSetIfAbsentListener#onRemoveFailed(Object)}
  * to provide information about the failed remove operation to event handlers.
  * 
- * <p>Example usage:
- * <pre>{@code
- * @Override
- * public void onRemoveFailed(OrangeRemoveFailedEvent event) {
- *     Object value = event.getValue();
- *     String reason = event.getReason();
- *     Exception exception = event.getException();
- *     
- *     logger.warn("Failed to remove value: {}, reason: {}", value, reason);
- *     if (exception != null) {
- *         logger.error("Exception details:", exception);
- *     }
- * }
- * }</pre>
- *
  * @author Liang.Zhong
  * @since 1.0.0
  * @see OrangeSetIfAbsentFailedEvent
  * @see OrangeRedisValueSetIfAbsentListener
  */
-public class OrangeRemoveFailedEvent extends OrangeSetIfAbsentFailedEvent{
+public class OrangeRemoveFailedEvent extends OrangeSetIfAbsentFailedEvent {
 
+	/**
+	 * Creates a remove failure event with an exception cause.
+	 *
+	 * @param args Additional arguments used in the remove operation (cannot be null)
+	 * @param value The value that failed to be removed (can be null)
+	 * @param exception The exception that caused the failure (can be null)
+	 * <p>
+	 * Delegates to {@link OrangeSetIfAbsentFailedEvent#OrangeSetIfAbsentFailedEvent(Object[], Object, Exception)}
+	 * while providing specific semantic meaning for remove operations.
+	 */
 	public OrangeRemoveFailedEvent(Object[] args, Object value, Exception exception) {
 		super(args, value, exception);
 	}
 
+	/**
+	 * Creates a remove failure event with a custom reason message.
+	 *
+	 * @param args Additional arguments used in the remove operation (cannot be null)
+	 * @param value The value that failed to be removed (can be null)
+	 * @param reason Human-readable description of the failure (cannot be null)
+	 * <p>
+	 * Delegates to {@link OrangeSetIfAbsentFailedEvent#OrangeSetIfAbsentFailedEvent(Object[], Object, String)}
+	 * while providing specific semantic meaning for remove operations.
+	 * <p>
+	 * Use this constructor when the failure wasn't caused by an exception but
+	 * still needs to be reported (e.g., when key didn't exist).
+	 */
 	public OrangeRemoveFailedEvent(Object[] args, Object value, String reason) {
 		super(args, value, reason);
 	}

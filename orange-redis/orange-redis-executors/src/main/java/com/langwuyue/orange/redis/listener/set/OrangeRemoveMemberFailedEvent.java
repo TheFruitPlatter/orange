@@ -19,6 +19,13 @@
 package com.langwuyue.orange.redis.listener.set;
 
 /**
+ * Event representing a failed Redis SET member removal operation.
+ *
+ * <p>This specialized event extends {@link OrangeAddMemberIfAbsentFailedEvent} to represent
+ * failures that occur when attempting to remove members from a Redis set. It provides
+ * the same information as its parent class but is semantically distinct for removal operations.
+ *
+ * @see OrangeAddMemberIfAbsentFailedEvent for complete method documentation
  * @author Liang.Zhong
  * @since 1.0.0
  */
