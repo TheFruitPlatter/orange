@@ -38,6 +38,11 @@ import com.langwuyue.orange.redis.operations.OrangeRedisGeoOperations.GeoEntry;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor for Redis GEO search within a bounding box and store results.
+ * <p>
+ * Performs a search for geo points within a specified rectangular area (bounding box)
+ * and stores the results to a target key.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
  */
@@ -45,11 +50,27 @@ public class OrangeSearchInBoxAndStoreExecutor extends OrangeRedisAbstractExecut
 	
 	private OrangeRedisGeoOperations operations;
 
+	/**
+	 * Constructs a new executor for geo search in box and store operations.
+	 *
+	 * @param operations Redis geo operations implementation
+	 * @param idGenerator Executor ID generator
+	 */
 	public OrangeSearchInBoxAndStoreExecutor(OrangeRedisGeoOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Execute Redis geo search in box and store operation.
+	 * <p>
+	 * Searches for geo points within specified bounding box using context parameters
+	 * and stores results to target key.
+	 *
+	 * @param context Context containing search parameters
+	 * @return Result of store operation
+	 * @throws Exception if execution fails
+	 */
 	@Override
 	public Object execute(OrangeRedisContext context) throws Exception {
 		OrangeBoxPointReferenceContext ctx = (OrangeBoxPointReferenceContext) context;
@@ -67,6 +88,11 @@ public class OrangeSearchInBoxAndStoreExecutor extends OrangeRedisAbstractExecut
 		);
 	}
 
+	/**
+	 * Get the list of annotation classes supported by this executor.
+	 *
+	 * @return List of supported annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(
@@ -81,6 +107,13 @@ public class OrangeSearchInBoxAndStoreExecutor extends OrangeRedisAbstractExecut
 		);
 	}
 
+	/**
+	 * Get the required context class type for this executor.
+	 * <p>
+	 * Returns the specific context class for geo box search operations.
+	 *
+	 * @return Context class type
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeBoxPointReferenceContext.class;

@@ -37,6 +37,11 @@ import com.langwuyue.orange.redis.operations.OrangeRedisGeoOperations.GeoEntry;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Redis geo-spatial radius search and store executor.
+ * <p>
+ * This executor searches for geo points within specified radius and stores results to target key.
+ * Supports configuration via annotations including center coordinates, search radius, unit etc.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
@@ -44,11 +49,27 @@ public class OrangeSearchInRadiusAndStoreExecutor extends OrangeRedisAbstractExe
 	
 	private OrangeRedisGeoOperations operations;
 
-	public OrangeSearchInRadiusAndStoreExecutor(OrangeRedisGeoOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
+	/**
+	 * Constructor.
+	 *
+	 * @param operations Redis geo operations interface
+	 * @param idGenerator Executor ID generator
+	 */
+	public OrangeSearchInRadiusAndStoreExecutor(OrangeRedisGeoOperations operations, OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Execute Redis geo radius search and store operation.
+	 * <p>
+	 * Searches for geo points within specified radius using context parameters,
+	 * and stores results to target key.
+	 *
+	 * @param context Context containing search parameters
+	 * @return Result of store operation
+	 * @throws Exception if execution fails
+	 */
 	@Override
 	public Object execute(OrangeRedisContext context) throws Exception {
 		OrangeRadiusPointReferenceContext ctx = (OrangeRadiusPointReferenceContext) context;
@@ -64,6 +85,13 @@ public class OrangeSearchInRadiusAndStoreExecutor extends OrangeRedisAbstractExe
 		);
 	}
 
+	/**
+	 * Get list of supported annotation classes.
+	 * <p>
+	 * Includes various parameter annotations for geo-spatial search.
+	 *
+	 * @return List of supported annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(
@@ -77,6 +105,13 @@ public class OrangeSearchInRadiusAndStoreExecutor extends OrangeRedisAbstractExe
 		);
 	}
 
+	/**
+	 * Get the required context class type for this executor.
+	 * <p>
+	 * Returns the specific context class for geo radius search operations.
+	 *
+	 * @return Context class type
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeRadiusPointReferenceContext.class;

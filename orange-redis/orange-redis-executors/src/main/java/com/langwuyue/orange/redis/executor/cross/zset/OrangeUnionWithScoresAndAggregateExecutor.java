@@ -36,23 +36,72 @@ import com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor for performing union operations on Redis sorted sets with scores and aggregation
+ * 
+ * <p>This executor handles Redis ZUNIONSTORE operations with score retrieval and aggregation.
+ * It combines multiple sorted sets into a single result set, calculating scores based on
+ * the specified aggregation function (SUM, MIN, or MAX) and optional weights.</p>
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeUnionWithScoresAndAggregateExecutor extends OrangeGetWithScoresAbstractExecutor {
 	
+	/**
+	 * Redis sorted set operations handler for executing union operations
+	 */
 	private OrangeRedisZSetOperations operations;
 
+	/**
+	 * Constructs a new union executor with scores and aggregation support
+	 * 
+	 * @param operations The Redis sorted set operations handler for executing union commands
+	 * @param idGenerator The generator for creating unique executor identifiers
+	 */
 	public OrangeUnionWithScoresAndAggregateExecutor(OrangeRedisZSetOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Gets the list of annotation classes supported by this executor
+	 * 
+	 * <p>This executor supports the following annotations:</p>
+	 * <ul>
+	 * <li>{@link Union} - Identifies this as a union operation</li>
+	 * <li>{@link CrossOperationKeys} - Specifies other keys to perform union with</li>
+	 * <li>{@link WithScores} - Indicates that member scores should be returned</li>
+	 * <li>{@link Aggregate} - Specifies how to aggregate scores from different sets</li>
+	 * </ul>
+	 * 
+	 * @return List of supported annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(Union.class,CrossOperationKeys.class,WithScores.class,Aggregate.class);
 	}
 
+	/**
+	 * Executes the union operation on sorted sets and returns the result collection with scores
+	 * 
+	 * <p>This method performs the actual union calculation operation and processes scores
+	 * according to the configured aggregation operator and weights. The returned result contains
+	 * all members from the union of the sets along with their aggregated scores.</p>
+	 * 
+	 * <p>The operation performs the following steps:</p>
+	 * <ol>
+	 * <li>Combines all members from the reference key and comparison keys</li>
+	 * <li>Applies weights to each set's scores if specified</li>
+	 * <li>Aggregates scores using the specified operator (SUM, MIN or MAX)</li>
+	 * <li>Returns the result with members and their final scores</li>
+	 * </ol>
+	 * 
+	 * @param context Redis operation context containing keys, aggregation operator and weights
+	 * @param valueField Reflection information of the value field, used for type conversion
+	 * @param returnArgumentType Type information of the method return value
+	 * @return The calculated union collection containing members and score information
+	 * @throws Exception If an error occurs during execution
+	 */
 	@Override
 	protected Collection doGet(OrangeRedisContext context, Field valueField, Type returnArgumentType) throws Exception {
 		OrangeAggregateContext ctx = (OrangeAggregateContext) context;
@@ -66,6 +115,19 @@ public class OrangeUnionWithScoresAndAggregateExecutor extends OrangeGetWithScor
 		);
 	}
 	
+	/**
+	 * Gets the context class used by this executor
+	 * 
+	 * <p>This executor uses {@link OrangeAggregateContext} which provides:</p>
+	 * <ul>
+	 * <li>Reference key and comparison keys for the union operation</li>
+	 * <li>Aggregation operator (SUM, MIN or MAX)</li>
+	 * <li>Optional weights for each input set</li>
+	 * <li>Type information for value conversion</li>
+	 * </ul>
+	 * 
+	 * @return The {@link OrangeAggregateContext} class used by this executor
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeAggregateContext.class;

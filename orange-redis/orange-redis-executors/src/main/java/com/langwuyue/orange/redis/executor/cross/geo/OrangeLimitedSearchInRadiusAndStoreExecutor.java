@@ -26,16 +26,43 @@ import com.langwuyue.orange.redis.mapping.OrangeRedisExecutorIdGenerator;
 import com.langwuyue.orange.redis.operations.OrangeRedisGeoOperations;
 
 /**
+ * Executor for limited GEO search within a circular radius and store results.
+ * 
+ * <p>Extends {@link OrangeSearchInRadiusAndStoreExecutor} to add support for limiting
+ * the number of results returned from the search operation. This executor handles:
+ * <ul>
+ *   <li>Searching for members within a specified circular radius</li>
+ *   <li>Storing the results in a destination key</li>
+ *   <li>Limiting the number of results via {@link Count} annotation</li>
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeLimitedSearchInRadiusAndStoreExecutor extends OrangeSearchInRadiusAndStoreExecutor {
 	
 
+	/**
+	 * Creates a new OrangeLimitedSearchInRadiusAndStoreExecutor instance.
+	 * 
+	 * @param operations the Redis GEO operations implementation
+	 * @param idGenerator the executor ID generator
+	 */
 	public OrangeLimitedSearchInRadiusAndStoreExecutor(OrangeRedisGeoOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(operations,idGenerator);
 	}
 
+	/**
+	 * Gets the list of supported annotation classes for this executor.
+	 * <p>Extends the parent class's supported annotations by adding {@link Count}
+	 * annotation to support limiting the number of search results.
+	 * 
+	 * @return list of annotation classes including:
+	 * <ul>
+	 *   <li>{@link Count} - for limiting result count</li>
+	 *   <li>All annotations from parent class</li>
+	 * </ul>
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		List<Class<? extends Annotation>> supportedAnnotationClasses = super.getSupportedAnnotationClasses();

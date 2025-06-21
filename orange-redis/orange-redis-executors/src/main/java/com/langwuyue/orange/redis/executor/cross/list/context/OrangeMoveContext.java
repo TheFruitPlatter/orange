@@ -28,14 +28,40 @@ import com.langwuyue.orange.redis.context.builder.OrangeMethodAnnotationHandler;
 import com.langwuyue.orange.redis.executor.cross.context.OrangeCrossOperationContext;
 
 /**
+ * Context class for Redis list move operations.
+ * 
+ * <p>This context holds all necessary information for executing a Redis list move operation,
+ * including:
+ * <ul>
+ *   <li>Source and destination keys</li>
+ *   <li>Move direction (LEFT/RIGHT)</li>
+ *   <li>Operation owner and method details</li>
+ *   <li>Value type information</li>
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeMoveContext extends OrangeCrossOperationContext {
 	
-	@OrangeRedisOperationArg(valueHandler = OrangeMethodAnnotationHandler.class,binding = ListMoveDirection.class)
+	/**
+	 * The direction of the list move operation (LEFT/RIGHT).
+	 * <p>This field is populated by the {@link OrangeMethodAnnotationHandler}
+	 * based on the {@link ListMoveDirection} annotation.
+	 */
+	@OrangeRedisOperationArg(valueHandler = OrangeMethodAnnotationHandler.class, binding = ListMoveDirection.class)
 	private ListMoveDirection direction;
 
+	/**
+	 * Creates a new OrangeMoveContext instance.
+	 * 
+	 * @param operationOwner the class that owns the operation method
+	 * @param operationMethod the method annotated with Redis operation
+	 * @param args the method arguments
+	 * @param keys the Redis keys involved in the operation
+	 * @param storeTo the destination key for the move operation
+	 * @param valueType the type of value being moved
+	 */
 	public OrangeMoveContext(
 		Class<?> operationOwner, 
 		Method operationMethod, 
@@ -47,6 +73,15 @@ public class OrangeMoveContext extends OrangeCrossOperationContext {
 		super(operationOwner, operationMethod, args, keys, storeTo, valueType);
 	}
 	
+	/**
+	 * Gets the direction of the list move operation.
+	 * 
+	 * @return the move direction (LEFT/RIGHT) which determines:
+	 * <ul>
+	 *   <li>From which end of the source list to pop the value</li>
+	 *   <li>To which end of the destination list to push the value</li>
+	 * </ul>
+	 */
 	public ListMoveDirection getDirection() {
 		return direction;
 	}

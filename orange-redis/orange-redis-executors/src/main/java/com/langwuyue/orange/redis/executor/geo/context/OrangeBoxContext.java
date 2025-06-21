@@ -49,8 +49,6 @@ import com.langwuyue.orange.redis.operations.OrangeRedisGeoOperations.SearchArgu
  *   <li>Whether to include coordinates/distance in results</li>
  * </ul>
  * 
- * <p>Used by {@link com.langwuyue.orange.redis.executor.geo.OrangeGeoBoxExecutor} 
- * to perform Redis GEO searches within a bounding box area.
  *
  * @author Liang.Zhong
  * @since 1.0.0

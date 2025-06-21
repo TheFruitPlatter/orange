@@ -36,28 +36,78 @@ import com.langwuyue.orange.redis.operations.OrangeRedisListOperations;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor for Redis list move operations between different keys.
+ * 
+ * <p>This executor handles the movement of elements between Redis lists with support for:
+ * <ul>
+ *   <li>Specifying source and destination keys</li>
+ *   <li>Controlling move direction (LEFT/RIGHT)</li>
+ *   <li>Type conversion of moved values</li>
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeMoveExecutor extends OrangeRedisGetOneAbstractExecutor {
 	
+	/**
+	 * Redis list operations instance used to perform the actual move operation.
+	 */
 	private OrangeRedisListOperations operations;
 
-	public OrangeMoveExecutor(OrangeRedisListOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
+	/**
+	 * Creates a new OrangeMoveExecutor instance.
+	 * 
+	 * @param operations the Redis list operations instance
+	 * @param idGenerator the executor ID generator
+	 */
+	public OrangeMoveExecutor(OrangeRedisListOperations operations, OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Returns the list of annotation classes supported by this executor.
+	 * 
+	 * @return a list containing the following annotation classes:
+	 * <ul>
+	 *   <li>{@link Move}</li>
+	 *   <li>{@link CrossOperationKeys}</li>
+	 *   <li>{@link StoreTo}</li>
+	 *   <li>{@link ListMoveDirection}</li>
+	 * </ul>
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(Move.class,CrossOperationKeys.class,StoreTo.class,ListMoveDirection.class);
 	}
 
+	/**
+	 * Returns the context class used by this executor.
+	 * 
+	 * @return the {@link OrangeMoveContext} class which holds all necessary
+	 *         information for list move operations
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeMoveContext.class;
 	}
 
+	/**
+	 * Executes the Redis list move operation.
+	 * 
+	 * @param context the execution context containing:
+	 * <ul>
+	 *   <li>Source list key</li>
+	 *   <li>Destination list key</li>
+	 *   <li>Move direction (LEFT/RIGHT)</li>
+	 *   <li>Value to move</li>
+	 * </ul>
+	 * @param valueField the field annotated with value to move (may be null)
+	 * @param returnArgumentType the expected return type
+	 * @return a collection containing the moved value
+	 * @throws Exception if the move operation fails
+	 */
 	@Override
 	protected Collection doGet(OrangeRedisContext context, Field valueField, Type returnArgumentType) throws Exception {
 		OrangeMoveContext ctx = (OrangeMoveContext) context;

@@ -35,6 +35,9 @@ import com.langwuyue.orange.redis.operations.OrangeRedisGeoOperations;
 import com.langwuyue.orange.redis.utils.OrangeCollectionUtils;
 
 /**
+ * Executor for searching geo points within radius and storing results,
+ * with additional member existence check.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
  */
@@ -42,11 +45,27 @@ public class OrangeSearchInRadiusAndStoreByExistsMemberExecutor extends OrangeRe
 	
 	private OrangeRedisGeoOperations operations;
 
+	/**
+	 * Constructs a new executor for geo radius search and store operations.
+	 *
+	 * @param operations Geo operations implementation
+	 * @param idGenerator Executor ID generator
+	 */
 	public OrangeSearchInRadiusAndStoreByExistsMemberExecutor(OrangeRedisGeoOperations operations,OrangeRedisExecutorIdGenerator idGenerator) {
 		super(idGenerator);
 		this.operations = operations;
 	}
 
+	/**
+	 * Execute Redis geo radius search and store operation with member existence check.
+	 * <p>
+	 * Searches for geo points within specified radius using context parameters,
+	 * stores results to target key, and checks if specified member exists within radius.
+	 *
+	 * @param context Context containing search parameters
+	 * @return Result of store operation
+	 * @throws Exception if execution fails
+	 */
 	@Override
 	public Object execute(OrangeRedisContext context) throws Exception {
 		OrangeRadiusContext ctx = (OrangeRadiusContext) context;
@@ -61,6 +80,11 @@ public class OrangeSearchInRadiusAndStoreByExistsMemberExecutor extends OrangeRe
 		);
 	}
 
+	/**
+	 * Get the list of annotation classes supported by this executor.
+	 *
+	 * @return List of supported annotation classes
+	 */
 	@Override
 	protected List<Class<? extends Annotation>> getSupportedAnnotationClasses() {
 		return OrangeCollectionUtils.asList(
@@ -73,6 +97,13 @@ public class OrangeSearchInRadiusAndStoreByExistsMemberExecutor extends OrangeRe
 		);
 	}
 
+	/**
+	 * Get the required context class type for this executor.
+	 * <p>
+	 * Returns the specific context class for geo radius search operations with member existence check.
+	 *
+	 * @return Context class type
+	 */
 	@Override
 	public Class<? extends OrangeRedisContext> getContextClass() {
 		return OrangeRadiusContext.class;

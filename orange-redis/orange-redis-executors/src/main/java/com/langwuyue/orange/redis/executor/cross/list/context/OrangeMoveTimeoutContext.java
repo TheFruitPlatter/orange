@@ -27,14 +27,45 @@ import com.langwuyue.orange.redis.annotation.Timeout;
 import com.langwuyue.orange.redis.context.builder.OrangeMethodAnnotationHandler;
 
 /**
+ * Context class for Redis list move operations with timeout support.
+ * 
+ * <p>Extends {@link OrangeMoveContext} to add timeout capabilities for list move operations.
+ * This context holds all necessary information including:
+ * <ul>
+ *   <li>Source and destination keys</li>
+ *   <li>Move direction (LEFT/RIGHT)</li>
+ *   <li>Timeout configuration</li>
+ *   <li>Operation owner and method details</li>
+ *   <li>Value type information</li>
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeMoveTimeoutContext extends OrangeMoveContext {
 	
-	@OrangeRedisOperationArg(valueHandler = OrangeMethodAnnotationHandler.class,binding = Timeout.class)
+	/**
+	 * The timeout configuration for the list move operation.
+	 * <p>This field is populated by the {@link OrangeMethodAnnotationHandler}
+	 * based on the {@link Timeout} annotation and specifies:
+	 * <ul>
+	 *   <li>Timeout value</li>
+	 *   <li>Timeout unit</li>
+	 * </ul>
+	 */
+	@OrangeRedisOperationArg(valueHandler = OrangeMethodAnnotationHandler.class, binding = Timeout.class)
 	private Timeout timeout;
 
+	/**
+	 * Creates a new OrangeMoveTimeoutContext instance.
+	 * 
+	 * @param operationOwner the class that owns the operation method
+	 * @param operationMethod the method annotated with Redis operation
+	 * @param args the method arguments
+	 * @param keys the Redis keys involved in the operation
+	 * @param storeTo the destination key for the move operation
+	 * @param valueType the type of value being moved
+	 */
 	public OrangeMoveTimeoutContext(
 		Class<?> operationOwner, 
 		Method operationMethod, 
@@ -46,6 +77,15 @@ public class OrangeMoveTimeoutContext extends OrangeMoveContext {
 		super(operationOwner, operationMethod, args, keys, storeTo, valueType);
 	}
 	
+	/**
+	 * Gets the timeout configuration for the list move operation.
+	 * 
+	 * @return the timeout configuration which determines:
+	 * <ul>
+	 *   <li>How long to wait for an element to become available</li>
+	 *   <li>The time unit for the wait period</li>
+	 * </ul>
+	 */
 	public Timeout getTimeout() {
 		return timeout;
 	}
