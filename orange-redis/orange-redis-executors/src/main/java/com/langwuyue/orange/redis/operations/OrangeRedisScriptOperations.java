@@ -25,11 +25,29 @@ import java.util.Map;
 import com.langwuyue.orange.redis.RedisValueTypeEnum;
 
 /**
+ * Interface for Redis script operations supporting execution of Lua scripts.
+ * Equivalent to Redis EVAL and EVALSHA commands with enhanced type handling.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public interface OrangeRedisScriptOperations {
 
+	/**
+	 * Executes a Redis Lua script with proper type handling for arguments and return value.
+	 * 
+	 * @param script the Lua script to execute (or SHA1 digest for cached scripts)
+	 * @param argsValueTypes map of argument values to their Redis value types
+	 * @param returnValueType the expected Redis value type of the return value
+	 * @param returnType the Java type to convert the return value to
+	 * @param keys list of keys accessed by the script
+	 * @param args arguments to pass to the script
+	 * @return the script result converted to the specified return type
+	 * @throws Exception if script execution fails or type conversion fails
+	 * 
+	 * @see <a href="https://redis.io/commands/eval">Redis EVAL command</a>
+	 * @see <a href="https://redis.io/commands/evalsha">Redis EVALSHA command</a>
+	 */
 	Object execute(
 		String script, 
 		Map<Object, RedisValueTypeEnum> argsValueTypes, 
