@@ -19,17 +19,38 @@
 package com.langwuyue.orange.redis;
 
 /**
+ * Redis value type enum, identifies data types stored in Redis.
+ * 
+ * <p>This enum defines various value types supported in Redis operations,
+ * used for type conversion and serialization/deserialization processing.</p>
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public enum RedisValueTypeEnum {
 	
+	/**
+	 * String type, suitable for simple string values
+	 * <p>Example: Caching simple text information</p>
+	 */
 	STRING,
 	
+	/**
+	 * JSON format, suitable for complex objects
+	 * <p>Example: Storing user information, configuration objects and other structured data</p>
+	 */
 	JSON,
 	
+	/**
+	 * Long integer number, suitable for integer values
+	 * <p>Example: Counters, IDs and other integer values</p>
+	 */
 	LONG,
 	
+	/**
+	 * Double precision floating point, suitable for decimal values
+	 * <p>Example: Prices, ratings and other scenarios requiring decimals</p>
+	 */
 	DOUBLE,
 	
 	;

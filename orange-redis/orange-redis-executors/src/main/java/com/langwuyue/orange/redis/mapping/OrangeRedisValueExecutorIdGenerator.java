@@ -33,11 +33,40 @@ import com.langwuyue.orange.redis.annotation.value.Lock;
 import com.langwuyue.orange.redis.annotation.value.SetValue;
 
 /**
+ * Executor ID generator for Redis value operations.
+ * 
+ * <p>This class extends the abstract executor ID generator to provide support
+ * for Redis value-specific annotations. It registers all the annotation classes
+ * that are relevant for Redis value operations, such as getting and setting values,
+ * conditional operations (CAS, IfAbsent), and atomic operations (Increment, Decrement).
+ * 
+ * <p>The registered annotations are used to generate unique operation IDs that
+ * identify specific Redis value operations based on their annotation combinations.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeRedisValueExecutorIdGenerator extends OrangeRedisExecutorIdAbstractGenerator {
 
+	/**
+	 * Registers all annotation classes supported by Redis value operations.
+	 * 
+	 * <p>This method extends the base registration by adding value-specific annotations:
+	 * <ul>
+	 *   <li>{@link RedisValue} - Marks parameters that represent Redis values</li>
+	 *   <li>{@link RedisOldValue} - Marks parameters that capture previous values</li>
+	 *   <li>{@link IfAbsent} - Indicates operations that should only proceed if a key is absent</li>
+	 *   <li>{@link CAS} - Indicates Compare-And-Set operations</li>
+	 *   <li>{@link Increment} - Marks atomic increment operations</li>
+	 *   <li>{@link Decrement} - Marks atomic decrement operations</li>
+	 *   <li>{@link SetValue} - Indicates value setting operations</li>
+	 *   <li>{@link GetValue} - Indicates value retrieval operations</li>
+	 *   <li>{@link AutoRenew} - Indicates keys that should be automatically renewed</li>
+	 *   <li>{@link Lock} - Indicates Redis-based locking operations</li>
+	 * </ul>
+	 *
+	 * @param supportedAnnotationClasses the list to populate with supported annotation classes
+	 */
 	@Override
 	protected void registerSupportedAnnotationClasses(List<Class<? extends Annotation>> supportedAnnotationClasses) {
 		super.registerSupportedAnnotationClasses(supportedAnnotationClasses);

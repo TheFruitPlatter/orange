@@ -44,11 +44,26 @@ import com.langwuyue.orange.redis.annotation.hash.HasKeys;
 import com.langwuyue.orange.redis.annotation.hash.HashKey;
 
 /**
+ * Executor ID generator for Redis hash operations.
+ * 
+ * <p>This class extends the abstract executor ID generator to provide support
+ * for Redis hash-specific annotations. It registers all the annotation classes
+ * that are relevant for Redis hash operations, such as adding, retrieving, and
+ * removing hash entries, as well as operations for hash keys and values.
+ * 
+ * <p>The registered annotations are used to generate unique operation IDs that
+ * identify specific Redis hash operations based on their annotation combinations.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeRedisHashExecutorIdGenerator extends OrangeRedisExecutorIdAbstractGenerator {
 
+	/**
+	 * Registers all annotation classes supported by Redis hash operations.
+	 * 
+	 * @param supportedAnnotationClasses the list to populate with supported annotation classes
+	 */
 	@Override
 	protected void registerSupportedAnnotationClasses(List<Class<? extends Annotation>> supportedAnnotationClasses) {
 		super.registerSupportedAnnotationClasses(supportedAnnotationClasses);

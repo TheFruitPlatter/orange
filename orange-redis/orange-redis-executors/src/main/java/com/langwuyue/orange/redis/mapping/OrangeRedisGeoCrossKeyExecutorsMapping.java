@@ -39,11 +39,43 @@ import com.langwuyue.orange.redis.operations.OrangeRedisScriptOperations;
 import com.langwuyue.orange.redis.template.NoTemplate;
 
 /**
+ * A specialized executor mapping class for Redis Geo cross-key operations.
+ * 
+ * <p>This class extends {@link OrangeRedisAbstractExecutorsMapping} to provide support
+ * for geographical operations that span across multiple Redis keys. It registers various
+ * executors that handle operations such as searching within a geographical radius or box
+ * and storing the results in a different key.
+ * 
+ * <p>The mapping includes executors for:
+ * <ul>
+ *   <li>Limited search operations within a radius with result storage</li>
+ *   <li>Limited search operations within a box with result storage</li>
+ *   <li>Search operations by existing members with result storage</li>
+ *   <li>Various combinations of the above operations</li>
+ * </ul>
+ * 
+ * <p>This class is part of the Orange Redis framework's geo-spatial capabilities,
+ * specifically designed for operations that involve storing results in different keys
+ * than the source data.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeRedisGeoCrossKeyExecutorsMapping extends OrangeRedisAbstractExecutorsMapping {
 	
+	/**
+	 * Constructs a new OrangeRedisGeoCrossKeyExecutorsMapping with the specified components.
+	 * 
+	 * <p>This constructor initializes the mapping with all necessary dependencies for
+	 * handling Redis Geo cross-key operations.
+	 *
+	 * @param operations the Redis Geo operations implementation to be used by executors
+	 * @param generator the executor ID generator specific to Geo cross-key operations
+	 * @param listeners collection of listeners for set-if-absent operations
+	 * @param scriptOperations operations for executing Redis scripts
+	 * @param multipleListeners collection of listeners for multiple set-if-absent operations
+	 * @param logger the logger for recording operation details and errors
+	 */
 	public OrangeRedisGeoCrossKeyExecutorsMapping(
 		OrangeRedisGeoOperations operations,
 		OrangeRedisGeoCrossKeyExecutorIdGenerator generator,
@@ -55,6 +87,21 @@ public class OrangeRedisGeoCrossKeyExecutorsMapping extends OrangeRedisAbstractE
 		super(operations,generator,scriptOperations,listeners,multipleListeners,logger);
 	}
 
+	/**
+	 * Registers all supported Redis Geo cross-key operation executors.
+	 * 
+	 * <p>This method extends the base implementation by registering executors that handle
+	 * geographical operations with result storage in different keys. It initializes and adds
+	 * various specialized executors to handle different types of geo-spatial operations.
+	 *
+	 * @param executors the list to which executors will be added
+	 * @param operations the Redis operations implementation
+	 * @param generator the executor ID generator
+	 * @param scriptOperations operations for executing Redis scripts
+	 * @param listeners collection of listeners for set-if-absent operations
+	 * @param multipleListeners collection of listeners for multiple set-if-absent operations
+	 * @param logger the logger for recording operation details and errors
+	 */
 	@Override
 	protected void registerExecutors(
 		List<OrangeRedisExecutor> executors, 
@@ -76,6 +123,13 @@ public class OrangeRedisGeoCrossKeyExecutorsMapping extends OrangeRedisAbstractE
 		executors.add(new OrangeSearchInRadiusAndStoreExecutor(geoOperations,generator));
 	}
 
+	/**
+	 * Returns the template class used by this executor mapping.
+	 * 
+	 * <p> This template just helps clarify error messages.
+	 *
+	 * @return the {@link NoTemplate} class
+	 */
 	@Override
 	protected Class<?> getTemplateClass() {
 		return NoTemplate.class;

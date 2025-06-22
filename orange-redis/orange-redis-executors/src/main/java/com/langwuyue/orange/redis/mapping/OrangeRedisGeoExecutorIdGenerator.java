@@ -37,11 +37,35 @@ import com.langwuyue.orange.redis.annotation.geo.SearchArgs;
 import com.langwuyue.orange.redis.annotation.geo.Width;
 
 /**
+ * A specialized executor ID generator for Redis Geo operations. This class extends the base
+ * {@link OrangeRedisExecutorIdAbstractGenerator} to provide support for geographical-related
+ * Redis operations and their associated annotations.
+ * 
+ * <p>This generator registers various annotations related to Redis Geo operations, including:
+ * <ul>
+ *   <li>Basic member operations (add, get, remove)</li>
+ *   <li>Geographical coordinates (latitude, longitude)</li>
+ *   <li>Search parameters (distance, width, height)</li>
+ *   <li>Operation modifiers (multiple, continue on failure)</li>
+ * </ul>
+ * 
+ * <p>The registered annotations are used to identify and process Redis Geo commands
+ * during method execution.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeRedisGeoExecutorIdGenerator extends OrangeRedisExecutorIdAbstractGenerator {
 
+	/**
+	 * Registers all annotation classes supported by this Redis Geo executor ID generator.
+	 * 
+	 * <p>This method extends the base implementation by adding Geo-specific annotations
+	 * to the list of supported annotation classes. These annotations are used to identify
+	 * and process Redis Geo commands during method execution.
+	 * 
+	 * @param supportedAnnotationClasses the list to which supported annotation classes will be added
+	 */
 	@Override
 	protected void registerSupportedAnnotationClasses(List<Class<? extends Annotation>> supportedAnnotationClasses) {
 		super.registerSupportedAnnotationClasses(supportedAnnotationClasses);

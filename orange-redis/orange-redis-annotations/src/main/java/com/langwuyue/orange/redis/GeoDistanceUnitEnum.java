@@ -20,12 +20,39 @@ package com.langwuyue.orange.redis;
 
 
 /**
+ * Redis geospatial distance unit enum, defines units supported for geo distance calculation and queries.
+ * 
+ * <p>This enum is mainly used in Redis GEO commands to specify distance units,
+ * such as {@code GEODIST}, {@code GEORADIUS} commands.</p>
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public enum GeoDistanceUnitEnum {
 	
-	METERS(6378137, "m"), KILOMETERS(6378.137, "km"), MILES(3963.191, "mi"), FEET(20925646.325, "ft");
+	/**
+	 * Meters, international standard unit
+	 * <p>Example: GEODIST key member1 member2 m</p>
+	 */
+	METERS(6378137, "m"), 
+	
+	/**
+	 * Kilometers, 1 kilometer = 1000 meters
+	 * <p>Example: GEORADIUS key longitude latitude 10 km</p>
+	 */
+	KILOMETERS(6378.137, "km"), 
+	
+	/**
+	 * Miles, 1 mile ≈ 1609.34 meters
+	 * <p>Example: GEORADIUS key longitude latitude 5 mi</p>
+	 */
+	MILES(3963.191, "mi"), 
+	
+	/**
+	 * Feet, 1 foot ≈ 0.3048 meters
+	 * <p>Example: GEORADIUS key longitude latitude 1000 ft</p>
+	 */
+	FEET(20925646.325, "ft");
 
 	private final double multiplier;
 	private final String abbreviation;
@@ -36,18 +63,18 @@ public enum GeoDistanceUnitEnum {
 	}
 
 	/**
-	 * Returns the multiplier to calculate metrics values from a base scale.
-	 *
-	 * @return
+	 * Gets the unit conversion multiplier, used to convert Earth's radius to current unit scale factor.
+	 * 
+	 * @return Unit conversion multiplier
 	 */
 	public double getMultiplier() {
 		return multiplier;
 	}
 
 	/**
-	 * Returns the scientific abbreviation of the unit the {@link GeoDistanceUnitEnum} is in.
-	 *
-	 * @return
+	 * Gets the scientific abbreviation of the unit, used for Redis command parameters.
+	 * 
+	 * @return Unit abbreviation string
 	 */
 	public String getAbbreviation() {
 		return abbreviation;

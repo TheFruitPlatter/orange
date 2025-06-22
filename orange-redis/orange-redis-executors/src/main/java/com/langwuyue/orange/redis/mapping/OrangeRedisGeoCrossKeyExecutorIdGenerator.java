@@ -34,11 +34,26 @@ import com.langwuyue.orange.redis.annotation.geo.SearchArgs;
 import com.langwuyue.orange.redis.annotation.geo.Width;
 
 /**
+ * Executor ID generator for Redis Geo operations that work across multiple keys.
+ * 
+ * <p>This class is responsible for generating executor IDs for Redis Geo operations
+ * that involve cross-key functionality, such as storing geo search results to another key
+ * or performing operations across multiple geo indexes.
+ * 
+ * <p>It registers all the annotation classes that are relevant for geo cross-key operations,
+ * including annotations for specifying geo coordinates, search parameters, and cross-operation
+ * key definitions.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeRedisGeoCrossKeyExecutorIdGenerator extends OrangeRedisExecutorIdAbstractGenerator {
 
+	/**
+	 * Registers all annotation classes supported by this executor ID generator.
+	 * 
+	 * @param supportedAnnotationClasses the list to which supported annotation classes will be added
+	 */
 	@Override
 	protected void registerSupportedAnnotationClasses(List<Class<? extends Annotation>> supportedAnnotationClasses) {
 		supportedAnnotationClasses.add(GetMembers.class);

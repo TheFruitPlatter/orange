@@ -22,13 +22,45 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 
 /**
+ * Interface for generating and validating operation IDs for Redis executors.
+ * 
+ * <p>This interface defines methods for generating unique operation IDs based on
+ * a list of annotation classes and for checking if a given operation ID contains
+ * a specific annotation. The implementation of this interface is responsible for
+ * mapping annotations to bit positions in the generated ID.
+ *
+ * <p>Operation IDs are used to efficiently identify and categorize Redis operations
+ * based on their associated annotations. Each operation ID is a 64-bit long value
+ * where each bit represents the presence or absence of a specific annotation.
+ *
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public interface OrangeRedisExecutorIdGenerator {
 	
+	/**
+	 * Generates an operation ID based on a list of annotation classes.
+	 * 
+	 * <p>This method creates a unique identifier by combining bit representations
+	 * of the provided annotation classes. Each annotation class is mapped to a specific
+	 * bit position, and the resulting ID has bits set for all the provided annotations.
+	 *
+	 * @param supportedClasses a list of annotation classes to include in the operation ID
+	 * @return a long value representing the generated operation ID
+	 */
 	long generate(List<Class<? extends Annotation>> supportedClasses);
 	
+	/**
+	 * Checks if a given operation ID contains a specific annotation.
+	 * 
+	 * <p>This method determines whether the bit pattern corresponding to the specified
+	 * annotation is present in the provided operation ID.
+	 *
+	 * @param operationId the operation ID to check
+	 * @param annotationClass the annotation class to check for
+	 * @return true if the operation ID contains the specified annotation, false otherwise
+	 */
 	boolean contains(long operationId, Class<? extends Annotation> annotationClass);
 
 }

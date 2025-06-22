@@ -28,11 +28,41 @@ import com.langwuyue.orange.redis.annotation.multiplelocks.MultipleLocks;
 import com.langwuyue.orange.redis.annotation.transaction.Release;
 
 /**
+ * A specialized executor ID generator for Redis multiple locks operations.
+ * 
+ * <p>This class extends {@link OrangeRedisExecutorIdAbstractGenerator} to provide
+ * specific support for generating executor IDs in the context of multiple Redis locks
+ * operations. It handles various lock-related annotations and generates appropriate
+ * executor IDs based on the combination of these annotations.
+ * 
+ * <p>The generator supports the following annotations:
+ * <ul>
+ *   <li>{@link MultipleLocks} - For handling multiple locks in a single operation</li>
+ *   <li>{@link AutoRenew} - For automatic lock renewal functionality</li>
+ *   <li>{@link Multiple} - For operations involving multiple keys</li>
+ *   <li>{@link ContinueOnFailure} - For specifying failure handling behavior</li>
+ *   <li>{@link Release} - For lock release operations in transactions</li>
+ * </ul>
+ * 
+ * <p>This generator ensures that each combination of these annotations produces
+ * a unique executor ID, allowing for proper identification and handling of
+ * different types of multiple lock operations.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeRedisMultipleLocksExecutorIdGenerator extends OrangeRedisExecutorIdAbstractGenerator {
 
+	/**
+	 * Registers all annotation classes supported by this executor ID generator.
+	 * 
+	 * <p>This method extends the base implementation by registering additional
+	 * annotation classes specific to multiple locks operations. These annotations
+	 * are used to identify and differentiate various types of multiple lock operations
+	 * when generating executor IDs.
+	 * 
+	 * @param supportedAnnotationClasses the list to which supported annotation classes will be added
+	 */
 	@Override
 	protected void registerSupportedAnnotationClasses(List<Class<? extends Annotation>> supportedAnnotationClasses) {
 		super.registerSupportedAnnotationClasses(supportedAnnotationClasses);

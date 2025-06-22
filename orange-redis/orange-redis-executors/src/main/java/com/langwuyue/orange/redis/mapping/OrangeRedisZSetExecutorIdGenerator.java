@@ -58,11 +58,29 @@ import com.langwuyue.orange.redis.annotation.zset.ScoreRange;
 import com.langwuyue.orange.redis.annotation.zset.WithScores;
 
 /**
+ * Executor ID generator for Redis sorted set (ZSet) operations.
+ * 
+ * <p>This class extends the abstract executor ID generator to provide support
+ * for Redis sorted set-specific annotations. It registers all the annotation classes
+ * that are relevant for Redis sorted set operations, such as adding, retrieving, and
+ * removing members with scores, as well as operations for score ranges, lexicographical
+ * ranges, rank ranges, and pagination.
+ * 
+ * <p>The registered annotations are used to generate unique operation IDs that
+ * identify specific Redis sorted set operations based on their annotation combinations.
+ * Sorted sets in Redis are particularly feature-rich, supporting both score-based and
+ * lexicographical ordering, which is reflected in the wide variety of supported annotations.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeRedisZSetExecutorIdGenerator extends OrangeRedisExecutorIdAbstractGenerator {
 
+	/**
+	 * Registers all annotation classes supported by Redis sorted set operations.
+	 * 
+	 * @param supportedAnnotationClasses the list to populate with supported annotation classes
+	 */
 	@Override
 	protected void registerSupportedAnnotationClasses(List<Class<? extends Annotation>> supportedAnnotationClasses) {
 		super.registerSupportedAnnotationClasses(supportedAnnotationClasses);

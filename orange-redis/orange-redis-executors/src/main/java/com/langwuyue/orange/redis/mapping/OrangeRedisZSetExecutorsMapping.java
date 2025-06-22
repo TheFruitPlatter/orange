@@ -120,11 +120,40 @@ import com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations;
 import com.langwuyue.orange.redis.template.zset.JSONOperationsTemplate;
 
 /**
+ * Mapping class for Redis sorted set (ZSet) operation executors.
+ * 
+ * <p>This class extends {@link OrangeRedisAbstractExecutorsMapping} to provide
+ * executor mapping for all Redis sorted set operations. It supports the following
+ * operation categories:
+ * <ul>
+ *   <li>Basic CRUD operations (add, remove, get)</li>
+ *   <li>Score-based operations (increment, decrement)</li>
+ *   <li>Range queries by lexicographical order</li>
+ *   <li>Range queries by rank</li>
+ *   <li>Range queries by score</li>
+ *   <li>Random member retrieval</li>
+ *   <li>Conditional operations (compare-and-swap)</li>
+ *   <li>Pagination support for various queries</li>
+ * </ul>
+ * 
+ * <p>The mapping creates and registers executors for all supported operation
+ * variants, ensuring proper operation handling and routing.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeRedisZSetExecutorsMapping extends OrangeRedisAbstractExecutorsMapping {
 	
+	/**
+	 * Constructs a new mapping for Redis sorted set operations.
+	 * 
+	 * @param operations the Redis sorted set operations instance
+	 * @param generator the executor ID generator for sorted set operations
+	 * @param listeners collection of set-if-absent listeners
+	 * @param scriptOperations Redis script operations instance
+	 * @param multipleListeners collection of multiple set-if-absent listeners
+	 * @param logger Redis operation logger
+	 */
 	public OrangeRedisZSetExecutorsMapping(
 		OrangeRedisZSetOperations operations,
 		OrangeRedisZSetExecutorIdGenerator generator,
@@ -136,9 +165,33 @@ public class OrangeRedisZSetExecutorsMapping extends OrangeRedisAbstractExecutor
 		super(operations,generator,scriptOperations,listeners,multipleListeners,logger);
 	}
 
+	/**
+	 * Registers all executors for Redis sorted set operations.
+	 * 
+	 * <p>This method populates the executors list with implementations for various
+	 * sorted set operations, including:
+	 * <ul>
+	 *   <li>Basic CRUD operations (add, remove, get)</li>
+	 *   <li>Score-based operations (increment, decrement)</li>
+	 *   <li>Range queries by lexicographical order</li>
+	 *   <li>Range queries by rank</li>
+	 *   <li>Range queries by score</li>
+	 *   <li>Random member retrieval</li>
+	 *   <li>Conditional operations (compare-and-swap)</li>
+	 *   <li>Pagination support for various queries</li>
+	 * </ul>
+	 * 
+	 * @param executors the list to which executors should be added
+	 * @param operations the Redis operations instance
+	 * @param generator the executor ID generator
+	 * @param scriptOperations Redis script operations instance
+	 * @param listeners collection of set-if-absent listeners
+	 * @param multipleListeners collection of multiple set-if-absent listeners
+	 * @param logger Redis operation logger
+	 */
 	@Override
 	protected void registerExecutors(
-		List<OrangeRedisExecutor> executors, 
+		List<OrangeRedisExecutor> executors,
 		OrangeRedisOperations operations,
 		OrangeRedisExecutorIdGenerator generator,
 		OrangeRedisScriptOperations scriptOperations,
@@ -248,6 +301,13 @@ public class OrangeRedisZSetExecutorsMapping extends OrangeRedisAbstractExecutor
 		executors.add(new OrangeCountExecutor(zSetOperations,generator));
 	}
 
+	/**
+	 * Returns the template class used for JSON serialization/deserialization of sorted set values.
+	 * 
+	 * <p> This template just helps clarify error messages.
+	 * 
+	 * @return the template class for JSON operations
+	 */
 	@Override
 	protected Class<?> getTemplateClass() {
 		return JSONOperationsTemplate.class;

@@ -45,6 +45,26 @@ import com.langwuyue.orange.redis.template.hash.JSONOperationsTemplate;
 import com.langwuyue.orange.redis.timer.OrangeRenewTimerWheel;
 
 /**
+ * Mapping class for Redis transaction operations executors.
+ * 
+ * <p>This class extends {@link OrangeRedisAbstractExecutorsMapping} to provide
+ * specific support for mapping Redis transaction operations to their corresponding executors.
+ * It manages the lifecycle of transactions and registers executors for various transaction-related
+ * operations.
+ * 
+ * <p>The mapping handles the following transaction operations:
+ * <ul>
+ *   <li>Beginning and committing transactions</li>
+ *   <li>Setting values within transactions</li>
+ *   <li>Getting values within transactions</li>
+ *   <li>Managing transaction snapshots</li>
+ *   <li>Handling transaction timeouts</li>
+ *   <li>Processing transaction commits with expiration</li>
+ * </ul>
+ * 
+ * <p>This class works in conjunction with {@link OrangeRedisDefaultTransactionManager}
+ * to properly manage transaction state and execution.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
@@ -52,6 +72,26 @@ public class OrangeRedisTransactionExecutorsMapping extends OrangeRedisAbstractE
 	
 	private OrangeRedisDefaultTransactionManager transactionManager;
 	
+	/**
+	 * Constructs a new OrangeRedisTransactionExecutorsMapping instance.
+	 * 
+	 * <p>This constructor initializes the transaction mapping with all necessary components
+	 * for handling Redis transaction operations. It sets up the transaction manager and
+	 * registers various executors for transaction operations.
+	 *
+	 * @param operations the Redis hash operations implementation
+	 * @param setOperations the Redis set operations implementation
+	 * @param zsetOperations the Redis sorted set operations implementation
+	 * @param generator the executor ID generator for transaction operations
+	 * @param listeners collection of listeners for single-key operations
+	 * @param scriptOperations the Redis script operations implementation
+	 * @param multipleListeners collection of listeners for multi-key operations
+	 * @param properties configuration properties for transactions
+	 * @param wheel timer wheel for transaction timeout management
+	 * @param expirationTimeAutoInitializer auto-initializer for expiration times
+	 * @param callbacks map of transaction timeout callbacks
+	 * @param logger the logger instance for Redis operations
+	 */
 	public OrangeRedisTransactionExecutorsMapping(
 		OrangeRedisHashOperations operations,
 		OrangeRedisSetOperations setOperations,
@@ -65,7 +105,6 @@ public class OrangeRedisTransactionExecutorsMapping extends OrangeRedisAbstractE
 		OrangeExpirationTimeAutoInitializer expirationTimeAutoInitializer,
 		Map<String,OrangeRedisTransactionTimeoutListener> callbacks,
 		OrangeRedisLogger logger
-		
 	) {
 		super(operations,generator,scriptOperations,listeners,multipleListeners,logger);
 		// Processor for auto committing.
@@ -106,11 +145,34 @@ public class OrangeRedisTransactionExecutorsMapping extends OrangeRedisAbstractE
 		this.registerExecutors((OrangeRedisExecutor)snapshotGetExecutor);
 	}
 
+	/**
+	 * Returns the template class used by this executor mapping.
+	 * 
+	 * <p> This template just helps clarify error messages.
+	 *
+	 * @return {@link JSONOperationsTemplate}.class indicating JSON templating is used
+	 */
 	@Override
 	protected Class<?> getTemplateClass() {
 		return JSONOperationsTemplate.class;
 	}
 	
+	/**
+	 * Gets the transaction manager instance for this mapping.
+	 * 
+	 * <p>The transaction manager is responsible for coordinating all Redis transaction operations,
+	 * including:
+	 * <ul>
+	 *   <li>Managing transaction lifecycle (begin, commit, rollback)</li>
+	 *   <li>Handling transaction timeouts and expiration</li>
+	 *   <li>Maintaining transaction snapshots</li>
+	 *   <li>Coordinating distributed locks for transaction operations</li>
+	 *   <li>Processing transaction commits with expiration settings</li>
+	 * </ul>
+	 * 
+	 * @return the {@link OrangeRedisDefaultTransactionManager} instance that manages
+	 *         all transaction operations for this mapping
+	 */
 	public OrangeRedisDefaultTransactionManager getTransactionManager() {
 		return transactionManager;
 	}

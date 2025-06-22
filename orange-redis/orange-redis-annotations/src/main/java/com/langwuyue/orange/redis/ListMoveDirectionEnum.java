@@ -19,12 +19,25 @@
 package com.langwuyue.orange.redis;
 
 /**
- * List move direction.
+ * Redis list operation direction enum, defines directions for moving or inserting list elements.
+ * 
+ * <p>This enum is mainly used in Redis list operations to specify the direction
+ * for moving or inserting elements, such as {@code LPOP}, {@code RPOP}, {@code LPUSH}, {@code RPUSH} operations.</p>
  * 
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public enum ListMoveDirectionEnum {
 	
-	LEFT, RIGHT;
+	/**
+	 * Left/head direction of the list
+	 * <p>Example: Pop element from list head (LPOP), or insert element to list head (LPUSH)</p>
+	 */
+	LEFT, 
+	
+	/**
+	 * Right/tail direction of the list
+	 * <p>Example: Pop element from list tail (RPOP), or insert element to list tail (RPUSH)</p>
+	 */
+	RIGHT;
 }

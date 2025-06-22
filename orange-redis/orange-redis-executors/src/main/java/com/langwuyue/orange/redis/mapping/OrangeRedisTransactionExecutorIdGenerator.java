@@ -28,11 +28,35 @@ import com.langwuyue.orange.redis.annotation.value.GetValue;
 import com.langwuyue.orange.redis.annotation.value.SetValue;
 
 /**
+ * Transaction executor ID generator for Redis operations.
+ * 
+ * <p>This class extends {@link OrangeRedisExecutorIdAbstractGenerator} to provide
+ * specific support for generating unique IDs for Redis transaction executors.
+ * It registers additional annotation classes that are specific to transaction operations.
+ * 
+ * <p>The generator supports the following transaction-related annotations:
+ * <ul>
+ *   <li>{@link SetValue} - For setting values within transactions</li>
+ *   <li>{@link GetValue} - For getting values within transactions</li>
+ *   <li>{@link Version} - For version control in transactions</li>
+ *   <li>{@link Commit} - For transaction commit operations</li>
+ *   <li>{@link RedisValue} - General Redis value operations</li>
+ * </ul>
+ * 
+ * <p>This generator works in conjunction with the transaction executor mapping
+ * to ensure proper identification and execution of transaction operations.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeRedisTransactionExecutorIdGenerator extends OrangeRedisExecutorIdAbstractGenerator {
 
+	/**
+	 * Registers all annotation classes supported by transaction executors.
+	 * 
+	 * @param supportedAnnotationClasses the list to which supported annotation classes
+	 *        should be added. This list is initialized by the superclass.
+	 */
 	@Override
 	protected void registerSupportedAnnotationClasses(List<Class<? extends Annotation>> supportedAnnotationClasses) {
 		super.registerSupportedAnnotationClasses(supportedAnnotationClasses);

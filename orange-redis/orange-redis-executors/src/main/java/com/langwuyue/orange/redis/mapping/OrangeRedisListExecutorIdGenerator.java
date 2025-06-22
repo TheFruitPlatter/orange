@@ -47,11 +47,27 @@ import com.langwuyue.orange.redis.annotation.zset.RankRange;
 import com.langwuyue.orange.redis.annotation.zset.Reverse;
 
 /**
+ * Executor ID generator for Redis list operations.
+ * 
+ * <p>This class extends the abstract executor ID generator to provide support
+ * for Redis list-specific annotations. It registers all the annotation classes
+ * that are relevant for Redis list operations, such as adding, retrieving, and
+ * removing list elements, as well as operations for list indices, positions,
+ * and directional operations (left/right).
+ * 
+ * <p>The registered annotations are used to generate unique operation IDs that
+ * identify specific Redis list operations based on their annotation combinations.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeRedisListExecutorIdGenerator extends OrangeRedisExecutorIdAbstractGenerator {
 
+	/**
+	 * Registers all annotation classes supported by Redis list operations.
+	 * 
+	 * @param supportedAnnotationClasses the list to populate with supported annotation classes
+	 */
 	@Override
 	protected void registerSupportedAnnotationClasses(List<Class<? extends Annotation>> supportedAnnotationClasses) {
 		super.registerSupportedAnnotationClasses(supportedAnnotationClasses);

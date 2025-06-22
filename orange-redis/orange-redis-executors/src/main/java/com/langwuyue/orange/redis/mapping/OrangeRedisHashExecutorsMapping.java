@@ -59,11 +59,43 @@ import com.langwuyue.orange.redis.operations.OrangeRedisScriptOperations;
 import com.langwuyue.orange.redis.template.hash.JSONOperationsTemplate;
 
 /**
+ * Implementation of {@link OrangeRedisExecutorsMapping} specifically for Redis Hash operations.
+ * 
+ * <p>This class extends {@link OrangeRedisAbstractExecutorsMapping} and provides a comprehensive
+ * mapping between Java methods and Redis Hash executors. It supports a wide range of hash operations
+ * including:
+ * <ul>
+ *   <li>Basic operations: add, get, remove hash entries</li>
+ *   <li>Atomic operations: increment, decrement, compare-and-swap</li>
+ *   <li>Batch operations: add/remove multiple members</li>
+ *   <li>Query operations: get keys, values, check existence</li>
+ *   <li>Random access: get random keys/members</li>
+ *   <li>Conditional operations: add-if-absent with optional expiration</li>
+ * </ul>
+ * 
+ * <p>Each operation is handled by a specialized executor that manages the conversion between
+ * Java objects and Redis hash entries, ensuring type safety and proper serialization.
+ * The mapping also supports various listeners for handling conditional operations and
+ * logging capabilities for operation tracking.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeRedisHashOperations
+ * @see OrangeRedisHashExecutorIdGenerator
  */
 public class OrangeRedisHashExecutorsMapping extends OrangeRedisAbstractExecutorsMapping {
 	
+	/**
+	 * Constructs a new OrangeRedisHashExecutorsMapping with the specified components.
+	 *
+	 * @param operations The Redis hash operations interface for executing hash commands
+	 * @param generator The executor ID generator specific to hash operations
+	 * @param listeners Collection of listeners for handling set-if-absent operations
+	 * @param scriptOperations The Redis script operations interface for executing Lua scripts
+	 *                         (used for atomic operations like compare-and-swap)
+	 * @param multipleListeners Collection of listeners for handling multiple set-if-absent operations
+	 * @param logger The logger instance for recording operation details and errors
+	 */
 	public OrangeRedisHashExecutorsMapping(
 		OrangeRedisHashOperations operations,
 		OrangeRedisHashExecutorIdGenerator generator,
@@ -75,9 +107,20 @@ public class OrangeRedisHashExecutorsMapping extends OrangeRedisAbstractExecutor
 		super(operations,generator,scriptOperations,listeners,multipleListeners,logger);
 	}
 
+	/**
+	 * Registers all Redis Hash executors supported by this mapping.
+	 * 
+	 * @param executors The list to which executors will be added
+	 * @param operations The Redis operations interface
+	 * @param generator The executor ID generator
+	 * @param scriptOperations The Redis script operations interface
+	 * @param listeners Collection of listeners for handling set-if-absent operations
+	 * @param multipleListeners Collection of listeners for handling multiple set-if-absent operations
+	 * @param logger The logger instance for recording operation details and errors
+	 */
 	@Override
 	protected void registerExecutors(
-		List<OrangeRedisExecutor> executors, 
+		List<OrangeRedisExecutor> executors,
 		OrangeRedisOperations operations,
 		OrangeRedisExecutorIdGenerator generator,
 		OrangeRedisScriptOperations scriptOperations,
@@ -120,6 +163,13 @@ public class OrangeRedisHashExecutorsMapping extends OrangeRedisAbstractExecutor
 		executors.add(new OrangeRandomAndDistinctKeysExecutor(hashOperations,generator));
 	}
 
+	/**
+	 * Returns the template class used for this executor mapping.
+	 * 
+	 * <p> This template just helps clarify error messages.
+	 *
+	 * @return The {@link JSONOperationsTemplate} class for Redis Hash operations
+	 */
 	@Override
 	protected Class<?> getTemplateClass() {
 		return JSONOperationsTemplate.class;
