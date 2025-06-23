@@ -24,31 +24,80 @@ import com.langwuyue.orange.redis.OrangeRedisException;
 import com.langwuyue.orange.redis.logger.OrangeRedisLogger;
 
 /**
+ * Worker implementation for the timer wheel that handles Redis key renewal tasks.
+ * 
+ * This class implements the core functionality of the timer wheel algorithm for scheduling
+ * and executing Redis key renewal tasks. It maintains a circular array of task buckets (the wheel)
+ * and processes tasks based on their scheduled execution time.
+ * 
+ * The worker runs in a dedicated thread and performs the following operations:
+ * 1. Moves new tasks from the queue to the appropriate bucket in the wheel
+ * 2. Executes tasks that are due in the current tick
+ * 3. Reschedules tasks for future execution if needed
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeRenewTimerWorker implements Runnable {
 	
+	/**
+	 * Minimum allowed tick duration in milliseconds (1 second)
+	 */
 	private static final long MIN_TICK_DURATION_MILLIS = 1000;
 	
+	/**
+	 * Size of the timer wheel (number of buckets)
+	 */
 	private int wheelSize;
 	
+	/**
+	 * Queue for newly added tasks waiting to be scheduled into the wheel
+	 */
 	private LinkedBlockingQueue<OrangeRenewTask> newTaskQueue = new LinkedBlockingQueue<>();
 	
+	/**
+	 * The timer wheel array, each element is a linked list of tasks
+	 */
 	private OrangeTaskLink[] wheel;
 	
+	/**
+	 * Current tick counter
+	 */
 	private long tick;
 	
+	/**
+	 * Duration of each tick in milliseconds
+	 */
 	private long tickDuration;
 	
+	/**
+	 * Timestamp when the worker started
+	 */
 	private long startTime;
 	
+	/**
+	 * Maximum number of tasks to poll from the queue in each round
+	 */
 	private int maxPollSizePerRound;
 	
+	/**
+	 * Logger for recording events and errors
+	 */
 	private OrangeRedisLogger logger;
 	
+	/**
+	 * Flag indicating whether the worker should be destroyed
+	 * Note: Field name is misspelled (should be "destroy"), but kept as is for compatibility
+	 */
 	private boolean destory = false;
 	
+	/**
+	 * Creates a new timer wheel worker with the specified configuration.
+	 * 
+	 * @param properties Configuration properties for the timer wheel, including wheel size and tick duration
+	 * @param logger Logger for recording events and errors during operation
+	 * @throws OrangeRedisException if the tick duration is invalid
+	 */
 	public OrangeRenewTimerWorker(OrangeAutoRenewProperties properties,OrangeRedisLogger logger) {
 		// Init timer wheel
 		this.wheelSize = properties.getWheelSize();
@@ -70,6 +119,17 @@ public class OrangeRenewTimerWorker implements Runnable {
 		this.logger = logger;
 	}
 
+	/**
+	 * Main execution loop for the timer wheel worker.
+	 * 
+	 * This method runs continuously until the worker is destroyed, performing the following operations in each cycle:
+	 * 1. Determines the next tick to process
+	 * 2. Moves new tasks from the queue to the appropriate bucket in the wheel
+	 * 3. Processes tasks that are due in the current tick
+	 * 4. Monitors execution time and logs warnings if processing takes longer than the tick duration
+	 * 
+	 * The method handles all exceptions internally to prevent the worker thread from terminating unexpectedly.
+	 */
 	@Override
 	public void run() {
 		this.startTime = System.currentTimeMillis();
@@ -115,6 +175,16 @@ public class OrangeRenewTimerWorker implements Runnable {
 		}
 	}
 	
+	/**
+	 * Calculates the next tick to process based on the current time.
+	 * 
+	 * This method determines how many ticks have elapsed since the worker started,
+	 * taking into account the configured tick duration. If the next tick is not yet due,
+	 * the method will sleep until it is time to process that tick.
+	 * 
+	 * @return The index in the wheel array for the next tick to process
+	 * @throws InterruptedException if the thread is interrupted while sleeping
+	 */
 	private int getNextTick() throws InterruptedException {
 		long tick = this.tick;
 		long diff = (tick * this.tickDuration) - (System.currentTimeMillis() - this.startTime);
@@ -127,6 +197,17 @@ public class OrangeRenewTimerWorker implements Runnable {
 		return (int)(tick % this.wheelSize);
 	}
 
+	/**
+	 * Moves tasks from the new task queue to the appropriate buckets in the timer wheel.
+	 * 
+	 * This method processes up to {@link #maxPollSizePerRound} tasks from the queue in each call.
+	 * For each task, it:
+	 * 1. Calculates the appropriate bucket based on the task's renewal threshold
+	 * 2. Determines how many complete wheel rotations will be needed before the task is due
+	 * 3. Adds the task to the appropriate bucket in the wheel
+	 * 
+	 * Tasks that have been marked for removal are skipped.
+	 */
 	private void newTaskQueue2Wheel() {
 		this.logger.debug("Scheduling new tasks into the timing wheel");
 		for(int i = 0; i < this.maxPollSizePerRound; i++) {
@@ -149,6 +230,16 @@ public class OrangeRenewTimerWorker implements Runnable {
 		this.logger.debug("All new tasks have been scheduled into the timing wheel");
 	}
 	
+	/**
+	 * Adds a new renewal task to the worker's queue.
+	 * 
+	 * This method is thread-safe and can be called from multiple threads.
+	 * The task will be added to the new task queue and will be scheduled into
+	 * the timer wheel during the next processing cycle.
+	 * 
+	 * @param task The renewal task to add
+	 * @return true if the task was successfully added to the queue, false otherwise
+	 */
 	public boolean addTask(OrangeRenewTask task) {
 		long renewThreshold = task.getRenewThreshold();
 		if(renewThreshold <= 0) {
@@ -159,6 +250,15 @@ public class OrangeRenewTimerWorker implements Runnable {
 		return this.newTaskQueue.add(task);
 	}
 	
+	/**
+	 * Initiates an orderly shutdown of the worker.
+	 * 
+	 * This method sets the destroy flag, which causes the worker's main loop
+	 * to exit gracefully after completing its current tasks.
+	 * 
+	 * Note: The method name is intentionally spelled as "destory" (instead of "destroy")
+	 * for backward compatibility reasons.
+	 */
 	public void destory() {
 		this.logger.info("Auto-renewal thread pool is shutting down now.");
 		this.destory = true;

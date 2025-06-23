@@ -21,30 +21,67 @@ package com.langwuyue.orange.redis.registry;
 import java.time.Duration;
 
 /**
+ * Configuration properties for slow Redis operation monitoring.
+ * 
+ * This class defines the configuration properties used to monitor and log slow Redis
+ * operations. It allows setting a threshold duration beyond which operations are
+ * considered "slow" and enables/disables the monitoring functionality.
+ * 
+ * These properties can be configured through application configuration to adjust
+ * the sensitivity of slow operation detection based on the specific requirements
+ * of the application environment.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeSlowOperationProperties {
 	
 	/**
-	 * Triggers a WARN log when execution time > threshold.
+	 * The threshold duration beyond which a Redis operation is considered slow.
+	 * Triggers a WARN log when execution time exceeds this threshold.
+	 * Default value is 1 second.
 	 */
 	private Duration slowOperationThreshold = Duration.ofSeconds(1);
 	
+	/**
+	 * Flag to enable or disable slow operation monitoring.
+	 * When set to false, no slow operation monitoring or logging will occur.
+	 * Default value is true (enabled).
+	 */
 	private boolean enabled = true;
 
+	/**
+	 * Gets the threshold duration for slow operations.
+	 * 
+	 * @return The duration threshold beyond which operations are considered slow
+	 */
 	public Duration getSlowOperationThreshold() {
 		return slowOperationThreshold;
 	}
 
+	/**
+	 * Sets the threshold duration for slow operations.
+	 * 
+	 * @param slowOperationThreshold The duration threshold to set
+	 */
 	public void setSlowOperationThreshold(Duration slowOperationThreshold) {
 		this.slowOperationThreshold = slowOperationThreshold;
 	}
 
+	/**
+	 * Checks if slow operation monitoring is enabled.
+	 * 
+	 * @return true if slow operation monitoring is enabled, false otherwise
+	 */
 	public boolean isEnabled() {
 		return enabled;
 	}
 
+	/**
+	 * Enables or disables slow operation monitoring.
+	 * 
+	 * @param enabled true to enable monitoring, false to disable
+	 */
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}

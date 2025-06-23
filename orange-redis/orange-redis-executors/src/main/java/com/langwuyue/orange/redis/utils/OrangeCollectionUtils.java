@@ -23,13 +23,33 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * Utility class providing collection-related helper methods for Orange Redis operations.
+ * 
+ * This abstract class contains static utility methods for working with collections
+ * in the context of Redis operations. It is designed to be used as a static utility
+ * class and cannot be instantiated.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public abstract class OrangeCollectionUtils {
 	
+	/**
+	 * Private constructor to prevent instantiation of this utility class.
+	 * This class is designed to be used via its static methods only.
+	 */
 	private OrangeCollectionUtils() {}
 	
+	/**
+	 * Creates a new ArrayList containing the specified elements.
+	 * 
+	 * This method provides a convenient way to create and initialize an ArrayList
+	 * in a single operation. It is similar to Arrays.asList() but returns an ArrayList
+	 * that can be modified, unlike the fixed-size list returned by Arrays.asList().
+	 *
+	 * @param values the elements to be placed into the list
+	 * @return a new ArrayList containing the specified elements
+	 */
 	public static List asList(Object... values) {
 		List list = new ArrayList<>(values.length);
 		Collections.addAll(list, values);

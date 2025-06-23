@@ -23,23 +23,51 @@ import java.util.function.Consumer;
 import com.langwuyue.orange.redis.logger.OrangeRedisLogger;
 
 /**
+ * A doubly-linked list implementation for managing OrangeRenewTask objects.
+ * 
+ * This class provides operations for adding tasks to the list, removing tasks,
+ * and processing expired tasks. It maintains head and tail pointers for efficient
+ * operations at both ends of the list.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeTaskLink {
         
+	/**
+	 * The first task in the linked list.
+	 */
 	private OrangeRenewTask head;
 	
+	/**
+	 * The last task in the linked list.
+	 */
     private OrangeRenewTask tail;
     
+    /**
+     * Logger for recording operations on the task link.
+     */
     private OrangeRedisLogger logger;
     
+    /**
+     * Constructs a new empty task link.
+     * 
+     * @param logger The logger to use for recording operations on the task link
+     */
     public OrangeTaskLink(OrangeRedisLogger logger) {
 		super();
 		this.logger = logger;
 	}
 
-	public void add(OrangeRenewTask task) {
+    /**
+     * Adds a task to the end of the linked list.
+     * 
+     * If the list is empty, the task becomes both the head and tail.
+     * Otherwise, the task is appended to the end of the list and becomes the new tail.
+     * 
+     * @param task The task to add to the linked list
+     */
+    public void add(OrangeRenewTask task) {
         assert task.getLink() == null;
         task.setLink(this);
         if (head == null) {
@@ -51,6 +79,18 @@ public class OrangeTaskLink {
         }
     }
 
+    /**
+     * Processes all tasks in the linked list, handling expired tasks and updating round counts.
+     * 
+     * This method iterates through the entire linked list from head to tail.
+     * For each task:
+     * - If the round count is 0 or less, the task is removed and processed by the consumer
+     * - If the task is marked for removal, it is removed without processing
+     * - Otherwise, the task's round count is decremented by 1
+     * 
+     * @param consumer The function to apply to each expired task
+     * @throws Exception If an error occurs during task processing
+     */
     public void expire(Consumer<OrangeRenewTask> consumer) throws Exception {
         OrangeRenewTask task = head;
         while (task != null) {
@@ -69,6 +109,20 @@ public class OrangeTaskLink {
         }
     }
 
+    /**
+     * Removes a task from the linked list and updates the head and tail pointers as needed.
+     * 
+     * This method handles all cases of removal:
+     * - Removing the head task
+     * - Removing the tail task
+     * - Removing the only task in the list
+     * - Removing a task from the middle of the list
+     * 
+     * After removal, the task's links are cleared (prev, next, and link references set to null).
+     * 
+     * @param task The task to remove from the linked list
+     * @return The next task in the list after the removed task, or null if there is no next task
+     */
     public OrangeRenewTask remove(OrangeRenewTask task) {
     	this.logger.debug("Removing {}", task);
         OrangeRenewTask next = task.getNext();

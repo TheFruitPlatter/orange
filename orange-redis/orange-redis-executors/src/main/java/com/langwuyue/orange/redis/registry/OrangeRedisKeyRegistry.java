@@ -28,23 +28,69 @@ import java.util.stream.Collectors;
 import com.langwuyue.orange.redis.OrangeRedisException;
 
 /**
+ * Registry for managing and validating Redis key patterns.
+ * 
+ * This class provides a centralized registry for Redis keys and their associated operations.
+ * It enforces key naming conventions and validates key patterns to prevent conflicts and
+ * potential runtime issues. The registry supports different levels of validation strictness
+ * as defined in {@link OrangeKeyNamingFormatCheckLevel}.
+ * 
+ * Key features:
+ * - Registration of Redis keys with their variable patterns
+ * - Validation of key naming conventions
+ * - Detection of potential key conflicts
+ * - Multiple levels of key format checking
+ * - Prevention of duplicate operation mappings
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeRedisKeyRegistry {
 	
+	/**
+	 * Character used to mark variable parts in key patterns.
+	 * For example: "user:?:profile" where ? represents a variable part.
+	 */
 	public static final String VARIABLE_MARK_CHAR = "?";
 	
+	/**
+	 * Pattern to validate that variables in key patterns are correctly positioned.
+	 * Ensures that variable markers appear only at the end of the key pattern.
+	 */
 	private static final Pattern PATTERN = Pattern.compile("\\w+(\\w+|:)*\\"+OrangeRedisKeyRegistry.VARIABLE_MARK_CHAR+"+");
 	
+	/**
+	 * Registry mapping Redis keys to their metadata.
+	 * Each key can have multiple metadata entries, though this is validated during checks.
+	 */
 	private static final Map<String,Set<OrangeRedisKeyMetaData>> ORANGE_REDIS_OPERATIONS_REGISTRY = new HashMap<>();
 	
+	/**
+	 * Registry for tracking similar keys after variable parts are removed.
+	 * Used to detect potential conflicts between different key patterns.
+	 */
 	private static final Map<String,Set<String>> ORANGE_REDIS_SIMILAR_KEYS_REGISTRY = new HashMap<>();
 	
+	/**
+	 * Gets the current Redis operations registry.
+	 * 
+	 * @return A map containing all registered Redis keys and their associated metadata
+	 */
 	public static Map<String,Set<OrangeRedisKeyMetaData>> getRegistry() {
 		return ORANGE_REDIS_OPERATIONS_REGISTRY;
 	}
 	
+	/**
+	 * Registers a new Redis key with its associated metadata.
+	 * 
+	 * This method registers a Redis key along with its variable pattern and the class
+	 * that performs operations using this key. It also tracks similar keys (keys that
+	 * share the same pattern after removing variables) to prevent potential conflicts.
+	 * 
+	 * @param key The actual Redis key to register
+	 * @param variableKey The key pattern with variable placeholders (e.g., "user:?:profile")
+	 * @param operationsClass The class that performs operations using this key
+	 */
 	public static void register(
 		String key, 
 		String variableKey, 
@@ -69,6 +115,30 @@ public class OrangeRedisKeyRegistry {
 		similarKeys.add(key);
 	}
 	
+	/**
+	 * Validates all registered keys according to the specified check level.
+	 * 
+	 * This method performs various checks on the registered keys based on the
+	 * validation level specified in {@link OrangeKeyNamingFormatCheckLevel}:
+	 * 
+	 * Level 1 (ONE_KEY_ONE_OPERATIONS):
+	 * - Ensures each key is associated with only one operation class
+	 * 
+	 * Level 2 (VARIABLE_MUST_BE_LAST):
+	 * - Includes Level 1 checks
+	 * - Ensures variable parts of keys are at the end of the pattern
+	 * 
+	 * Level 3 (SIMILAR_AFTER_IGNORE_VAR):
+	 * - Includes Level 1 and 2 checks
+	 * - Prevents keys that become identical when variables are removed
+	 * 
+	 * Level 4 (STRICT_PREFIX_MATCH):
+	 * - Includes all previous level checks
+	 * - Ensures no key pattern is a prefix of another
+	 * 
+	 * @param level The validation level to apply (from OrangeKeyNamingFormatCheckLevel)
+	 * @throws OrangeRedisException if any validation check fails
+	 */
 	public static void checkKey(int level) {
 		ORANGE_REDIS_OPERATIONS_REGISTRY.forEach((k,v) -> {
 			if(v.size() > 1) {

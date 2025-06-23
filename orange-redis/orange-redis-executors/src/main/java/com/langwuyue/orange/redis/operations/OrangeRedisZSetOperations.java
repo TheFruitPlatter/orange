@@ -487,7 +487,6 @@ public interface OrangeRedisZSetOperations extends OrangeRedisOperations {
 	 * @param comparisonKeys keys of the comparison sorted sets
 	 * @param storeTo destination key to store result
 	 * @return number of elements in the resulting set
-	 * @throws Exception if any error occurs
 	 */
 	Long differenceAndStore(String referenceKey, Collection<String> comparisonKeys, String storeTo);
 	
