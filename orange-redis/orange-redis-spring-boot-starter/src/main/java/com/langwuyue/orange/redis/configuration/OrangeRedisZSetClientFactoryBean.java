@@ -27,7 +27,6 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 import com.langwuyue.orange.redis.OrangeRedisCircuitBreaker;
 import com.langwuyue.orange.redis.OrangeRedisDefaultCircuitBreaker;
-import com.langwuyue.orange.redis.OrangeRedisException;
 import com.langwuyue.orange.redis.RedisValueTypeEnum;
 import com.langwuyue.orange.redis.annotation.zset.OrangeRedisZSetClient;
 import com.langwuyue.orange.redis.listener.OrangeIfAbsentListenerProxy;
@@ -44,15 +43,51 @@ import com.langwuyue.orange.redis.operations.OrangeRedisScriptOperations;
 import com.langwuyue.orange.redis.operations.OrangeRedisZSetOperations;
 
 /**
+ * Factory bean for creating Redis ZSet client proxies.
+ * This class is responsible for creating and configuring proxy instances that handle
+ * Redis ZSet (Sorted Set) operations. It extends the abstract factory bean to provide
+ * specific implementation for ZSet operations.
+ * 
+ * <p>The factory bean manages the creation of invocation handlers, executors mappings,
+ * and various listeners required for ZSet operations. It also handles circuit breaker
+ * configuration for fault tolerance.</p>
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
  */
 public class OrangeRedisZSetClientFactoryBean extends OrangeRedisClientAbstractFactoryBean {
 	
+	/**
+	 * The ZSet client annotation instance.
+	 * This field stores the annotation metadata from {@link OrangeRedisZSetClient}
+	 * that configures this client's behavior, including circuit breaker settings
+	 * and value type configuration.
+	 *
+	 */
 	private OrangeRedisZSetClient client;
 	
+	/**
+	 * Static cache for the ZSet executors mapping.
+	 * This mapping is shared across all instances of the factory bean to avoid
+	 * redundant creation of executors for the same operations. It is lazily
+	 * initialized when first accessed through {@link #getExecutorsMapping()}.
+	 *
+	 */
 	private static OrangeRedisZSetExecutorsMapping EXECUTORS_MAPPING;
 	
+	/**
+	 * Constructs a new OrangeRedisZSetClientFactoryBean with the specified parameters.
+	 * This constructor initializes the factory bean with the necessary components to create
+	 * and configure Redis ZSet operation proxies. It delegates to the parent class constructor
+	 * for common initialization tasks.
+	 *
+	 * @param operationOwner The class that owns the Redis ZSet operations to be proxied.
+	 *                       This is typically an interface defining the ZSet operations.
+	 * @param clientDefinitionClass The class that contains the {@link OrangeRedisZSetClient} annotation,
+	 *                             which provides configuration details for the client.
+	 * @param configuration The Orange Redis configuration that contains global settings
+	 *                     such as connection details, serializers, and other Redis-related properties.
+	 */
 	public OrangeRedisZSetClientFactoryBean(
 			Class<?> operationOwner,
 			Class<?> clientDefinitionClass,
@@ -61,6 +96,15 @@ public class OrangeRedisZSetClientFactoryBean extends OrangeRedisClientAbstractF
 		super(operationOwner, configuration, clientDefinitionClass);
 	}
 	
+	/**
+	 * Gets the executors mapping for Redis ZSet operations.
+	 * This method initializes and returns the mapping between operation IDs and their executors.
+	 * If the mapping already exists, it returns the cached instance.
+	 * Otherwise, it creates a new mapping with ZSet operations, script operations, listeners, and logger.
+	 *
+	 * @return the Redis ZSet executors mapping
+	 *
+	 */
 	@Override
 	protected OrangeRedisExecutorsMapping getExecutorsMapping() {
 		if(EXECUTORS_MAPPING !=  null) {
@@ -83,6 +127,15 @@ public class OrangeRedisZSetClientFactoryBean extends OrangeRedisClientAbstractF
 		return EXECUTORS_MAPPING;
 	}
 	
+	/**
+	 * Gets the collection of multiple set-if-absent listeners for ZSet operations.
+	 * This method retrieves all beans of type OrangeRedisZSetAddMembersIfAbsentListener from the application context,
+	 * proxies them to implement the OrangeRedisMultipleSetIfAbsentListener interface, and sorts them according to
+	 * their annotation-based order.
+	 *
+	 * @return a collection of multiple set-if-absent listeners, or an empty list if none are found
+	 *
+	 */
 	@Override
 	protected Collection<OrangeRedisMultipleSetIfAbsentListener> getMultipleListener() {
 		Map<String, OrangeRedisZSetAddMembersIfAbsentListener> beanMap = this.getApplicationContext().getBeansOfType(OrangeRedisZSetAddMembersIfAbsentListener.class);
@@ -98,6 +151,15 @@ public class OrangeRedisZSetClientFactoryBean extends OrangeRedisClientAbstractF
 		return listeners;
 	}
 
+	/**
+	 * Gets the collection of Redis set-if-absent listeners for ZSet operations.
+	 * This method retrieves all beans of type OrangeRedisZSetAddIfAbsentListener from the application context,
+	 * proxies them to implement the OrangeRedisSetIfAbsentListener interface, and sorts them according to
+	 * their annotation-based order.
+	 *
+	 * @return a collection of Redis set-if-absent listeners, or an empty list if none are found
+	 *
+	 */
 	@Override
 	protected Collection<OrangeRedisSetIfAbsentListener> getListeners() {
 		Map<String, OrangeRedisZSetAddMemberIfAbsentListener> beanMap = this.getApplicationContext().getBeansOfType(OrangeRedisZSetAddMemberIfAbsentListener.class);
@@ -113,11 +175,28 @@ public class OrangeRedisZSetClientFactoryBean extends OrangeRedisClientAbstractF
 		return listeners;
 	}
 
+	/**
+	 * Gets the Redis value type enum for ZSet operations.
+	 * This method returns the ZSET value type, which is used to determine the appropriate
+	 * Redis data structure operations to use.
+	 *
+	 * @return the Redis value type enum (ZSET)
+	 *
+	 */
 	@Override
 	protected RedisValueTypeEnum getValueType() {
 		return client.valueType();
 	}
 	
+	/**
+	 * Gets the circuit breaker class for Redis ZSet operations.
+	 * This method retrieves the circuit breaker class from the client annotation.
+	 * If a custom breaker class is not specified, it attempts to load the class by name.
+	 * If that fails, it falls back to the default circuit breaker class.
+	 *
+	 * @return the class of the Redis circuit breaker to use
+	 *
+	 */
 	@Override
 	protected Class<? extends OrangeRedisCircuitBreaker> getCircuitBreakerClass(){
 		this.client = this.getClientDefinitionClass().getAnnotation(OrangeRedisZSetClient.class);

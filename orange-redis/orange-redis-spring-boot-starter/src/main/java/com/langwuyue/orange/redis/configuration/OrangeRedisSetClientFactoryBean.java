@@ -27,7 +27,6 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 import com.langwuyue.orange.redis.OrangeRedisCircuitBreaker;
 import com.langwuyue.orange.redis.OrangeRedisDefaultCircuitBreaker;
-import com.langwuyue.orange.redis.OrangeRedisException;
 import com.langwuyue.orange.redis.RedisValueTypeEnum;
 import com.langwuyue.orange.redis.annotation.set.OrangeRedisSetClient;
 import com.langwuyue.orange.redis.listener.OrangeIfAbsentListenerProxy;
@@ -44,6 +43,10 @@ import com.langwuyue.orange.redis.operations.OrangeRedisScriptOperations;
 import com.langwuyue.orange.redis.operations.OrangeRedisSetOperations;
 
 /**
+ * Factory bean for creating Redis Set client instances.
+ * This class handles the creation and configuration of Redis Set operations,
+ * including listeners, executors, and circuit breakers.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
@@ -53,6 +56,13 @@ public class OrangeRedisSetClientFactoryBean extends OrangeRedisClientAbstractFa
 	
 	private static OrangeRedisSetExecutorsMapping EXECUTORS_MAPPING;
 	
+	/**
+	 * Constructs a new OrangeRedisSetClientFactoryBean.
+	 *
+	 * @param operationOwner the class that owns the Redis operations
+	 * @param clientDefinitionClass the class that defines the client interface
+	 * @param configuration the Orange Redis configuration
+	 */
 	public OrangeRedisSetClientFactoryBean(
 			Class<?> operationOwner,
 			Class<?> clientDefinitionClass,
@@ -61,6 +71,12 @@ public class OrangeRedisSetClientFactoryBean extends OrangeRedisClientAbstractFa
 		super(operationOwner, configuration, clientDefinitionClass);
 	}
 	
+	/**
+	 * Gets the executors mapping for Redis Set operations.
+	 * Creates and initializes the mapping if it doesn't exist yet.
+	 *
+	 * @return the Redis Set executors mapping
+	 */
 	@Override
 	protected OrangeRedisExecutorsMapping getExecutorsMapping() {
 		if(EXECUTORS_MAPPING != null) {
@@ -87,6 +103,12 @@ public class OrangeRedisSetClientFactoryBean extends OrangeRedisClientAbstractFa
 		return EXECUTORS_MAPPING;
 	}
 	
+	/**
+	 * Gets the collection of multiple Set if-absent listeners.
+	 * These listeners handle operations for adding multiple members to a Set if they are absent.
+	 *
+	 * @return collection of multiple Set if-absent listeners
+	 */
 	@Override
 	protected Collection<OrangeRedisMultipleSetIfAbsentListener> getMultipleListener() {
 		Map<String, OrangeRedisSetAddMembersIfAbsentListener> beanMap = this.getApplicationContext().getBeansOfType(OrangeRedisSetAddMembersIfAbsentListener.class);
@@ -98,6 +120,12 @@ public class OrangeRedisSetClientFactoryBean extends OrangeRedisClientAbstractFa
 		return listeners;
 	}
 
+	/**
+	 * Gets the collection of Redis Set if-absent listeners.
+	 * These listeners handle operations for adding a single member to a Set if it is absent.
+	 *
+	 * @return collection of Redis Set if-absent listeners
+	 */
 	@Override
 	protected Collection<OrangeRedisSetIfAbsentListener> getListeners() {
 		Map<String, OrangeRedisSetAddMemberIfAbsentListener> beanMap = this.getApplicationContext().getBeansOfType(OrangeRedisSetAddMemberIfAbsentListener.class);
@@ -109,11 +137,24 @@ public class OrangeRedisSetClientFactoryBean extends OrangeRedisClientAbstractFa
 		return listeners;
 	}
 
+	/**
+	 * Gets the Redis value type for this client.
+	 * The value type is determined from the client annotation.
+	 *
+	 * @return the Redis value type enum
+	 */
 	@Override
 	protected RedisValueTypeEnum getValueType() {
 		return client.valueType();
 	}
 	
+	/**
+	 * Gets the circuit breaker class for Redis Set operations.
+	 * The circuit breaker class is determined from the client annotation.
+	 * If a custom breaker class name is specified, it will attempt to load that class.
+	 *
+	 * @return the circuit breaker class for Redis Set operations
+	 */
 	@Override
 	protected Class<? extends OrangeRedisCircuitBreaker> getCircuitBreakerClass(){
 		this.client = this.getClientDefinitionClass().getAnnotation(OrangeRedisSetClient.class);

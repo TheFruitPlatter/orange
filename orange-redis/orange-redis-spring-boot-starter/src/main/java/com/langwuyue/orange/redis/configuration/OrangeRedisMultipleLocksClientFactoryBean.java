@@ -30,7 +30,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 import com.langwuyue.orange.redis.OrangeRedisCircuitBreaker;
 import com.langwuyue.orange.redis.OrangeRedisDefaultCircuitBreaker;
-import com.langwuyue.orange.redis.OrangeRedisException;
 import com.langwuyue.orange.redis.RedisValueTypeEnum;
 import com.langwuyue.orange.redis.annotation.multiplelocks.OrangeRedisMultipleLocksClient;
 import com.langwuyue.orange.redis.executor.multiplelocks.OrangeExpirationTimeAutoInitializer;
@@ -48,6 +47,11 @@ import com.langwuyue.orange.redis.operations.OrangeRedisScriptOperations;
 import com.langwuyue.orange.redis.timer.OrangeRenewTimerWheel;
 
 /**
+ * Factory bean for creating Redis multiple locks client instances.
+ * 
+ * <p>This factory handles the creation and configuration of Redis multiple locks clients,
+ * including executor mappings, listeners, and circuit breakers.</p>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
@@ -61,6 +65,13 @@ public class OrangeRedisMultipleLocksClientFactoryBean extends OrangeRedisClient
 	
 	private OrangeExpirationTimeAutoInitializer expirationTimeAutoInitializer;
 	
+	/**
+	 * Constructs a new factory bean for Redis multiple locks client.
+	 *
+	 * @param operationOwner the operation owner class
+	 * @param clientDefinitionClass the client definition class
+	 * @param configuration the Redis configuration
+	 */
 	public OrangeRedisMultipleLocksClientFactoryBean(
 			Class<?> operationOwner,
 			Class<?> clientDefinitionClass,
@@ -69,6 +80,14 @@ public class OrangeRedisMultipleLocksClientFactoryBean extends OrangeRedisClient
 		super(operationOwner, configuration, clientDefinitionClass);
 	}
 	
+	/**
+	 * Gets or creates the executors mapping for Redis multiple locks.
+	 * 
+	 * <p>This method implements a singleton pattern for the executors mapping,
+	 * ensuring thread-safe lazy initialization.</p>
+	 * 
+	 * @return the Redis multiple locks executors mapping instance
+	 */
 	@Override
 	protected OrangeRedisExecutorsMapping getExecutorsMapping() {
 		if(EXECUTORS_MAPPING !=  null) {
@@ -94,6 +113,14 @@ public class OrangeRedisMultipleLocksClientFactoryBean extends OrangeRedisClient
 		return EXECUTORS_MAPPING;
 	}
 	
+	/**
+	 * Gets all configured multiple lock listeners from application context.
+	 * 
+	 * <p>This method retrieves all beans of type OrangeRedisMultipleLocksListener,
+	 * wraps them in proxies, and sorts them according to Spring's ordering rules.</p>
+	 * 
+	 * @return collection of proxy-wrapped and sorted multiple lock listeners
+	 */
 	@Override
 	protected Collection<OrangeRedisMultipleSetIfAbsentListener> getMultipleListener() {
 		Map<String, OrangeRedisMultipleLocksListener> beanMap = this.getApplicationContext().getBeansOfType(OrangeRedisMultipleLocksListener.class);
@@ -105,16 +132,38 @@ public class OrangeRedisMultipleLocksClientFactoryBean extends OrangeRedisClient
 		return listeners;
 	}
 
+	/**
+	 * Gets the collection of Redis lock listeners.
+	 * 
+	 * <p>Currently returns an empty list as this implementation doesn't support
+	 * individual lock listeners. Subclasses may override to provide custom listeners.</p>
+	 * 
+	 * @return empty collection of Redis lock listeners
+	 */
 	@Override
 	protected Collection<OrangeRedisSetIfAbsentListener> getListeners() {
 		return new ArrayList<>();
 	}
 
+	/**
+	 * Gets the value type for Redis multiple locks operations.
+	 * 
+	 * <p>Returns the value type specified in the {@link OrangeRedisMultipleLocksClient}
+	 * annotation on the client interface.</p>
+	 * 
+	 * @return the Redis value type enum
+	 */
 	@Override
 	protected RedisValueTypeEnum getValueType() {
 		return client.valueType();
 	}
 
+	/**
+	 * Sets the Spring application context and initializes required beans.
+	 * 
+	 * @param applicationContext the Spring application context
+	 * @throws BeansException if bean lookup fails
+	 */
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		super.setApplicationContext(applicationContext);
@@ -122,6 +171,16 @@ public class OrangeRedisMultipleLocksClientFactoryBean extends OrangeRedisClient
 		this.expirationTimeAutoInitializer = applicationContext.getBean(OrangeExpirationTimeAutoInitializer.class);
 	}
 	
+	/**
+	 * Gets the circuit breaker class for Redis multiple locks operations.
+	 * 
+	 * <p>Retrieves the circuit breaker configuration from the {@link OrangeRedisMultipleLocksClient}
+	 * annotation, supporting both direct class reference and class name specification.</p>
+	 * 
+	 * <p>If class name specification fails, falls back to the default circuit breaker class.</p>
+	 * 
+	 * @return the configured circuit breaker class, or default if not specified
+	 */
 	@Override
 	protected Class<? extends OrangeRedisCircuitBreaker> getCircuitBreakerClass(){
 		this.client = this.getClientDefinitionClass().getAnnotation(OrangeRedisMultipleLocksClient.class);

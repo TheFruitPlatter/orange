@@ -23,7 +23,6 @@ import java.util.Collection;
 
 import com.langwuyue.orange.redis.OrangeRedisCircuitBreaker;
 import com.langwuyue.orange.redis.OrangeRedisDefaultCircuitBreaker;
-import com.langwuyue.orange.redis.OrangeRedisException;
 import com.langwuyue.orange.redis.RedisValueTypeEnum;
 import com.langwuyue.orange.redis.annotation.list.OrangeRedisListClient;
 import com.langwuyue.orange.redis.listener.OrangeRedisMultipleSetIfAbsentListener;
@@ -37,15 +36,62 @@ import com.langwuyue.orange.redis.operations.OrangeRedisListOperations;
 import com.langwuyue.orange.redis.operations.OrangeRedisScriptOperations;
 
 /**
+ * Factory bean for creating Redis List client instances.
+ * 
+ * <p>This factory bean is responsible for creating and configuring Redis List client
+ * instances based on interfaces annotated with {@link OrangeRedisListClient}. It handles
+ * the initialization of Redis operations, executors mapping, listeners, and circuit breakers
+ * specific to List data structures in Redis.
+ * 
+ * <p>The factory creates a proxy implementation of the client interface that delegates
+ * Redis operations to the appropriate executors based on method annotations. It manages
+ * the lifecycle of these components and ensures they are properly configured with the
+ * necessary dependencies.
+ * 
+ * <p>This implementation is thread-safe and caches the executors mapping at the class level
+ * for performance optimization.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeRedisClientAbstractFactoryBean
+ * @see OrangeRedisListClient
+ * @see OrangeRedisListOperations
  */
 public class OrangeRedisListClientFactoryBean extends OrangeRedisClientAbstractFactoryBean {
 	
+	/**
+	 * The Redis List client annotation instance extracted from the client definition class.
+	 * This field stores the annotation metadata that configures how the List client should behave.
+	 */
 	private OrangeRedisListClient client;
 	
+	/**
+	 * Shared static mapping of Redis List executors.
+	 * 
+	 * <p>This static field caches the executors mapping to improve performance by reusing
+	 * the same mapping across multiple instances of this factory bean. The mapping contains
+	 * all the necessary executors for handling Redis List operations.
+	 * 
+	 * <p>The mapping is lazily initialized when first needed and then reused for subsequent requests.
+	 */
 	private static OrangeRedisListExecutorsMapping EXECUTORS_MAPPING;
 	
+	/**
+	 * Constructs a new OrangeRedisListClientFactoryBean with the specified operation owner,
+	 * client definition class and Redis configuration.
+	 * 
+	 * <p>This constructor initializes the factory bean with:
+	 * <ul>
+	 *   <li>The operation owner class that will use the Redis List operations</li>
+	 *   <li>The client definition class annotated with {@link OrangeRedisListClient}</li>
+	 *   <li>The Redis connection configuration</li>
+	 * </ul>
+	 * 
+	 * @param operationOwner the class that owns the Redis List operations
+	 * @param clientDefinitionClass the interface class annotated with {@link OrangeRedisListClient}
+	 *                             that defines the Redis List operations
+	 * @param configuration the Redis connection configuration containing connection details
+	 */
 	public OrangeRedisListClientFactoryBean(
 			Class<?> operationOwner,
 			Class<?> clientDefinitionClass,
@@ -54,6 +100,24 @@ public class OrangeRedisListClientFactoryBean extends OrangeRedisClientAbstractF
 		super(operationOwner, configuration,clientDefinitionClass);
 	}
 	
+	/**
+	 * Gets or creates the executors mapping for Redis List operations.
+	 * 
+	 * <p>This method implements a lazy initialization pattern with caching at the class level.
+	 * On first call, it creates a new {@link OrangeRedisListExecutorsMapping} instance with:
+	 * <ul>
+	 *   <li>List operations implementation</li>
+	 *   <li>Executor ID generator</li>
+	 *   <li>Listeners collection</li>
+	 *   <li>Script operations implementation</li>
+	 *   <li>Multiple listeners collection</li>
+	 *   <li>Logger instance</li>
+	 * </ul>
+	 * 
+	 * <p>Subsequent calls return the cached instance for better performance.
+	 * 
+	 * @return the executors mapping instance for Redis List operations
+	 */
 	@Override
 	protected OrangeRedisExecutorsMapping getExecutorsMapping() {
 		if(EXECUTORS_MAPPING != null) {

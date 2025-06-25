@@ -28,23 +28,69 @@ import com.langwuyue.orange.redis.executor.transaction.OrangeRedisTransactionMan
 import com.langwuyue.orange.redis.logger.OrangeRedisLogger;
 
 /**
- * Commit Redis transaction after database transaction completes.
+ * An aspect that synchronizes Redis transactions with database transactions.
  * 
+ * This aspect monitors Spring's {@code @Transactional} annotated methods and ensures that
+ * Redis transactions are properly committed or rolled back in sync with the database
+ * transaction's outcome. It works by:
+ * 
+ * <ul>
+ *   <li>Intercepting methods annotated with {@code @Transactional}</li>
+ *   <li>Registering a {@link TransactionSynchronization} that will be called after the
+ *       database transaction completes</li>
+ *   <li>Committing the Redis transaction if the database transaction commits successfully</li>
+ *   <li>Rolling back the Redis transaction if the database transaction rolls back</li>
+ * </ul>
+ * 
+ * This ensures data consistency between the database and Redis cache by maintaining
+ * transactional integrity across both systems.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see org.springframework.transaction.annotation.Transactional
+ * @see OrangeRedisTransactionManager
  */
 @Aspect
 public class OrangeDBTransactionalAspect {
 	
+	/**
+	 * The transaction manager responsible for handling Redis transactions.
+	 */
 	private OrangeRedisTransactionManager orangeTransactionManager;
 	
+	/**
+	 * Logger for Redis-related operations and errors.
+	 */
 	private OrangeRedisLogger logger;
 	
-	public OrangeDBTransactionalAspect(OrangeRedisTransactionManager orangeTransactionManager,OrangeRedisLogger logger) {
+	/**
+	 * Constructs a new OrangeDBTransactionalAspect.
+	 * 
+	 * @param orangeTransactionManager the Redis transaction manager to handle Redis transactions
+	 * @param logger the logger for Redis operations and error reporting
+	 */
+	public OrangeDBTransactionalAspect(OrangeRedisTransactionManager orangeTransactionManager, OrangeRedisLogger logger) {
 		this.orangeTransactionManager = orangeTransactionManager;
 		this.logger = logger;
 	}
     
+    /**
+     * Intercepts methods annotated with {@code @Transactional} and synchronizes Redis
+     * transactions with the database transaction.
+     * 
+     * This method:
+     * <ul>
+     *   <li>Allows the original method to proceed</li>
+     *   <li>If transaction synchronization is active, registers a synchronization callback</li>
+     *   <li>The callback commits or rolls back the Redis transaction based on the database
+     *       transaction's outcome</li>
+     * </ul>
+     *
+     * @param joinPoint the join point representing the intercepted method
+     * @return the result of the intercepted method's execution
+     * @throws Throwable if the intercepted method throws an exception or if there's an error
+     *         in transaction synchronization
+     */
     @Around("@annotation(org.springframework.transaction.annotation.Transactional)")
     public Object monitorTransaction(ProceedingJoinPoint joinPoint) throws Throwable {
         Object result = joinPoint.proceed();

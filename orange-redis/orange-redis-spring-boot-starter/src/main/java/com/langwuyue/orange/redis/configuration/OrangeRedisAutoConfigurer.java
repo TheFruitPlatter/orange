@@ -32,38 +32,96 @@ import com.langwuyue.orange.redis.logger.OrangeRedisLogger;
 import com.langwuyue.orange.redis.timer.OrangeRenewTimerWheel;
 
 /**
+ * Auto-configuration class for Orange Redis framework components.
+ * 
+ * <p>This class provides automatic configuration for the Orange Redis framework
+ * by registering necessary beans in the Spring application context. It enables
+ * property binding through {@link OrangeRedisProperties} and scans for components
+ * in relevant packages.
+ * 
+ * <p>All beans are conditionally registered with {@code @ConditionalOnMissingBean}
+ * to allow for custom implementations to be provided by the application if needed.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeRedisProperties
+ * @see OrangeRedisKeyChecker
+ * @see OrangeRenewTimerWheel
+ * @see OrangeExpirationTimeAutoInitializer
+ * @see OrangeRedisLogger
+ * @see OrangeRedisDefaultCircuitBreaker
  */
 @EnableConfigurationProperties(OrangeRedisProperties.class)
 @ComponentScan(basePackageClasses = {OrangeRedisAutoConfigurer.class,OrangeRedisKeytRegistryEndpoint.class})
 class OrangeRedisAutoConfigurer {
 	
-	
+	/**
+	 * Creates a new {@link OrangeRedisKeyChecker} bean.
+	 * 
+	 * <p>The key checker is responsible for validating Redis keys according to
+	 * the configured Redis connection settings.
+	 *
+	 * @param configuration the Redis connection configuration
+	 * @return a new instance of {@link OrangeRedisKeyChecker}
+	 */
 	@Bean
 	@ConditionalOnMissingBean
 	OrangeRedisKeyChecker newOrangeRedisKeyChecker(OrangeRedisConnectionConfiguration configuration) {
 		return new OrangeRedisKeyChecker(configuration);
 	}
 	
+	/**
+	 * Creates a new {@link OrangeRenewTimerWheel} bean.
+	 * 
+	 * <p>The timer wheel is used for scheduling and managing automatic key renewal
+	 * operations based on the configured auto-renewal properties.
+	 *
+	 * @param properties the Redis properties containing auto-renewal settings
+	 * @param logger the Redis logger for logging renewal operations
+	 * @return a new instance of {@link OrangeRenewTimerWheel}
+	 */
 	@Bean
 	@ConditionalOnMissingBean
 	OrangeRenewTimerWheel newOrangeRenewTimerWheel(OrangeRedisProperties properties,OrangeRedisLogger logger) {
 		return new OrangeRenewTimerWheel(properties.getAutoRenew(),logger);
 	}
 	
+	/**
+	 * Creates a new {@link OrangeExpirationTimeAutoInitializer} bean.
+	 * 
+	 * <p>The initializer is responsible for setting up default expiration times
+	 * for Redis keys based on the configured auto-renewal properties.
+	 *
+	 * @param properties the Redis properties containing auto-renewal settings
+	 * @return a new instance of {@link OrangeDefaultExpirationTimeAutoInitializer}
+	 */
 	@Bean
 	@ConditionalOnMissingBean
 	OrangeExpirationTimeAutoInitializer newOrangeDefaultExpirationTimeAutoInitializer(OrangeRedisProperties properties) {
 		return new OrangeDefaultExpirationTimeAutoInitializer(properties.getAutoRenew());
 	}
 	
+	/**
+	 * Creates a new {@link OrangeRedisLogger} bean.
+	 * 
+	 * <p>The logger provides Redis-specific logging capabilities for the Orange Redis framework.
+	 *
+	 * @return a new instance of {@link OrangeRedisDefaultLogger}
+	 */
 	@Bean
 	@ConditionalOnMissingBean
 	OrangeRedisLogger newOrangeRedisLogger() {
 		return new OrangeRedisDefaultLogger();
 	}
 	
+	/**
+	 * Creates a new {@link OrangeRedisDefaultCircuitBreaker} bean.
+	 * 
+	 * <p>The circuit breaker provides fault tolerance for Redis operations,
+	 * preventing cascading failures when Redis is unavailable or experiencing issues.
+	 *
+	 * @return a new instance of {@link OrangeRedisDefaultCircuitBreaker}
+	 */
 	@Bean
 	@ConditionalOnMissingBean
 	OrangeRedisDefaultCircuitBreaker newOrangeRedisDefaultCircuitBreaker() {

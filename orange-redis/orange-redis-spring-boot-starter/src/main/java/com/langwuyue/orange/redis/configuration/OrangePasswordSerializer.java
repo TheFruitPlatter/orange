@@ -24,8 +24,33 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
+/**
+ * Custom JSON serializer for password fields that masks the actual password value
+ * for security purposes.
+ * 
+ * <p>This serializer is designed to enhance security by preventing sensitive password
+ * information from being exposed in logs, debug output, or any serialized JSON
+ * representation. When a password field is serialized, it will always be replaced
+ * with asterisks ("******") regardless of the actual password value.
+ * 
+ *
+ * @author Liang.Zhong
+ * @see JsonSerializer
+ */
 public class OrangePasswordSerializer extends JsonSerializer<String>{
 
+	/**
+	 * Serializes a password string by replacing it with asterisks for security.
+	 * 
+	 * <p>This method always writes "******" to the JSON output regardless of
+	 * the actual password value, ensuring that sensitive password data is never
+	 * exposed in the serialized output.
+	 *
+	 * @param value the password string to serialize
+	 * @param gen the JSON generator
+	 * @param serializers the serializer provider
+	 * @throws IOException if an I/O error occurs during serialization
+	 */
 	@Override
 	public void serialize(String value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
 		gen.writeString("******");

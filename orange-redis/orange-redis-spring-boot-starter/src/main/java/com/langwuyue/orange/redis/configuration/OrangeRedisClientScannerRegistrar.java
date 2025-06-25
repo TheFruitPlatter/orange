@@ -49,11 +49,54 @@ import com.langwuyue.orange.redis.context.builder.OrangeOperationArgMultipleHand
 import com.langwuyue.orange.redis.context.builder.OrangeOperationArgSimpleHandler;
 
 /**
+ * A registrar that registers bean definitions for Redis client interfaces.
+ * 
+ * <p>This class implements {@link ImportBeanDefinitionRegistrar} to programmatically register
+ * bean definitions for Redis client interfaces during Spring container initialization.
+ * It works in conjunction with {@link OrangeRedisClientScan} annotation to determine which
+ * packages to scan for Redis client interfaces.
+ * 
+ * <p>The registrar configures various Redis client types and their corresponding factory beans
+ * in the {@link OrangeRedisConfiguration}, including:
+ * <ul>
+ *   <li>Value operations ({@link OrangeRedisValueClient})</li>
+ *   <li>ZSet operations ({@link OrangeRedisZSetClient})</li>
+ *   <li>Set operations ({@link OrangeRedisSetClient})</li>
+ *   <li>List operations ({@link OrangeRedisListClient})</li>
+ *   <li>Hash operations ({@link OrangeRedisHashClient})</li>
+ *   <li>Geo operations ({@link OrangeRedisGeoClient})</li>
+ *   <li>Cross-key operations for ZSet, Set, List, and Geo</li>
+ *   <li>Transaction operations ({@link OrangeRedisTransactionClient})</li>
+ *   <li>Multiple locks operations ({@link OrangeRedisMultipleLocksClient})</li>
+ *   <li>Script operations ({@link OrangeRedisScriptClient})</li>
+ * </ul>
+ * 
+ * <p>It also configures various handlers for processing method arguments and annotations.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see ImportBeanDefinitionRegistrar
+ * @see OrangeRedisClientScan
+ * @see OrangeRedisConfiguration
  */
 class OrangeRedisClientScannerRegistrar implements ImportBeanDefinitionRegistrar {
 	
+	/**
+	 * Registers bean definitions for Redis client interfaces based on the {@link OrangeRedisClientScan} annotation.
+	 * 
+	 * <p>This method performs the following operations:
+	 * <ol>
+	 *   <li>Extracts base packages to scan from the {@link OrangeRedisClientScan} annotation</li>
+	 *   <li>Creates and configures an {@link OrangeRedisConfiguration} with all supported Redis client types
+	 *       and their corresponding factory beans</li>
+	 *   <li>Configures various handlers for processing method arguments and annotations</li>
+	 *   <li>Creates and registers an {@link OrangeRedisClientScannerBeanDefinition} that will scan the
+	 *       specified packages for Redis client interfaces during container initialization</li>
+	 * </ol>
+	 *
+	 * @param importingClassMetadata metadata about the importing class that is annotated with {@link OrangeRedisClientScan}
+	 * @param registry the registry of bean definitions
+	 */
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		Set<String> newBasePackages = new HashSet<>();

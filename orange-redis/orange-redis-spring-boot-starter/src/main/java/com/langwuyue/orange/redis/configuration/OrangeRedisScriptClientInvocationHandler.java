@@ -34,11 +34,36 @@ import com.langwuyue.orange.redis.mapping.OrangeRedisExecutorsMapping;
 import com.langwuyue.orange.redis.util.OrangeStringTemlateUtils;
 
 /**
+ * Dynamic proxy handler for Redis script client invocations.
+ *
+ * <p>Extends {@link OrangeRedisClientInvocationHandler} to specifically handle method invocations
+ * on interfaces annotated with {@link com.langwuyue.orange.redis.annotation.script.OrangeRedisScriptClient},
+ * converting method calls to Redis script execution operations.</p>
+ *
+ * <p>Key features include:
+ * <ul>
+ *   <li>Constructing Redis script execution context</li>
+ *   <li>Handling script parameter and key resolution</li>
+ *   <li>Supporting parameter-to-Redis-key conversion</li>
+ *   <li>Inheriting core features from parent class (circuit breakers, executors etc.)</li>
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeRedisClientInvocationHandler
+ * @see OrangeRedisScriptContextBuilder
  */
 public class OrangeRedisScriptClientInvocationHandler extends OrangeRedisClientInvocationHandler {
 	
+	/**
+	 * Constructs a new Redis script client invocation handler.
+	 *
+	 * @param operationOwner the interface class containing Redis script operations
+	 * @param mapping the executors mapping configuration
+	 * @param operationArgHandlerMapping the argument handler mapping
+	 * @param circuitBreaker the circuit breaker instance
+	 * @param properties Redis configuration properties
+	 */
 	public OrangeRedisScriptClientInvocationHandler(
 		Class<?> operationOwner,
 		OrangeRedisExecutorsMapping mapping,
@@ -49,16 +74,39 @@ public class OrangeRedisScriptClientInvocationHandler extends OrangeRedisClientI
 		super(operationOwner, mapping, null, operationArgHandlerMapping,null,circuitBreaker,properties);
 	}
 
+	/**
+	 * Creates a new script context builder instance.
+	 * 
+	 * @return new OrangeRedisScriptContextBuilder instance
+	 */
 	@Override
 	protected OrangeRedisContextBuilder newBuilder() {
 		return new OrangeRedisScriptContextBuilder();
 	}
 	
+	/**
+	 * Gets the Redis Key object for the specified method invocation.
+	 * 
+	 * @param method the invoked method
+	 * @param args the method arguments
+	 * @return Key object or null if not applicable
+	 * @see com.langwuyue.orange.redis.context.OrangeRedisContext.Key
+	 */
 	@Override
 	protected Key getKey(Method method,Object[] args) {
 		return null;
 	}
 	
+	/**
+	 * Creates and configures a script-specific context builder.
+	 * 
+	 * @param executor the Redis executor
+	 * @param method the invoked method
+	 * @param args the method arguments
+	 * @return configured OrangeRedisScriptContextBuilder
+	 * @throws Exception if context creation fails
+	 *
+	 */
 	@Override
 	protected OrangeRedisContextBuilder createContextBuilder(OrangeRedisExecutor executor,Method method, Object[] args) throws Exception {
 		OrangeRedisScriptContextBuilder builder = (OrangeRedisScriptContextBuilder)super.createContextBuilder(executor, method, args);
@@ -66,6 +114,14 @@ public class OrangeRedisScriptClientInvocationHandler extends OrangeRedisClientI
 		return builder;
 	}
 	
+	/**
+	 * Generates Redis keys from method parameters annotated with @OrangeRedisKey.
+	 * 
+	 * @param method the invoked method
+	 * @param args the method arguments
+	 * @return List of generated Redis keys
+	 * @see com.langwuyue.orange.redis.annotation.OrangeRedisKey
+	 */
 	private List<String> getKeys(Method method, Object[] args) {
 		OrangeScriptArgHandlerMapping mapping = (OrangeScriptArgHandlerMapping)this.getOperationArgHandlerMapping();
 		List<Class<?>> keyClasses = mapping.getKeyClasses(method);

@@ -27,8 +27,15 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Import;
 
 /**
+ * Annotation to enable scanning for Redis client interfaces.
+ * 
+ * <p>This annotation is used to automatically detect interfaces annotated with
+ * {@code OrangeRedisClient} and register them as Spring beans. It works similarly
+ * to Spring's {@code @ComponentScan} but specifically for Redis client interfaces.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeRedisClientScannerRegistrar
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -36,5 +43,14 @@ import org.springframework.context.annotation.Import;
 @Import(OrangeRedisClientScannerRegistrar.class)
 public @interface OrangeRedisClientScan {
 
+	/**
+	 * Specifies the base packages to scan for Redis client interfaces.
+	 * 
+	 * <p>These packages and their sub-packages will be scanned for interfaces
+	 * annotated with {@code OrangeRedisClient}. The scanning process is similar
+	 * to Spring's component scanning but specifically targets Redis client interfaces.
+	 * 
+	 * @return an array of base packages to scan
+	 */
 	String[] basePackages();
 }

@@ -27,17 +27,45 @@ import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 
 /**
+ * Redis metrics auto-configuration class that registers Redis-related metrics with Micrometer.
+ *
+ * <p>This configuration is automatically enabled when the property {@code orange.redis.metrics.enabled}
+ * is set to {@code true}. By default, metrics collection is disabled.</p>
+ *
+ * <p>Currently registers the following metrics:
+ * <ul>
+ *   <li>{@code redis.active.request} - Gauge tracking the number of active Redis requests</li>
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see SmartInitializingSingleton
+ * @see MeterRegistry
+ * @see Gauge
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(name = "orange.redis.metrics.enabled", havingValue = "true", matchIfMissing = false)
 public class OrangeRedisMetricsAutoConfigurer implements SmartInitializingSingleton {
 	
-	private OrangeRedisTransactionClientFactoryBean factoryBean;
+	/**
+	 * The Redis transaction client factory bean that provides access to Redis metrics data.
+	 * <p>Injected through constructor and cannot be null.</p>
+	 */
+	private final OrangeRedisTransactionClientFactoryBean factoryBean;
 	
-	private ObjectProvider<MeterRegistry> registryProvider;
+	/**
+	 * Provider for MeterRegistry to support optional metrics collection.
+	 * <p>Injected through constructor and lazily provides the MeterRegistry instance.</p>
+	 * <p>May be null if metrics collection is not available in the application context.</p>
+	 */
+	private final ObjectProvider<MeterRegistry> registryProvider;
 	
+	/**
+	 * Constructs a new metrics auto-configurer for Redis.
+	 *
+	 * @param factoryBean the Redis transaction client factory
+	 * @param registryProvider the provider for MeterRegistry (metrics registry)
+	 */
 	public OrangeRedisMetricsAutoConfigurer(
 		OrangeRedisTransactionClientFactoryBean factoryBean,
 		ObjectProvider<MeterRegistry> registryProvider
@@ -46,6 +74,17 @@ public class OrangeRedisMetricsAutoConfigurer implements SmartInitializingSingle
 		this.registryProvider = registryProvider;
 	}
 	
+	/**
+	 * Registers Redis metrics after all singletons have been initialized.
+	 * 
+	 * <p>This method registers the following metrics when a MeterRegistry is available:
+	 * <ul>
+	 *   <li>{@code redis.active.request} - Gauge tracking active Redis requests</li>
+	 *   <li>{@code redis.connection.count} - Gauge tracking active Redis connections</li>
+	 * </ul>
+	 * 
+	 * @throws IllegalStateException if metrics registration fails
+	 */
 	@Override
 	public void afterSingletonsInstantiated() {
         MeterRegistry registry = registryProvider.getIfAvailable();

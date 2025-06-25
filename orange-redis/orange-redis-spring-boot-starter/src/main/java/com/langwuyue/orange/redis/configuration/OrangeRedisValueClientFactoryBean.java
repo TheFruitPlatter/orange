@@ -29,7 +29,6 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 import com.langwuyue.orange.redis.OrangeRedisCircuitBreaker;
 import com.langwuyue.orange.redis.OrangeRedisDefaultCircuitBreaker;
-import com.langwuyue.orange.redis.OrangeRedisException;
 import com.langwuyue.orange.redis.RedisValueTypeEnum;
 import com.langwuyue.orange.redis.annotation.value.OrangeRedisValueClient;
 import com.langwuyue.orange.redis.executor.multiplelocks.OrangeExpirationTimeAutoInitializer;
@@ -47,6 +46,10 @@ import com.langwuyue.orange.redis.operations.OrangeRedisValueOperations;
 import com.langwuyue.orange.redis.timer.OrangeRenewTimerWheel;
 
 /**
+ * Factory bean for creating Redis value client proxies.
+ * This class is responsible for creating and configuring Redis value client instances
+ * based on interfaces annotated with {@link OrangeRedisValueClient}.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
@@ -60,6 +63,16 @@ public class OrangeRedisValueClientFactoryBean extends OrangeRedisClientAbstract
 	
 	private OrangeExpirationTimeAutoInitializer expirationTimeAutoInitializer;
 	
+	/**
+	 * Constructs a new Redis value client factory bean.
+	 * Initializes the factory with the operation owner class, client definition class,
+	 * and Redis configuration settings.
+	 *
+	 * @param operationOwner the class that owns the Redis operations
+	 * @param clientDefinitionClass the interface class that defines the Redis client
+	 * @param configuration the Redis configuration settings
+	 *
+	 */
 	public OrangeRedisValueClientFactoryBean(
 			Class<?> operationOwner,
 			Class<?> clientDefinitionClass,
@@ -68,6 +81,14 @@ public class OrangeRedisValueClientFactoryBean extends OrangeRedisClientAbstract
 		super(operationOwner, configuration, clientDefinitionClass);
 	}
 	
+	/**
+	 * Gets the executors mapping for Redis operations.
+	 * This method creates and initializes the Redis value executors mapping with
+	 * necessary operations, listeners, and other components if it doesn't exist yet.
+	 *
+	 * @return the Redis executors mapping for handling operations
+	 *
+	 */
 	@Override
 	protected OrangeRedisExecutorsMapping getExecutorsMapping() {
 		if(EXECUTORS_MAPPING != null) {
@@ -96,11 +117,27 @@ public class OrangeRedisValueClientFactoryBean extends OrangeRedisClientAbstract
 		return EXECUTORS_MAPPING;
 	}
 
+	/**
+	 * Gets the collection of multiple set-if-absent listeners.
+	 * This implementation returns an empty collection as value clients
+	 * do not use multiple set-if-absent listeners by default.
+	 *
+	 * @return an empty collection of multiple set-if-absent listeners
+	 *
+	 */
 	@Override
 	protected Collection<OrangeRedisMultipleSetIfAbsentListener> getMultipleListener() {
 		return new ArrayList<>();
 	}
 
+	/**
+	 * Gets the collection of Redis set-if-absent listeners.
+	 * This method retrieves all beans of type OrangeRedisValueSetIfAbsentListener from the application context,
+	 * proxies them, and sorts them according to their annotation-based order.
+	 *
+	 * @return a collection of Redis set-if-absent listeners, or an empty list if none are found
+	 *
+	 */
 	@Override
 	protected Collection<OrangeRedisSetIfAbsentListener> getListeners() {
 		Map<String, OrangeRedisValueSetIfAbsentListener> beanMap = this.getApplicationContext().getBeansOfType(OrangeRedisValueSetIfAbsentListener.class);
@@ -116,11 +153,25 @@ public class OrangeRedisValueClientFactoryBean extends OrangeRedisClientAbstract
 		return listeners;
 	}
 
+	/**
+	 * Gets the Redis value type enum.
+	 * This method returns the value type specified in the client annotation.
+	 *
+	 * @return the Redis value type enum from the client annotation
+	 */
 	@Override
 	protected RedisValueTypeEnum getValueType() {
 		return this.client.valueType();
 	}
 	
+	/**
+	 * Sets the application context.
+	 * This method is called by the Spring framework to inject the application context.
+	 * It's used to retrieve listener beans and other components from the Spring container.
+	 *
+	 * @param applicationContext the Spring application context
+	 * @throws BeansException if a bean-related exception occurs
+	 */
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		super.setApplicationContext(applicationContext);
@@ -128,6 +179,14 @@ public class OrangeRedisValueClientFactoryBean extends OrangeRedisClientAbstract
 		this.expirationTimeAutoInitializer = applicationContext.getBean(OrangeExpirationTimeAutoInitializer.class);
 	}
 	
+	/**
+	 * Gets the circuit breaker class for Redis operations.
+	 * This method retrieves the circuit breaker class from the client annotation.
+	 * If a custom breaker class is not specified, it attempts to load the class by name.
+	 * If that fails, it falls back to the default circuit breaker class.
+	 *
+	 * @return the class of the Redis circuit breaker to use
+	 */
 	@Override
 	protected Class<? extends OrangeRedisCircuitBreaker> getCircuitBreakerClass(){
 		this.client = this.getClientDefinitionClass().getAnnotation(OrangeRedisValueClient.class);

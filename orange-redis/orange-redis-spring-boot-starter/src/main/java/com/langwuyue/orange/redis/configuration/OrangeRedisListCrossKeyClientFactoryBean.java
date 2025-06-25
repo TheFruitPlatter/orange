@@ -25,7 +25,6 @@ import java.util.Map;
 
 import com.langwuyue.orange.redis.OrangeRedisCircuitBreaker;
 import com.langwuyue.orange.redis.OrangeRedisDefaultCircuitBreaker;
-import com.langwuyue.orange.redis.OrangeRedisException;
 import com.langwuyue.orange.redis.RedisValueTypeEnum;
 import com.langwuyue.orange.redis.annotation.OrangeRedisKey;
 import com.langwuyue.orange.redis.annotation.cross.OrangeRedisListCrossKeyClient;
@@ -44,15 +43,66 @@ import com.langwuyue.orange.redis.operations.OrangeRedisListOperations;
 import com.langwuyue.orange.redis.operations.OrangeRedisScriptOperations;
 
 /**
+ * Factory bean for creating Redis List clients that operate across multiple keys.
+ *
+ * <p>This factory bean creates and configures Redis List client instances that can perform
+ * operations involving multiple Redis keys. It handles the initialization of:
+ * <ul>
+ *   <li>Redis List operations implementation</li>
+ *   <li>Cross-key executor mappings</li>
+ *   <li>Circuit breakers configuration</li>
+ *   <li>Operation argument handlers</li>
+ * </ul>
+ *
+ * <p>The factory creates a proxy implementation that delegates Redis operations to the
+ * appropriate executors based on method annotations. It manages the lifecycle of these
+ * components and ensures they are properly configured with the necessary dependencies.
+ *
+ * <p>This implementation is thread-safe and caches the executors mapping at the class level
+ * for performance optimization.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeRedisClientAbstractFactoryBean
+ * @see OrangeRedisListCrossKeyClient
+ * @see OrangeRedisListCrossKeyExecutorsMapping
  */
 public class OrangeRedisListCrossKeyClientFactoryBean extends OrangeRedisClientAbstractFactoryBean {
 	
+	/**
+	 * Shared static mapping of Redis List cross-key executors.
+	 * 
+	 * <p>This static field caches the executors mapping to improve performance by reusing
+	 * the same mapping across multiple instances of this factory bean. The mapping contains
+	 * all the necessary executors for handling cross-key Redis List operations.
+	 * 
+	 * <p>The mapping is lazily initialized when first needed and then reused for subsequent requests.
+	 */
 	private static OrangeRedisListCrossKeyExecutorsMapping EXECUTORS_MAPPING;
 	
+	/**
+	 * The Redis List cross-key client annotation instance extracted from the client definition class.
+	 * 
+	 * <p>This field stores the annotation metadata that configures how the cross-key List client
+	 * should behave, including circuit breaker settings and other operational parameters.
+	 */
 	private OrangeRedisListCrossKeyClient client;
 	
+	/**
+	 * Constructs a new OrangeRedisListCrossKeyClientFactoryBean with the specified parameters.
+	 * 
+	 * <p>This constructor initializes the factory bean with:
+	 * <ul>
+	 *   <li>The operation owner class that will use the cross-key Redis List operations</li>
+	 *   <li>The client definition class annotated with {@link OrangeRedisListCrossKeyClient}</li>
+	 *   <li>The Redis connection configuration containing connection details</li>
+	 * </ul>
+	 * 
+	 * @param operationOwner the class that owns the cross-key Redis List operations
+	 * @param clientDefinitionClass the interface class annotated with {@link OrangeRedisListCrossKeyClient}
+	 *                             that defines the cross-key Redis List operations
+	 * @param configuration the Redis connection configuration containing connection details
+	 */
 	public OrangeRedisListCrossKeyClientFactoryBean(
 			Class<?> operationOwner,
 			Class<?> clientDefinitionClass,
@@ -89,6 +139,24 @@ public class OrangeRedisListCrossKeyClientFactoryBean extends OrangeRedisClientA
 		);
 	}
 
+	/**
+	 * Gets or creates the executors mapping for cross-key Redis List operations.
+	 * 
+	 * <p>This method implements a lazy initialization pattern with caching at the class level.
+	 * On first call, it creates a new {@link OrangeRedisListCrossKeyExecutorsMapping} instance with:
+	 * <ul>
+	 *   <li>Cross-key List operations implementation</li>
+	 *   <li>Executor ID generator</li>
+	 *   <li>Listeners collection</li>
+	 *   <li>Script operations implementation</li>
+	 *   <li>Multiple listeners collection</li>
+	 *   <li>Logger instance</li>
+	 * </ul>
+	 * 
+	 * <p>Subsequent calls return the cached instance for better performance.
+	 * 
+	 * @return the executors mapping instance for cross-key Redis List operations
+	 */
 	@Override
 	protected OrangeRedisExecutorsMapping getExecutorsMapping() {
 		if(EXECUTORS_MAPPING != null) {
@@ -130,6 +198,21 @@ public class OrangeRedisListCrossKeyClientFactoryBean extends OrangeRedisClientA
 		return null;
 	}
 	
+	/**
+	 * Gets the circuit breaker class configured for this cross-key List client.
+	 * 
+	 * <p>This method determines the circuit breaker implementation to use by:
+	 * <ol>
+	 *   <li>First checking the {@link OrangeRedisListCrossKeyClient#breaker()} value</li>
+	 *   <li>If the default breaker is specified, falls back to checking {@link OrangeRedisListCrossKeyClient#breakerClassName()}</li>
+	 *   <li>If a custom class name is provided, attempts to load that class dynamically</li>
+	 * </ol>
+	 * 
+	 * <p>If any errors occur during class loading, the method falls back to the default
+	 * circuit breaker and logs a warning.
+	 * 
+	 * @return the circuit breaker class to use for this client, never null
+	 */
 	@Override
 	protected Class<? extends OrangeRedisCircuitBreaker> getCircuitBreakerClass(){
 		this.client = this.getClientDefinitionClass().getAnnotation(OrangeRedisListCrossKeyClient.class);

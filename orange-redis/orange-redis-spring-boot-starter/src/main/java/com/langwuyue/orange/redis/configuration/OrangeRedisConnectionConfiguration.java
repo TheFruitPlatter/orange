@@ -37,29 +37,85 @@ import com.langwuyue.orange.redis.OrangeRedisException;
 import com.langwuyue.orange.redis.configuration.OrangeRedisProperties.Pool;
 
 /**
+ * Configuration class for setting up Redis connection configurations.
+ * 
+ * <p>This class handles the configuration of different Redis deployment modes:
+ * <ul>
+ *   <li>Standalone - Single Redis instance</li>
+ *   <li>Sentinel - High availability Redis setup</li>
+ *   <li>Cluster - Distributed Redis setup</li>
+ * </ul>
+ * 
+ * <p>It supports configuration through both properties and URL-based configuration,
+ * and handles authentication, SSL, and connection pooling settings.
+ *
  * @author Liang.Zhong
  * @since 1.0.0
  */
 class OrangeRedisConnectionConfiguration {
+	/**
+	 * Flag indicating whether Apache Commons Pool 2 is available on the classpath.
+	 * This is used to determine if connection pooling can be enabled by default.
+	 */
 	private static final boolean COMMONS_POOL2_AVAILABLE = ClassUtils.isPresent("org.apache.commons.pool2.ObjectPool",
 			OrangeRedisConnectionConfiguration.class.getClassLoader());
 
+	/**
+	 * Redis properties containing configuration settings for Redis connections.
+	 */
 	private final OrangeRedisProperties properties;
 
+	/**
+	 * Configuration for standalone Redis connection, if provided externally.
+	 */
 	private final RedisStandaloneConfiguration standaloneConfiguration;
 
+	/**
+	 * Configuration for Redis Sentinel connection, if provided externally.
+	 */
 	private final RedisSentinelConfiguration sentinelConfiguration;
 
+	/**
+	 * Configuration for Redis Cluster connection, if provided externally.
+	 */
 	private final RedisClusterConfiguration clusterConfiguration;
 	
+	/**
+	 * Creates a Redis connection factory based on the configured properties.
+	 * 
+	 * <p>This method is intended to be overridden by subclasses to provide
+	 * specific implementation of the connection factory.
+	 *
+	 * @return a Redis connection factory instance
+	 */
 	protected RedisConnectionFactory redisConnectionFactory() {
 		return null;
 	}
 
+	/**
+	 * Retrieves the connection pool configuration.
+	 * 
+	 * <p>This method is intended to be overridden by subclasses to provide
+	 * specific pool configuration.
+	 *
+	 * @return the connection pool configuration
+	 */
 	protected Pool getPool() {
 		return null;
 	}
 
+	/**
+	 * Creates a new Redis connection configuration.
+	 * 
+	 * <p>This constructor initializes the connection configuration with the provided
+	 * properties and optional external configurations for different Redis deployment modes.
+	 * The external configurations, if provided, take precedence over the properties.
+	 *
+	 * @param properties the Redis properties containing connection settings
+	 * @param standaloneConfigurationProvider provider for standalone Redis configuration
+	 * @param sentinelConfigurationProvider provider for Redis Sentinel configuration
+	 * @param clusterConfigurationProvider provider for Redis Cluster configuration
+	 */
 	protected OrangeRedisConnectionConfiguration(OrangeRedisProperties properties,
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
@@ -70,6 +126,18 @@ class OrangeRedisConnectionConfiguration {
 		this.clusterConfiguration = clusterConfigurationProvider.getIfAvailable();
 	}
 
+	/**
+	 * Creates and returns a Redis standalone configuration.
+	 * 
+	 * <p>This method creates a standalone Redis configuration based on either:
+	 * <ul>
+	 *   <li>The externally provided standalone configuration if available</li>
+	 *   <li>The URL-based configuration if a URL is provided in properties</li>
+	 *   <li>The individual property settings (host, port, etc.)</li>
+	 * </ul>
+	 *
+	 * @return the Redis standalone configuration, never null
+	 */
 	protected final RedisStandaloneConfiguration getStandaloneConfig() {
 		if (this.standaloneConfiguration != null) {
 			return this.standaloneConfiguration;
@@ -92,6 +160,18 @@ class OrangeRedisConnectionConfiguration {
 		return config;
 	}
 
+	/**
+	 * Creates and returns a Redis Sentinel configuration.
+	 * 
+	 * <p>This method creates a Sentinel configuration based on either:
+	 * <ul>
+	 *   <li>The externally provided sentinel configuration if available</li>
+	 *   <li>The properties-based sentinel configuration if sentinel properties are defined</li>
+	 * </ul>
+	 * <p>If neither is available, this method returns null.
+	 *
+	 * @return the Redis Sentinel configuration, or null if not applicable
+	 */
 	protected final RedisSentinelConfiguration getSentinelConfig() {
 		if (this.sentinelConfiguration != null) {
 			return this.sentinelConfiguration;
@@ -138,11 +218,34 @@ class OrangeRedisConnectionConfiguration {
 		return this.properties;
 	}
 
+	/**
+	 * Determines whether connection pooling is enabled for the given pool configuration.
+	 * 
+	 * <p>Connection pooling is enabled if:
+	 * <ul>
+	 *   <li>The pool configuration explicitly enables it</li>
+	 *   <li>The pool configuration doesn't specify and Commons Pool 2 is available on the classpath</li>
+	 * </ul>
+	 *
+	 * @param pool the pool configuration to check
+	 * @return true if connection pooling is enabled, false otherwise
+	 */
 	protected boolean isPoolEnabled(Pool pool) {
 		Boolean enabled = pool.getEnabled();
 		return (enabled != null) ? enabled : COMMONS_POOL2_AVAILABLE;
 	}
 
+	/**
+	 * Creates a list of Redis sentinel nodes from the sentinel configuration.
+	 * 
+	 * <p>This method converts the string representation of sentinel nodes from the
+	 * properties into RedisNode objects that can be used in the sentinel configuration.
+	 * If any node string is invalid, an IllegalStateException is thrown.
+	 *
+	 * @param sentinel the sentinel properties containing node information
+	 * @return a list of Redis sentinel nodes
+	 * @throws IllegalStateException if any node string is invalid
+	 */
 	private List<RedisNode> createSentinels(OrangeRedisProperties.Sentinel sentinel) {
 		List<RedisNode> nodes = new ArrayList<>();
 		for (String node : sentinel.getNodes()) {
@@ -156,6 +259,21 @@ class OrangeRedisConnectionConfiguration {
 		return nodes;
 	}
 
+	/**
+	 * Parses a Redis URL and creates a connection information object.
+	 * 
+	 * <p>This method parses a Redis URL into its components and validates the format.
+	 * It supports both standard Redis ('redis://') and SSL Redis ('rediss://') URLs.
+	 * The URL can include authentication information in the format:
+	 * <ul>
+	 *   <li>redis://[username:password@]host[:port]</li>
+	 *   <li>rediss://[username:password@]host[:port]</li>
+	 * </ul>
+	 *
+	 * @param url the Redis URL to parse
+	 * @return a ConnectionInfo object containing the parsed connection details
+	 * @throws OrangeRedisException if the URL is invalid or uses an unsupported scheme
+	 */
 	protected ConnectionInfo parseUrl(String url) {
 		try {
 			URI uri = new URI(url);
@@ -184,6 +302,12 @@ class OrangeRedisConnectionConfiguration {
 		}
 	}
 
+	/**
+	 * Inner class that holds connection information parsed from a Redis URL.
+	 * 
+	 * <p>This class encapsulates all the connection details extracted from a Redis URL,
+	 * including host, port, authentication credentials, and SSL usage flag.
+	 */
 	static class ConnectionInfo {
 
 		private final URI uri;
@@ -194,6 +318,14 @@ class OrangeRedisConnectionConfiguration {
 
 		private final String password;
 
+		/**
+		 * Creates a new ConnectionInfo instance with the specified parameters.
+		 *
+		 * @param uri the parsed URI object
+		 * @param useSsl flag indicating whether SSL should be used for the connection
+		 * @param username the username for authentication, may be null
+		 * @param password the password for authentication, may be null
+		 */
 		ConnectionInfo(URI uri, boolean useSsl, String username, String password) {
 			this.uri = uri;
 			this.useSsl = useSsl;
@@ -201,22 +333,47 @@ class OrangeRedisConnectionConfiguration {
 			this.password = password;
 		}
 
+		/**
+		 * Returns whether SSL should be used for the connection.
+		 *
+		 * @return true if SSL should be used, false otherwise
+		 */
 		boolean isUseSsl() {
 			return this.useSsl;
 		}
 
+		/**
+		 * Returns the hostname of the Redis server.
+		 *
+		 * @return the hostname extracted from the URI
+		 */
 		String getHostName() {
 			return this.uri.getHost();
 		}
 
+		/**
+		 * Returns the port number of the Redis server.
+		 *
+		 * @return the port number extracted from the URI
+		 */
 		int getPort() {
 			return this.uri.getPort();
 		}
 
+		/**
+		 * Returns the username for authentication.
+		 *
+		 * @return the username, may be null if not specified
+		 */
 		String getUsername() {
 			return this.username;
 		}
 
+		/**
+		 * Returns the password for authentication.
+		 *
+		 * @return the password, may be null if not specified
+		 */
 		String getPassword() {
 			return this.password;
 		}
