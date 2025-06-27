@@ -27,12 +27,51 @@ import com.langwuyue.orange.redis.registry.OrangeSlowOperationRegistry;
 import com.langwuyue.orange.redis.registry.OrangeSlowOperationRegistry.SlowInfo;
 
 /**
+ * Spring Boot Actuator endpoint that exposes information about slow Redis operations.
+ * 
+ * <p>This endpoint provides a read-only view of Redis operations that have been
+ * identified as "slow" based on their execution time. It can be accessed via the
+ * "/actuator/of-redis-slow-ops" path when Spring Boot Actuator is enabled and
+ * the endpoint is exposed.
+ * 
+ * <p>Slow operations are Redis commands that take longer than expected to complete,
+ * which might indicate performance issues or potential bottlenecks in the system.
+ * This endpoint helps in:
+ * <ul>
+ *   <li>Identifying performance bottlenecks in Redis operations</li>
+ *   <li>Monitoring operation execution times</li>
+ *   <li>Debugging slow-running commands</li>
+ *   <li>Performance tuning and optimization</li>
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeSlowOperationRegistry
+ * @see SlowInfo
  */
 @Endpoint(id = "of-redis-slow-ops")
 public class OrangeRedisSlowOperationEndpoint {
 	
+	/**
+	 * Retrieves information about slow Redis operations.
+	 * 
+	 * <p>This method is invoked when a GET request is made to the endpoint.
+	 * It returns a list of slow operation information objects that contain
+	 * details about Redis operations that have been flagged as slow based
+	 * on their execution time.
+	 * 
+	 * <p>The returned list includes details such as:
+	 * <ul>
+	 *   <li>Operation execution time</li>
+	 *   <li>Command details</li>
+	 *   <li>Timestamp of occurrence</li>
+	 *   <li>Additional context information</li>
+	 * </ul>
+	 *
+	 * @return A list of {@link SlowInfo} objects containing details about
+	 *         slow Redis operations
+	 * @see OrangeSlowOperationRegistry#getRegistry()
+	 */
 	@ReadOperation
 	public List<SlowInfo> getDeadTransaction(){
 		return OrangeSlowOperationRegistry.getRegistry();

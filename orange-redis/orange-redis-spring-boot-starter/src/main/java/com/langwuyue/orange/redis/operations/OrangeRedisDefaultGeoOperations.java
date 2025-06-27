@@ -43,17 +43,48 @@ import com.langwuyue.orange.redis.configuration.OrangeRedisSerializer;
 import com.langwuyue.orange.redis.logger.OrangeRedisLogger;
 
 /**
+ * Default implementation of {@link OrangeRedisGeoOperations} for Redis geo operations.
+ * 
+ * <p>This class provides thread-safe implementations of all Redis geo operations,
+ * including adding locations, calculating distances, and searching within radius or bounding boxes.
+ * It handles serialization/deserialization of keys and values transparently using the configured
+ * {@link OrangeRedisSerializer}.
+ * 
+ * <p>All operations are logged at debug level when debug logging is enabled.
+ * 
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeRedisGeoOperations
+ * @see GeoOperations
+ * @see OrangeRedisSerializer
  */
 public class OrangeRedisDefaultGeoOperations extends OrangeRedisAbstractOperations implements OrangeRedisGeoOperations{
 	
+	/**
+	 * The Spring Data Redis GeoOperations instance used to perform the actual Redis operations.
+	 * This is the core component that executes the Redis geo commands.
+	 */
 	private GeoOperations<String,byte[]> operations;
 	
+	/**
+	 * The serializer used to convert Java objects to byte arrays and vice versa.
+	 * This enables storing complex Java objects in Redis geo indexes.
+	 */
 	private OrangeRedisSerializer redisSerializer;
 	
+	/**
+	 * Logger for recording operation details and debugging information.
+	 * Used to log method calls, parameters, and results when debug logging is enabled.
+	 */
 	private OrangeRedisLogger logger;
 	
+	/**
+	 * Constructs a new OrangeRedisDefaultGeoOperations instance with the required dependencies.
+	 *
+	 * @param template The Spring Data Redis template that provides Redis operations
+	 * @param redisSerializer The serializer to convert between Java objects and byte arrays
+	 * @param logger The logger for recording operation details and debugging information
+	 */
 	public OrangeRedisDefaultGeoOperations(RedisTemplate<String,byte[]> template,OrangeRedisSerializer redisSerializer,OrangeRedisLogger logger) {
 		super(template,logger);
 		this.operations = template.opsForGeo();
@@ -61,6 +92,19 @@ public class OrangeRedisDefaultGeoOperations extends OrangeRedisAbstractOperatio
 		this.logger = logger;
 	}
 
+	/**
+	 * Removes the specified members from the geo index stored at the given key.
+	 *
+	 * <p>This method removes one or more members from the geo index. If a member does not exist,
+	 * it will be ignored. The operation is atomic - either all valid members are removed or none are.
+	 *
+	 * @param key The key of the geo index
+	 * @param valueType The type of the values to be removed, used for serialization
+	 * @param values The members to remove from the geo index
+	 * @return The number of members that were removed from the geo index, not including non existing members
+	 * @throws Exception if there is an error during serialization or Redis operation
+	 * @see GeoOperations#remove(Object, Object...)
+	 */
 	@Override
 	public Long remove(String key, RedisValueTypeEnum valueType,Object... values) throws Exception {
 		if(this.logger.isDebugEnabled()) {
@@ -74,6 +118,19 @@ public class OrangeRedisDefaultGeoOperations extends OrangeRedisAbstractOperatio
 		return results;
 	}
 
+	/**
+	 * Adds multiple geo points with their associated members to the geo index stored at the given key.
+	 *
+	 * <p>This method adds multiple geo points with their associated members to the geo index.
+	 * If a member already exists, its position will be updated to the new point.
+	 *
+	 * @param key The key of the geo index
+	 * @param members The list of GeoEntry objects containing location and coordinates to add
+	 * @param valueType The type of the values to be added, used for serialization
+	 * @return The number of elements added to the geo index, not including elements already existing
+	 * @throws Exception if there is an error during serialization or Redis operation
+	 * @see GeoOperations#add(Object, Iterable)
+	 */
 	@Override
 	public Long add(String key, List<GeoEntry> members, RedisValueTypeEnum valueType) throws Exception {
 		if(this.logger.isDebugEnabled()) {
@@ -94,6 +151,21 @@ public class OrangeRedisDefaultGeoOperations extends OrangeRedisAbstractOperatio
 		return results;
 	}
 
+	/**
+	 * Calculates the distance between two members in the geo index.
+	 *
+	 * <p>This method returns the distance between two members in the specified unit.
+	 * The distance is calculated using the Haversine formula.
+	 *
+	 * @param key The key of the geo index
+	 * @param location1 The first member
+	 * @param location2 The second member
+	 * @param geoUnit The unit of the returned distance
+	 * @param valueType The type of the values, used for serialization
+	 * @return The distance between the two members in the specified unit, or null if one or both members don't exist
+	 * @throws Exception if there is an error during serialization or Redis operation
+	 * @see GeoOperations#distance(Object, Object, Object, org.springframework.data.redis.connection.RedisGeoCommands.DistanceUnit)
+	 */
 	@Override
 	public Double distance(
 		String key, 
@@ -127,6 +199,20 @@ public class OrangeRedisDefaultGeoOperations extends OrangeRedisAbstractOperatio
 		return null;
 	}
 	
+	/**
+	 * Retrieves the positions (coordinates) for one or more members of the geo index.
+	 *
+	 * <p>This method returns the longitude and latitude of all the specified members as GeoEntry objects.
+	 * For members that are not found in the geo index, null will be returned in their respective positions.
+	 *
+	 * @param key The key of the geo index
+	 * @param valueType The type of the members, used for serialization
+	 * @param values The members whose positions are to be retrieved
+	 * @return A list of GeoEntry objects containing the positions and original values of the specified members,
+	 *         in the same order as requested, with null entries for non-existent members
+	 * @throws Exception if there is an error during serialization or Redis operation
+	 * @see GeoOperations#position(Object, Object...)
+	 */
 	@Override
 	public List<GeoEntry> position(String key, RedisValueTypeEnum valueType, Object... values) throws Exception {
 		if(this.logger.isDebugEnabled()) {
@@ -154,6 +240,24 @@ public class OrangeRedisDefaultGeoOperations extends OrangeRedisAbstractOperatio
 		return entries;
 	}
 
+	/**
+	 * Searches for members within a given radius from a member location in the geo index.
+	 *
+	 * <p>This method finds all members within the specified radius from a given member's location.
+	 * The search can be customized using the SearchArguments parameter to include coordinates,
+	 * distances, sorting preferences, and limit the number of results.
+	 *
+	 * @param key The key of the geo index
+	 * @param location The member whose location is used as the center of the search
+	 * @param radius The radius of the search area
+	 * @param unit The unit of the radius (e.g., meters, kilometers)
+	 * @param valueType The type of the values stored in the geo index, used for serialization
+	 * @param returnType The expected return type for deserialization
+	 * @param searchArguments Additional search parameters (coordinates inclusion, distance inclusion, sorting, limit)
+	 * @return A list of GeoEntryInRadius objects containing the matching members and their details
+	 * @throws Exception if there is an error during serialization or Redis operation
+	 * @see GeoOperations#radius(Object, Object, Distance, GeoRadiusCommandArgs)
+	 */
 	@Override
 	public List<GeoEntryInRadius> radius(
 		String key, 
@@ -208,6 +312,25 @@ public class OrangeRedisDefaultGeoOperations extends OrangeRedisAbstractOperatio
 		return results;
 	}
 	
+	/**
+	 * Searches for members within a given radius from a specific geographic point in the geo index.
+	 *
+	 * <p>This method finds all members within the specified radius from a given point defined by longitude and latitude.
+	 * The search can be customized using the SearchArguments parameter to include coordinates,
+	 * distances, sorting preferences, and limit the number of results.
+	 *
+	 * @param key The key of the geo index
+	 * @param longitude The longitude of the center point of the search
+	 * @param latitude The latitude of the center point of the search
+	 * @param distance The radius of the search area
+	 * @param unit The unit of the radius (e.g., meters, kilometers)
+	 * @param valueType The type of the values stored in the geo index, used for serialization
+	 * @param returnType The expected return type for deserialization
+	 * @param searchArguments Additional search parameters (coordinates inclusion, distance inclusion, sorting, limit)
+	 * @return A list of GeoEntryInRadius objects containing the matching members and their details
+	 * @throws Exception if there is an error during serialization or Redis operation
+	 * @see GeoOperations#radius(Object, Circle, GeoRadiusCommandArgs)
+	 */
 	@Override
 	public List<GeoEntryInRadius> radius(
 		String key, 
@@ -262,6 +385,24 @@ public class OrangeRedisDefaultGeoOperations extends OrangeRedisAbstractOperatio
 		return results;
 	}
 	
+	/**
+	 * Searches for members within a given radius from a member location and stores the result in another key.
+	 *
+	 * <p>This method finds all members within the specified radius from a given member's location
+	 * and stores the result in a destination key. The search can be customized using the SearchArguments
+	 * parameter to include distances, sorting preferences, and limit the number of results.
+	 *
+	 * @param key The key of the geo index to search in
+	 * @param destKey The key where the results will be stored
+	 * @param location The member whose location is used as the center of the search
+	 * @param distance The radius of the search area
+	 * @param unit The unit of the radius (e.g., meters, kilometers)
+	 * @param valueType The type of the values stored in the geo index, used for serialization
+	 * @param searchArguments Additional search parameters (distance inclusion, sorting, limit)
+	 * @return The number of members stored in the destination key
+	 * @throws Exception if there is an error during serialization or Redis operation
+	 * @see GeoOperations#searchAndStore(Object, Object, GeoReference, Distance, GeoSearchStoreCommandArgs)
+	 */
 	@Override
 	public Long searchRadiusAndStore(
 		String key, 
@@ -311,6 +452,24 @@ public class OrangeRedisDefaultGeoOperations extends OrangeRedisAbstractOperatio
 		return results;
 	}
 	
+	/**
+	 * Searches for members within a given radius from a specific geographic point and stores the result in another key.
+	 *
+	 * <p>This method finds all members within the specified radius from a given point defined by longitude and latitude,
+	 * and stores the result in a destination key. The search can be customized using the SearchArguments
+	 * parameter to include distances, sorting preferences, and limit the number of results.
+	 *
+	 * @param key The key of the geo index to search in
+	 * @param destKey The key where the results will be stored
+	 * @param longitude The longitude of the center point of the search
+	 * @param latitude The latitude of the center point of the search
+	 * @param distance The radius of the search area
+	 * @param unit The unit of the radius (e.g., meters, kilometers)
+	 * @param searchArguments Additional search parameters (distance inclusion, sorting, limit)
+	 * @return The number of members stored in the destination key
+	 * @throws Exception if there is an error during serialization or Redis operation
+	 * @see GeoOperations#searchAndStore(Object, Object, GeoReference, Distance, GeoSearchStoreCommandArgs)
+	 */
 	@Override
 	public Long searchRadiusAndStore(
 		String key, 
@@ -360,6 +519,27 @@ public class OrangeRedisDefaultGeoOperations extends OrangeRedisAbstractOperatio
 		return results;
 	}
 
+	/**
+	 * Searches for members within a bounding box centered at a specific geographic point in the geo index.
+	 *
+	 * <p>This method finds all members within a rectangular area defined by width and height dimensions
+	 * centered at the specified longitude and latitude. The search can be customized using the SearchArguments
+	 * parameter to include coordinates, distances, sorting preferences, and limit the number of results.
+	 *
+	 * @param key The key of the geo index
+	 * @param longitude The longitude of the center point of the bounding box
+	 * @param latitude The latitude of the center point of the bounding box
+	 * @param widthUnit The unit of the width dimension (e.g., meters, kilometers)
+	 * @param width The width of the bounding box
+	 * @param heightUnit The unit of the height dimension (e.g., meters, kilometers)
+	 * @param height The height of the bounding box
+	 * @param valueType The type of the values stored in the geo index, used for serialization
+	 * @param returnType The expected return type for deserialization
+	 * @param searchArguments Additional search parameters (coordinates inclusion, distance inclusion, sorting, limit)
+	 * @return A list of GeoEntryInRadius objects containing the matching members and their details
+	 * @throws Exception if there is an error during serialization or Redis operation
+	 * @see GeoOperations#search(Object, GeoReference, BoundingBox, GeoSearchCommandArgs)
+	 */
 	@Override
 	public List<GeoEntryInRadius> box(
 		String key, 
@@ -420,6 +600,26 @@ public class OrangeRedisDefaultGeoOperations extends OrangeRedisAbstractOperatio
 		return results;
 	}
 
+	/**
+	 * Searches for members within a bounding box centered at a member location in the geo index.
+	 *
+	 * <p>This method finds all members within a rectangular area defined by width and height dimensions
+	 * centered at the location of the specified member. The search can be customized using the SearchArguments
+	 * parameter to include coordinates, distances, sorting preferences, and limit the number of results.
+	 *
+	 * @param key The key of the geo index
+	 * @param location The member whose location is used as the center of the bounding box
+	 * @param width The width of the bounding box
+	 * @param widthUnit The unit of the width dimension (e.g., meters, kilometers)
+	 * @param height The height of the bounding box
+	 * @param heightUnit The unit of the height dimension (e.g., meters, kilometers)
+	 * @param valueType The type of the values stored in the geo index, used for serialization
+	 * @param returnType The expected return type for deserialization
+	 * @param searchArguments Additional search parameters (coordinates inclusion, distance inclusion, sorting, limit)
+	 * @return A list of GeoEntryInRadius objects containing the matching members and their details
+	 * @throws Exception if there is an error during serialization or Redis operation
+	 * @see GeoOperations#search(Object, GeoReference, BoundingBox, GeoSearchCommandArgs)
+	 */
 	@Override
 	public List<GeoEntryInRadius> box(
 		String key, 
@@ -478,6 +678,27 @@ public class OrangeRedisDefaultGeoOperations extends OrangeRedisAbstractOperatio
 		return results;
 	}
 
+	/**
+	 * Searches for members within a bounding box centered at a member location and stores the result in another key.
+	 *
+	 * <p>This method finds all members within a rectangular area defined by width and height dimensions
+	 * centered at the location of the specified member, and stores the result in a destination key.
+	 * The search can be customized using the SearchArguments parameter to include distances,
+	 * sorting preferences, and limit the number of results.
+	 *
+	 * @param key The key of the geo index to search in
+	 * @param destKey The key where the results will be stored
+	 * @param location The member whose location is used as the center of the bounding box
+	 * @param width The width of the bounding box
+	 * @param widthUnit The unit of the width dimension (e.g., meters, kilometers)
+	 * @param height The height of the bounding box
+	 * @param heightUnit The unit of the height dimension (e.g., meters, kilometers)
+	 * @param valueType The type of the values stored in the geo index, used for serialization
+	 * @param searchArguments Additional search parameters (distance inclusion, sorting, limit)
+	 * @return The number of members stored in the destination key
+	 * @throws Exception if there is an error during serialization or Redis operation
+	 * @see GeoOperations#searchAndStore(Object, Object, GeoReference, BoundingBox, GeoSearchStoreCommandArgs)
+	 */
 	@Override
 	public Long searchBoxAndStore(
 		String key, 
@@ -534,6 +755,27 @@ public class OrangeRedisDefaultGeoOperations extends OrangeRedisAbstractOperatio
 		return results;
 	}
 	
+	/**
+	 * Searches for members within a bounding box centered at a specific geographic point and stores the result in another key.
+	 *
+	 * <p>This method finds all members within a rectangular area defined by width and height dimensions
+	 * centered at the specified longitude and latitude, and stores the result in a destination key.
+	 * The search can be customized using the SearchArguments parameter to include distances,
+	 * sorting preferences, and limit the number of results.
+	 *
+	 * @param key The key of the geo index to search in
+	 * @param destKey The key where the results will be stored
+	 * @param longitude The longitude of the center point of the bounding box
+	 * @param latitude The latitude of the center point of the bounding box
+	 * @param widthUnit The unit of the width dimension (e.g., meters, kilometers)
+	 * @param width The width of the bounding box
+	 * @param heightUnit The unit of the height dimension (e.g., meters, kilometers)
+	 * @param height The height of the bounding box
+	 * @param searchArguments Additional search parameters (distance inclusion, sorting, limit)
+	 * @return The number of members stored in the destination key
+	 * @throws Exception if there is an error during serialization or Redis operation
+	 * @see GeoOperations#searchAndStore(Object, Object, GeoReference, BoundingBox, GeoSearchStoreCommandArgs)
+	 */
 	@Override
 	public Long searchBoxAndStore(
 		String key, 
@@ -590,6 +832,19 @@ public class OrangeRedisDefaultGeoOperations extends OrangeRedisAbstractOperatio
 		return results;
 	}
 	
+	/**
+	 * Converts Spring Data Redis GeoResults to a list of GeoEntryInRadius objects.
+	 *
+	 * <p>This private helper method transforms the results from Spring Data Redis geo operations
+	 * into a more user-friendly format. It deserializes the binary data into the requested type
+	 * and extracts coordinates and distance information into GeoEntryInRadius objects.
+	 *
+	 * @param resultsWithAvgDistance The GeoResults from Spring Data Redis operations
+	 * @param valueType The type of the values stored in the geo index, used for deserialization
+	 * @param returnType The expected return type for deserialization
+	 * @return A list of GeoEntryInRadius objects containing the deserialized members and their details
+	 * @throws Exception if there is an error during deserialization
+	 */
 	private List<GeoEntryInRadius> toEntry(
 		GeoResults<GeoLocation<byte[]>> resultsWithAvgDistance,
 		RedisValueTypeEnum valueType,

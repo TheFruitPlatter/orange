@@ -30,17 +30,45 @@ import com.langwuyue.orange.redis.configuration.OrangeRedisSerializer;
 import com.langwuyue.orange.redis.logger.OrangeRedisLogger;
 
 /**
+ * Default implementation of {@link OrangeRedisScriptOperations} that provides Redis script execution capabilities.
+ * 
+ * <p>This class handles the execution of Redis scripts (Lua scripts) with support for:
+ * <ul>
+ *   <li>Custom serialization of script arguments</li>
+ *   <li>Type-safe deserialization of script results</li>
+ *   <li>Detailed logging of script execution</li>
+ * </ul>
+ *
  * @author Liang.Zhong
  * @since 1.0.0
+ * @see OrangeRedisScriptOperations
  */
 public class OrangeRedisDefaultScriptOperations implements OrangeRedisScriptOperations {
 
+	/**
+	 * Redis template used for executing Redis script operations.
+	 * The template is configured to work with String keys and byte[] values.
+	 */
 	private RedisTemplate<String,byte[]> template;
 	
+	/**
+	 * Serializer for converting between Java objects and Redis byte arrays.
+	 * Handles serialization and deserialization of script arguments and results.
+	 */
 	private OrangeRedisSerializer redisSerializer;
 	
+	/**
+	 * Logger for recording script execution details and debugging information.
+	 */
 	private OrangeRedisLogger logger;
 	
+	/**
+	 * Constructs a new {@code OrangeRedisDefaultScriptOperations} instance.
+	 *
+	 * @param template The Redis template used for script execution
+	 * @param redisSerializer The serializer for converting between Java objects and Redis byte arrays
+	 * @param logger The logger for recording script execution details
+	 */
 	public OrangeRedisDefaultScriptOperations(
 		RedisTemplate<String,byte[]> template,
 		OrangeRedisSerializer redisSerializer,
@@ -51,6 +79,25 @@ public class OrangeRedisDefaultScriptOperations implements OrangeRedisScriptOper
 		this.logger = logger;
 	}
 	
+	/**
+	 * Executes a Redis script with the given arguments and returns the deserialized result.
+	 * 
+	 * <p>This method provides flexible script execution with support for:
+	 * <ul>
+	 *   <li>Custom serialization of each argument based on its value type</li>
+	 *   <li>Type-safe deserialization of the script result</li>
+	 *   <li>Detailed logging of script execution details</li>
+	 * </ul>
+	 *
+	 * @param script The Lua script to execute
+	 * @param argsValueType A map specifying the serialization type for each argument
+	 * @param returnValueType The expected value type of the script result
+	 * @param returnType The Java type to deserialize the result into
+	 * @param keys The Redis keys used in the script
+	 * @param args The arguments passed to the script
+	 * @return The deserialized script result, or null if the script returned nil
+	 * @throws Exception If script execution fails or result deserialization fails
+	 */
 	@Override
 	public Object execute(
 		String script, 
