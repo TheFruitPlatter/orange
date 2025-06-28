@@ -74,8 +74,6 @@ public abstract class OrangeStringTemlateUtils {
 	 * @param method the method whose parameters will be available in the evaluation context
 	 * @param args the argument values passed to the method
 	 * @return the processed string with all expressions evaluated
-	 * @throws EvaluationException if expression evaluation fails
-	 * @throws ParseException if the template cannot be parsed
 	 */
 	public static String getString(String template,Method method, Object[] args) {
 		if(template.indexOf(TEMPLATE_PARSER_CONTEXT.getExpressionPrefix()) != -1) {

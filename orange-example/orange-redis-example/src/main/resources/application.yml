@@ -18,10 +18,9 @@ orange:
     metrics:
       enabled: true
     client-type: lettuce
-    host: 10.192.11.120
-    # host: 127.0.0.1
-    username: default
-    password: FC23E904EDB5
+    host: 127.0.0.1
+    #username: 
+    #password: 
     database: 0
     port: 6379
     key-check-level: 4

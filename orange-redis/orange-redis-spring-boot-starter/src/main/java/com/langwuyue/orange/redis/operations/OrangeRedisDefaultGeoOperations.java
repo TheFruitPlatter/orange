@@ -164,7 +164,6 @@ public class OrangeRedisDefaultGeoOperations extends OrangeRedisAbstractOperatio
 	 * @param valueType The type of the values, used for serialization
 	 * @return The distance between the two members in the specified unit, or null if one or both members don't exist
 	 * @throws Exception if there is an error during serialization or Redis operation
-	 * @see GeoOperations#distance(Object, Object, Object, org.springframework.data.redis.connection.RedisGeoCommands.DistanceUnit)
 	 */
 	@Override
 	public Double distance(

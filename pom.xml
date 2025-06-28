@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.langwuyue</groupId>
 	<artifactId>orange</artifactId>
@@ -22,10 +24,11 @@
 		<current.year>${maven.build.timestamp}</current.year>
 		<project.owner>Liang.Zhong</project.owner>
 	</properties>
-	
+
+	<name>Orange Framework</name>
 	<url>https://github.com/TheFruitPlatter/orange</url>
 	<description>Java framework base on Spring Boot 2.0+</description>
-	
+
 	<scm>
 		<connection>https://github.com/TheFruitPlatter/orange.git</connection>
 		<developerConnection>https://github.com/TheFruitPlatter/orange.git</developerConnection>
@@ -161,7 +164,8 @@
 							<outputDirectory>${project.build.outputDirectory}</outputDirectory>
 							<resources>
 								<resource>
-									<directory>${maven.multiModuleProjectDirectory}/</directory>
+									<directory>
+										${maven.multiModuleProjectDirectory}/</directory>
 									<includes>
 										<include>LICENSE</include>
 										<include>NOTICE</include>
@@ -186,43 +190,42 @@
 				</configuration>
 			</plugin>
 			<plugin>
-	            <groupId>org.apache.maven.plugins</groupId>
-	            <artifactId>maven-gpg-plugin</artifactId>
-	            <version>3.1.0</version>
-	            <configuration>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>3.1.0</version>
+				<configuration>
 					<keyname>jianpanxia_liang@163.com</keyname>
 				</configuration>
-	            <executions>
-	                <execution>
-	                    <id>sign-artifacts</id>
-	                    <phase>verify</phase>
-	                    <goals>
-	                        <goal>sign</goal>
-	                    </goals>
-	                </execution>
-	            </executions>
-	        </plugin>
-	        <plugin>
-	            <groupId>org.apache.maven.plugins</groupId>
-	            <artifactId>maven-javadoc-plugin</artifactId>
-	            <version>3.6.3</version>
-	            <configuration>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.6.3</version>
+				<configuration>
 					<encoding>UTF-8</encoding>
 					<docencoding>UTF-8</docencoding>
 					<charset>UTF-8</charset>
 					<source>8</source>
 					<show>public</show>
 				</configuration>
-	            <executions>
-	                <execution>
-	                    <id>generate-javadoc</id>
-	                    <phase>package</phase>
-	                    <goals>
-	                        <goal>javadoc</goal>
-	                    </goals>
-	                </execution>
-	            </executions>
-	        </plugin>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 </project>

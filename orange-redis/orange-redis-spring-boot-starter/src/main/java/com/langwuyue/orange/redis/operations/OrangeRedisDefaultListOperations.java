@@ -192,8 +192,8 @@ public class OrangeRedisDefaultListOperations extends OrangeRedisAbstractOperati
 	 * 
 	 * <p>The count argument influences the operation in the following ways:
 	 * <ul>
-	 *   <li>count > 0: Remove elements equal to value moving from head to tail</li>
-	 *   <li>count < 0: Remove elements equal to value moving from tail to head</li>
+	 *   <li>count &gt; 0: Remove elements equal to value moving from head to tail</li>
+	 *   <li>count &lt; 0: Remove elements equal to value moving from tail to head</li>
 	 *   <li>count = 0: Remove all elements equal to value</li>
 	 * </ul>
 	 *
@@ -283,7 +283,6 @@ public class OrangeRedisDefaultListOperations extends OrangeRedisAbstractOperati
 	 * for an element to become available. If the timeout expires before an element is available,
 	 * null is returned.
 	 *
-	 * @param <T> the type of the returned value
 	 * @param key the key of the list
 	 * @param timeout the maximum time to wait for an element to become available
 	 * @param timeUnit the time unit of the timeout
@@ -456,7 +455,6 @@ public class OrangeRedisDefaultListOperations extends OrangeRedisAbstractOperati
 	 * <p>If the list contains fewer than count elements, all available elements will be returned.
 	 * If the key does not exist, an empty list is returned.
 	 *
-	 * @param <T> the type of the returned values
 	 * @param key the key of the list
 	 * @param count the maximum number of elements to pop
 	 * @param valueType the type of the values stored in Redis
@@ -516,7 +514,7 @@ public class OrangeRedisDefaultListOperations extends OrangeRedisAbstractOperati
 	/**
 	 * Sets the list element at index to value.
 	 * 
-	 * <p>An error is returned for out of range indexes (index >= size or index < -size).
+	 * <p>An error is returned for out of range indexes (index >= size or index &lt; -size).
 	 * Negative indexes are supported, with -1 being the last element, -2 the penultimate, etc.
 	 *
 	 * @param key the key of the list

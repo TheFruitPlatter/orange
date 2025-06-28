@@ -87,13 +87,6 @@ public class OrangeRedisHashClientFactoryBean extends OrangeRedisClientAbstractF
 	 * all the necessary configuration parameters for creating and configuring
 	 * the Redis Hash client proxy.
 	 * 
-	 * <!-- Chinese documentation -->
-	 * Hash客户端注解实例。
-	 * 
-	 * <p>此字段存储来自{@link OrangeRedisHashClient}的注解元数据，
-	 * 用于配置此客户端的行为，包括断路器设置、哈希键类型、哈希值类型和其他操作配置。
-	 * 
-	 * <p>该注解从客户端定义类中获取，并提供创建和配置Redis Hash客户端代理所需的所有配置参数。
 	 */
 	private OrangeRedisHashClient client;
 	
@@ -108,14 +101,6 @@ public class OrangeRedisHashClientFactoryBean extends OrangeRedisClientAbstractF
 	 * Redis Hash operations, including the operations implementation, executor ID generator,
 	 * listeners, and script operations.
 	 * 
-	 * <!-- Chinese documentation -->
-	 * Hash操作执行器映射的静态缓存。
-	 * 
-	 * <p>此映射在工厂Bean的所有实例间共享，以避免为相同操作重复创建执行器。
-	 * 它在首次通过{@link #getExecutorsMapping()}访问时被懒加载初始化。
-	 * 
-	 * <p>执行器映射包含执行Redis Hash操作所需的所有组件，包括操作实现、
-	 * 执行器ID生成器、监听器和脚本操作。
 	 */
 	private static OrangeRedisHashExecutorsMapping EXECUTORS_MAPPING;
 	
@@ -141,24 +126,6 @@ public class OrangeRedisHashClientFactoryBean extends OrangeRedisClientAbstractF
 	 *                             which provides configuration details for the client.
 	 * @param configuration The Orange Redis configuration that contains global settings
 	 *                     such as connection details, serializers, and other Redis-related properties.
-	 *
-	 * <!-- Chinese documentation -->
-	 * 使用指定参数构造一个新的OrangeRedisHashClientFactoryBean。
-	 * 
-	 * <p>此构造函数使用必要的组件初始化工厂Bean，以创建和配置Redis Hash操作代理。
-	 * 它将通用初始化任务（如设置操作所有者、Redis配置和客户端定义类）委托给父类构造函数。
-	 * 
-	 * <p>工厂Bean使用这些参数来：
-	 * <ul>
-	 *   <li>识别定义Redis Hash操作的接口</li>
-	 *   <li>从客户端定义类的注解中提取配置</li>
-	 *   <li>访问Redis连接和序列化设置</li>
-	 *   <li>创建适当的代理和处理器</li>
-	 * </ul>
-	 *
-	 * @param operationOwner 拥有要代理的Redis Hash操作的类。这通常是定义Hash操作的接口。
-	 * @param clientDefinitionClass 包含{@link OrangeRedisHashClient}注解的类，该注解为客户端提供配置详情。
-	 * @param configuration Orange Redis配置，包含全局设置，如连接详情、序列化器和其他Redis相关属性。
 	 */
 	public OrangeRedisHashClientFactoryBean(
 			Class<?> operationOwner,

@@ -7,6 +7,10 @@
 		<version>1.0.0-RELEASE</version>
 	</parent>
 	<artifactId>orange-redis-spring-boot-starter</artifactId>
+	
+	<name>Orange Framework Redis Starter</name>
+	<url>https://github.com/TheFruitPlatter/orange</url>
+	<description>Java framework base on Spring Boot 2.0+</description>
 
 	<dependencies>
 		<dependency>

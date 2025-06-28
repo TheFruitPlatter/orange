@@ -1496,7 +1496,6 @@ public class OrangeRedisDefaultZSetOperations extends OrangeRedisAbstractOperati
 	 * @param comparisonKeys Collection of keys of other sorted sets to compare against
 	 * @param storeTo The key where the resulting sorted set will be stored
 	 * @return The number of members in the resulting sorted set stored at the destination key
-	 * @see ZSetOperations#differenceAndStore(Object, Object, Collection)
 	 */
 	@Override
 	public Long differenceAndStore(String referenceKey, Collection<String> comparisonKeys, String storeTo) {
