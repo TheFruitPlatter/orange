@@ -47,12 +47,6 @@
 - Maven 3.0+
 
 ### 安装方式
-#### 方案A：源码编译（当前推荐）
-```bash
-git clone [项目地址]
-mvn clean install
-```
-#### 方案B：Maven依赖（即将发布）
 ```xml
 <dependency>
   <groupId>com.langwuyue</groupId>
@@ -138,10 +132,15 @@ public class CacheController {
 }
 ```
 ## 进阶指南
-参考项目中的示例模块：
+
+### 参考项目中的示例模块：
+
 - 覆盖90%+的典型使用场景
 - 包含完整测试用例
 - 提供最佳实践示例
+
+### 访问文档进一步学习
+<a href="https://orange.langwuyue.com">Orange 文档</a>
 
 ## 加入我们
 参与贡献方式：

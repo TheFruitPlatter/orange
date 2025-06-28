@@ -46,12 +46,6 @@ With over 10 years of professional experience, I've observed that many so-called
 - Maven 3.0+
 
 ### Installation Options
-#### Option A: Source Compilation (Recommended)
-```bash
-git clone [project URL]
-mvn clean install
-```
-#### Option B: Maven Dependency (Coming Soon)
 ```xml
 <dependency>
   <groupId>com.langwuyue</groupId>
@@ -134,11 +128,14 @@ public class CacheController {
 }
 ```
 ## Advanced Guide
-Refer to the example module in the project:
+### Refer to the example module in the project:
 
 - Covers 90%+ typical usage scenarios
 - Includes complete test cases  
 - Provides best practice examples
+
+### Visit orange framework web site
+<a href="https://orange.langwuyue.com">Orange Framework Document</a>
 
 ## Join Us
 Contribution methods:
