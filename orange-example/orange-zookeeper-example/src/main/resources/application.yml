@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: orange-example
+  datasource:
+    url: jdbc:h2:mem:orangedb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+  sql:
+    init:
+      mode: always
+  h2:
+    console:
+      enabled: true
+      path: /h2/console
+server:
+  port: 8088
+orange:
+  zookeeper:
+    enabled: true
+    connection-string: 10.192.11.109:2181
+    # connection-string: localhost:2181
+    namespace: orange
+    charset: UTF-8
+    session-timeout: 60s
+    connection-timeout: 15s
+    close-timeout: 1s
+    default-data: 
+    can-be-read-only: true
+    use-container-parents-if-available: true
